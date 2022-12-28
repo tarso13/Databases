@@ -1,15 +1,33 @@
 package gui;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+import static java.lang.System.exit;
 
 public class GUI {
-
     private static void displayProcedures() {
-        String[] options = {"New Hire", "New Contract", "Change Employee Info", "Change Salary/Bonus", "New Fire/Retirement","Payment", "Questions", "Statistics"};
-        int ret = JOptionPane.showOptionDialog(null, "Choose one of the availabe options",
-                "Procedures",
-                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+        JPanel panel;
+        JButton[] buttons = new JButton[8];
+        panel = new JPanel(new GridLayout(1, 8));
+        String b[] = {"New Hire", "New Contract", "Change Employee Info", "Change Salary/Bonus", "New Fire/Retirement", "Payment", "Questions", "Statistics"};
+        for (int i = 0; i < buttons.length; i++) {
+            buttons[i] = new JButton(b[i]);
+            buttons[i].setSize(80, 80);
+            buttons[i].setActionCommand(b[i]);
+            buttons[i].addActionListener(e -> {
+                String choice = e.getActionCommand();
+                JOptionPane.showMessageDialog(null, "You have clicked: " + choice);
+                exit(1);
+            });
+            panel.add(buttons[i]);
+        }
 
+        JFrame frame = new JFrame();
+        frame.add(panel);
+        frame.pack();
+        frame.setVisible(true);
     }
 
     public static void login_page() {
