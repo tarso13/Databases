@@ -2,35 +2,63 @@ package gui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 
 import static java.lang.System.exit;
 
 public class GUI {
-    private static void displayProcedures() {
+
+    private static void displayQueries() {
         JPanel panel;
         JButton[] buttons = new JButton[8];
-        panel = new JPanel(new GridLayout(1, 8));
-        String b[] = {"New Hire", "New Contract", "Change Employee Info", "Change Salary/Bonus", "New Fire/Retirement", "Payment", "Questions", "Statistics"};
+        panel = new JPanel(new GridLayout(8, 1));
+        String b[] = {"Payment State per Staff Category", "Max Salary per Staff Category", "Min Salary per Staff Category",
+                "Average Salary per Staff Category", "Average Salary and Bonus Increase", "Employee Data and Salary", "Total Salary Increase per Staff Category", "Back to Login Page"};
         for (int i = 0; i < buttons.length; i++) {
             buttons[i] = new JButton(b[i]);
             buttons[i].setSize(80, 80);
             buttons[i].setActionCommand(b[i]);
             buttons[i].addActionListener(e -> {
                 String choice = e.getActionCommand();
-                JOptionPane.showMessageDialog(null, "You have clicked: " + choice);
-                exit(1);
+//                JOptionPane.showMessageDialog(null, "You have clicked: " + choice);
+                if (choice.equals("Back to Login Page"))
+                    loginPage();
             });
             panel.add(buttons[i]);
         }
 
-        JFrame frame = new JFrame();
+        JFrame frame = new JFrame("Queries Supported");
         frame.add(panel);
         frame.pack();
         frame.setVisible(true);
     }
 
-    public static void login_page() {
+    private static void displayProcedures() {
+        JPanel panel;
+        JButton[] buttons = new JButton[9];
+        panel = new JPanel(new GridLayout(9, 1));
+        String b[] = {"New Hire", "New Contract", "Change Employee Info", "Change Salary/Bonus", "New Fire/Retirement", "Payment", "Queries", "Statistics", "Back to Login Page"};
+        for (int i = 0; i < buttons.length; i++) {
+            buttons[i] = new JButton(b[i]);
+            buttons[i].setSize(80, 80);
+            buttons[i].setActionCommand(b[i]);
+            buttons[i].addActionListener(e -> {
+                String choice = e.getActionCommand();
+//                JOptionPane.showMessageDialog(null, "You have clicked: " + choice);
+                if (choice.equals("Queries")) {
+                    displayQueries();
+                } else if (choice.equals("Back to Login Page"))
+                    loginPage();
+            });
+            panel.add(buttons[i]);
+        }
+
+        JFrame frame = new JFrame("Procedures");
+        frame.add(panel);
+        frame.pack();
+        frame.setVisible(true);
+    }
+
+    public static void loginPage() {
         JTextField username = new JTextField();
         JTextField password = new JPasswordField();
         Object[] message = {
@@ -42,7 +70,6 @@ public class GUI {
         if (option == JOptionPane.OK_OPTION) {
             //change correct credentials
             if (username.getText().equals("root") && password.getText().equals("root")) {
-                //System.out.println("Login successful");
                 displayProcedures();
             } else
                 System.out.println("login failed");
