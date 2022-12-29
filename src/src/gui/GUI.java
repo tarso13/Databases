@@ -8,6 +8,7 @@ import static java.lang.System.exit;
 public class GUI {
 
     private static void displayQueries() {
+        JFrame frame = new JFrame("Queries Supported");
         JPanel panel;
         JButton[] buttons = new JButton[8];
         panel = new JPanel(new GridLayout(8, 1));
@@ -19,20 +20,19 @@ public class GUI {
             buttons[i].setActionCommand(b[i]);
             buttons[i].addActionListener(e -> {
                 String choice = e.getActionCommand();
-//                JOptionPane.showMessageDialog(null, "You have clicked: " + choice);
                 if (choice.equals("Back to Login Page"))
                     loginPage();
+                frame.dispose();
             });
             panel.add(buttons[i]);
         }
-
-        JFrame frame = new JFrame("Queries Supported");
         frame.add(panel);
         frame.pack();
         frame.setVisible(true);
     }
 
     private static void displayProcedures() {
+        JFrame frame = new JFrame("Procedures");
         JPanel panel;
         JButton[] buttons = new JButton[9];
         panel = new JPanel(new GridLayout(9, 1));
@@ -43,16 +43,15 @@ public class GUI {
             buttons[i].setActionCommand(b[i]);
             buttons[i].addActionListener(e -> {
                 String choice = e.getActionCommand();
-//                JOptionPane.showMessageDialog(null, "You have clicked: " + choice);
                 if (choice.equals("Queries")) {
                     displayQueries();
                 } else if (choice.equals("Back to Login Page"))
                     loginPage();
+                frame.dispose();
             });
             panel.add(buttons[i]);
         }
 
-        JFrame frame = new JFrame("Procedures");
         frame.add(panel);
         frame.pack();
         frame.setVisible(true);
@@ -71,11 +70,12 @@ public class GUI {
             //change correct credentials
             if (username.getText().equals("root") && password.getText().equals("root")) {
                 displayProcedures();
-            } else
-                System.out.println("login failed");
-
+            } else {
+                JOptionPane.showMessageDialog(null, "Incorrect login");
+                loginPage();
+            }
         } else
-            System.out.println("Login cancelled");
+            JOptionPane.showMessageDialog(null, "Login cancelled");
 
     }
 }
