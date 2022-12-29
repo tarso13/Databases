@@ -43,10 +43,15 @@ public class ContractorEducator extends Employee{
     @Override
     public String toString() {
         return "ContractorEducator{" +
-                "username" + userName +
-                ", password" + password +
-                ", groupEmployer " + groupEmployer() +
-                ", JobDepartment " + JobDepartment() +
-                "}";
+                "firstname: " + getFirstName() +
+                ",lastname: " + getLastName() +
+                ",address: " + getAddress() +
+                ",phoneNumber: " + getPhoneNumber() +
+                ",beginHiringDate: " + getBeginHiringDate() +
+                ",username: " + userName +
+                ", password: " + password +
+                ", groupEmployer: " + groupEmployer() +
+                ", JobDepartment: " + JobDepartment() +
+                "}\n";
     }
 }

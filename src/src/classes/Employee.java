@@ -3,6 +3,8 @@ package classes;
 import java.util.Date;
 
 public abstract class Employee {
+
+    enum employee {PE, PM, CE, CM};
     private String firstName;
     private String lastName;
 
@@ -74,5 +76,15 @@ public abstract class Employee {
     }
 
     public abstract String toString();
+
+    public employee findEmployee(){
+        if (groupEmployer().equals("Permanent")){
+            if (JobDepartment().equals("Educator")) return employee.PE;
+            return employee.PM;
+        } else{
+            if (JobDepartment().equals("Educator")) return employee.CE;
+            return employee.CM;
+        }
+    }
 
 }

@@ -44,11 +44,15 @@ public class PermanentManager extends Employee{
 
     @Override
     public String toString() {
-        return "PermanentManager{" +
-                "username" + userName +
-                ", password" + password +
-                ", groupEmployer " + groupEmployer() +
-                ", JobDepartment " + JobDepartment() +
-                "}";
+        return "firstname: " + getFirstName() +
+                ",lastname: " + getLastName() +
+                ",address: " + getAddress() +
+                ",phoneNumber: " + getPhoneNumber() +
+                ",beginHiringDate: " + getBeginHiringDate() +
+                ",username: " + userName +
+                ", password: " + password +
+                ", groupEmployer: " + groupEmployer() +
+                ", JobDepartment: " + JobDepartment() +
+                "}\n";
     }
 }
