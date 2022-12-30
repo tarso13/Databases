@@ -1,6 +1,6 @@
 package classes;
 
-public class EmployeesSalary {
+public class EmployeesSalary{
     private int basicSalary;
     private int contractSalary;
 
@@ -8,7 +8,7 @@ public class EmployeesSalary {
 
     private int SalaryID;
 
-    EmployeesSalary(int basicSalary, int contractSalary, int salaryID){
+    public EmployeesSalary(int basicSalary, int contractSalary, int salaryID){
         this.basicSalary = basicSalary;
         this.contractSalary = contractSalary;
         this.SalaryID = salaryID;

@@ -39,7 +39,7 @@ public class PermanentEducator extends Employee{
 
     @Override
     public String JobDepartment() {
-        return "Educator";
+        return "Education";
     }
 
     @Override

@@ -16,7 +16,6 @@ public class Connector {
             int port = 3306;
             String username = "root";
             String passwd = "";
-
             this.con = DriverManager.getConnection(url + ":" + port + "/" + databaseName + "?characterEncoding=UTF-8", username, passwd);
         } catch (ClassNotFoundException | SQLException e) {
             System.err.println("ERROR: " + e.getMessage());

@@ -39,7 +39,7 @@ public class ContractorManager extends Employee{
 
     @Override
     public String JobDepartment() {
-        return "Manager";
+        return "Management";
     }
 
     @Override
