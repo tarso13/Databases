@@ -3,12 +3,8 @@ package gui;
 import javax.swing.*;
 import java.awt.*;
 
-import static java.lang.System.exit;
-
 public class GUI {
-
-    private static void displayQueries() {
-        JFrame frame = new JFrame("Queries Supported");
+    private static void displayQueries(JFrame queriesFrame) {
         JPanel panel;
         JButton[] buttons = new JButton[8];
         panel = new JPanel(new GridLayout(8, 1));
@@ -20,19 +16,39 @@ public class GUI {
             buttons[i].setActionCommand(b[i]);
             buttons[i].addActionListener(e -> {
                 String choice = e.getActionCommand();
-                if (choice.equals("Back to Login Page"))
-                    loginPage();
-                frame.dispose();
+                switch (choice) {
+                    case "Back to Login Page":
+                        loginPage();
+                        break;
+                    case "Payment State per Staff Category":
+                        break;
+                    case "Max Salary per Staff Category":
+                        break;
+                    case "Min Salary per Staff Category":
+                        break;
+                    case "Average Salary per Staff Category":
+                        break;
+                    case "Average Salary and Bonus Increase":
+                        break;
+                    case "Employee Data and Salary":
+                        break;
+                    case "Total Salary Increase per Staff Category":
+                        break;
+                    default:
+                        assert (false);
+                }
+                queriesFrame.dispose();
             });
             panel.add(buttons[i]);
         }
-        frame.add(panel);
-        frame.pack();
-        frame.setVisible(true);
+
+        queriesFrame.add(panel);
+        queriesFrame.pack();
+        queriesFrame.setVisible(true);
+        queriesFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    private static void displayProcedures() {
-        JFrame frame = new JFrame("Procedures");
+    private static void displayProcedures(JFrame proceduresFrame) {
         JPanel panel;
         JButton[] buttons = new JButton[9];
         panel = new JPanel(new GridLayout(9, 1));
@@ -43,18 +59,41 @@ public class GUI {
             buttons[i].setActionCommand(b[i]);
             buttons[i].addActionListener(e -> {
                 String choice = e.getActionCommand();
-                if (choice.equals("Queries")) {
-                    displayQueries();
-                } else if (choice.equals("Back to Login Page"))
-                    loginPage();
-                frame.dispose();
+                switch (choice) {
+                    case "Queries":
+                        JFrame queriesFrame = new JFrame("Queries Supported");
+                        displayQueries(queriesFrame);
+                        break;
+                    case "Back to Login Page":
+                        proceduresFrame.dispose();
+                        loginPage();
+                        break;
+                    case "New Hire":
+                        break;
+                    case "New Contract":
+                        break;
+                    case "Change Employee Info":
+                        break;
+                    case "Change Salary/Bonus":
+                        break;
+                    case "New Fire/Retirement":
+                        break;
+                    case "Payment":
+                        break;
+                    case "Statistics":
+                        break;
+                    default:
+                        assert (false);
+                }
+                proceduresFrame.dispose();
             });
             panel.add(buttons[i]);
         }
 
-        frame.add(panel);
-        frame.pack();
-        frame.setVisible(true);
+        proceduresFrame.add(panel);
+        proceduresFrame.pack();
+        proceduresFrame.setVisible(true);
+        proceduresFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public static void loginPage() {
@@ -69,13 +108,13 @@ public class GUI {
         if (option == JOptionPane.OK_OPTION) {
             //change correct credentials
             if (username.getText().equals("root") && password.getText().equals("root")) {
-                displayProcedures();
+                JFrame proceduresFrame = new JFrame("Procedures");
+                displayProcedures(proceduresFrame);
             } else {
                 JOptionPane.showMessageDialog(null, "Incorrect login");
                 loginPage();
             }
         } else
             JOptionPane.showMessageDialog(null, "Login cancelled");
-
     }
 }
