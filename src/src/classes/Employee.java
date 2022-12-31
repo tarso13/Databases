@@ -9,12 +9,11 @@ public abstract class Employee {
     public abstract String groupEmployer();
 
     public abstract String JobDepartment();
+
     private Date beginHiringDate;
-
+    private EmployeesSalary employeesSalary;
     private String address;
-
     private int phoneNumber;
-
     private FamilyState familyState;
 
     private BankInfo bankInfo;
@@ -74,5 +73,13 @@ public abstract class Employee {
     }
 
     public abstract String toString();
+
+    public EmployeesSalary setEmployeesSalary(EmployeesSalary employeesSalary) {
+        this.employeesSalary = employeesSalary;
+    }
+
+    public EmployeesSalary getEmployeesSalary() {
+        return this.employeesSalary;
+    }
 
 }
