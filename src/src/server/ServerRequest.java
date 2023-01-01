@@ -41,11 +41,13 @@ public class ServerRequest {
                 "SELECT * FROM PermanentEducator where EmployeeId=?");
         statement2.setInt(1, EmployeeId);
         ResultSet resultPE = statement2.executeQuery();
-        resultPE.next();
-
-        PermanentEducator pEducator = new PermanentEducator(resultEmployee.getString("firstName"),
-                resultEmployee.getString("lastName"), resultEmployee.getString("address"),
-                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultPE.getInt("PEId"));
+        PermanentEducator pEducator = null;
+        if (resultPE.next() == false) {
+            System.out.println("ResultSet in empty in Java");
+        } else
+            pEducator = new PermanentEducator(resultEmployee.getString("firstName"),
+                    resultEmployee.getString("lastName"), resultEmployee.getString("address"),
+                    resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultPE.getInt("PEId"));
         return pEducator;
     }
 
@@ -199,18 +201,22 @@ public class ServerRequest {
 
     public EmployeesSalary getEmployeeSalaryData(int EmployeeId) throws SQLException {
         PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM Employee where EmployeeId='" + EmployeeId + "'");
+                "SELECT * FROM Employee where EmployeeId=?");
         statement1.setInt(1, EmployeeId);
         ResultSet resultEmployee = statement1.executeQuery();
-        resultEmployee.next();
-
-        PreparedStatement statement2 = selectStatement(connector,
-                "SELECT * FROM EmployeesSalary where EmployeeId='" + EmployeeId + "'");
-        statement2.setInt(1, EmployeeId);
-        ResultSet resultES = statement2.executeQuery();
-        resultES.next();
-
-        EmployeesSalary employeesSalary = new EmployeesSalary(resultES.getInt("basicSalary"), resultES.getInt("contractSalary"), resultES.getInt("salaryId"));
+        ResultSet resultES = null;
+        EmployeesSalary employeesSalary = null;
+        if (resultEmployee.next() == false)
+            System.out.println("Empty Result Set");
+        else {
+            PreparedStatement statement2 = selectStatement(connector,
+                    "SELECT * FROM EmployeesSalary where EmployeeId=?");
+            statement2.setInt(1, EmployeeId);
+            resultES = statement2.executeQuery();
+            if (resultES.next() == false)
+                System.out.println("Empty Result Set");
+            employeesSalary = new EmployeesSalary(resultES.getInt("basicSalary"), resultES.getInt("contractSalary"), resultES.getInt("salaryId"));
+        }
         return employeesSalary;
     }
 }
