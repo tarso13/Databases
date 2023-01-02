@@ -36,7 +36,6 @@ public class ServerRequest {
         statement1.setInt(1, EmployeeId);
         ResultSet resultEmployee = statement1.executeQuery();
         resultEmployee.next();
-
         PreparedStatement statement2 = selectStatement(connector,
                 "SELECT * FROM PermanentEducator where EmployeeId=?");
         statement2.setInt(1, EmployeeId);
@@ -51,96 +50,143 @@ public class ServerRequest {
         return pEducator;
     }
 
-    public ArrayList<Employee> sortSalaryperStaffCategoryPE(ArrayList<ResultSet> SalariesperCategory, ArrayList<Employee> sortedSalaryperStaffCategory) throws SQLException {
-        for (int i = 0; i < SalariesperCategory.size(); ++i) {
-            if (SalariesperCategory.get(i).getString("group").equals("Permanent") && SalariesperCategory.get(i).getString("department").equals("Education")) {
-                PermanentManager PE = new PermanentManager(SalariesperCategory.get(i).getString("firstName"),
-                        SalariesperCategory.get(i).getString("lastName"), SalariesperCategory.get(i).getString("address"),
-                        SalariesperCategory.get(i).getInt("phoneNumber"), SalariesperCategory.get(i).getDate("beginHiringDate"), SalariesperCategory.get(i).getInt("PMId"));
-                sortedSalaryperStaffCategory.add(PE);
-            }
-        }
 
+    public ArrayList<Employee> addPESalaries(ArrayList<Employee> sortedSalaryperStaffCategory) throws SQLException {
+        PreparedStatement statement1 = selectStatement(connector,
+                "SELECT * FROM Employee");
+        ResultSet resultEmployee = statement1.executeQuery();
+        if (resultEmployee.next() == false) {
+            return sortedSalaryperStaffCategory;
+        } else {
+            PreparedStatement statement2 = selectStatement(connector,
+                    "SELECT * FROM PermanentEducator");
+            ResultSet resultPE = statement2.executeQuery();
+            PermanentEducator pEducator = null;
+            do {
+                if (resultPE.next() == false) {
+                    System.out.println("No PEs");
+                } else {
+                    do {
+                        pEducator = new PermanentEducator(resultEmployee.getString("firstName"),
+                                resultEmployee.getString("lastName"), resultEmployee.getString("address"),
+                                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultPE.getInt("PEId"));
+                        sortedSalaryperStaffCategory.add(pEducator);
+                    } while (resultPE.next());
+                }
+            } while (resultEmployee.next());
+        }
         return sortedSalaryperStaffCategory;
     }
 
-    public ArrayList<Employee> sortSalaryperStaffCategoryPM(ArrayList<ResultSet> SalariesperCategory, ArrayList<Employee> sortedSalaryperStaffCategory) throws SQLException {
-        for (int i = 0; i < SalariesperCategory.size(); ++i) {
-            if (SalariesperCategory.get(i).getString("group").equals("Permanent") && SalariesperCategory.get(i).getString("department").equals("Management")) {
-                PermanentManager PM = new PermanentManager(SalariesperCategory.get(i).getString("firstName"),
-                        SalariesperCategory.get(i).getString("lastName"), SalariesperCategory.get(i).getString("address"),
-                        SalariesperCategory.get(i).getInt("phoneNumber"), SalariesperCategory.get(i).getDate("beginHiringDate"), SalariesperCategory.get(i).getInt("PEId"));
-                sortedSalaryperStaffCategory.add(PM);
-            }
+    public ArrayList<Employee> addPMSalaries(ArrayList<Employee> sortedSalaryperStaffCategory) throws SQLException {
+        PreparedStatement statement1 = selectStatement(connector,
+                "SELECT * FROM Employee");
+        ResultSet resultEmployee = statement1.executeQuery();
+        if (resultEmployee.next() == false) {
+            return sortedSalaryperStaffCategory;
+        } else {
+            do {
+                PreparedStatement statement2 = selectStatement(connector,
+                        "SELECT * FROM PermanentManager");
+                ResultSet resultPM = statement2.executeQuery();
+                PermanentManager pManager = null;
+                if (resultPM.next() == false) {
+                    System.out.println("No PMs");
+                } else {
+                    do {
+                        pManager = new PermanentManager(resultEmployee.getString("firstName"),
+                                resultEmployee.getString("lastName"), resultEmployee.getString("address"),
+                                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultPM.getInt("PMId"));
+                        sortedSalaryperStaffCategory.add(pManager);
+                    } while (resultPM.next());
+                }
+            } while (resultEmployee.next());
         }
-
         return sortedSalaryperStaffCategory;
     }
 
-    public ArrayList<Employee> sortSalaryperStaffCategoryCM(ArrayList<ResultSet> SalariesperCategory, ArrayList<Employee> sortedSalaryperStaffCategory) throws SQLException {
-        for (int i = 0; i < SalariesperCategory.size(); ++i) {
-            if (SalariesperCategory.get(i).getString("group").equals("Contractor") && SalariesperCategory.get(i).getString("department").equals("Management")) {
-                ContractorManager CM = new ContractorManager(SalariesperCategory.get(i).getString("firstName"),
-                        SalariesperCategory.get(i).getString("lastName"), SalariesperCategory.get(i).getString("address"),
-                        SalariesperCategory.get(i).getInt("phoneNumber"), SalariesperCategory.get(i).getDate("beginHiringDate"), SalariesperCategory.get(i).getInt("CMId"));
-                sortedSalaryperStaffCategory.add(CM);
-            }
+    public ArrayList<Employee> addCMSalaries(ArrayList<Employee> sortedSalaryperStaffCategory) throws SQLException {
+        PreparedStatement statement1 = selectStatement(connector,
+                "SELECT * FROM Employee");
+        ResultSet resultEmployee = statement1.executeQuery();
+        if (resultEmployee.next() == false)
+            return sortedSalaryperStaffCategory;
+        else {
+            PreparedStatement statement2 = selectStatement(connector,
+                    "SELECT * FROM ContractorManager");
+            ResultSet resultCM = statement2.executeQuery();
+            ContractorManager cManager = null;
+            do {
+                if (resultCM.next() == false) {
+                    System.out.println("No CMs");
+                } else {
+                    do {
+                        cManager = new ContractorManager(resultEmployee.getString("firstName"),
+                                resultEmployee.getString("lastName"), resultEmployee.getString("address"),
+                                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultCM.getInt("CMId"));
+                        sortedSalaryperStaffCategory.add(cManager);
+                    } while (resultCM.next());
+                }
+            } while (resultEmployee.next());
         }
-
         return sortedSalaryperStaffCategory;
     }
 
-    public ArrayList<Employee> sortSalaryperStaffCategoryCE(ArrayList<ResultSet> SalariesperCategory, ArrayList<Employee> sortedSalaryperStaffCategory) throws SQLException {
-        for (int i = 0; i < SalariesperCategory.size(); ++i) {
-            if (SalariesperCategory.get(i).getString("group").equals("Contractor") && SalariesperCategory.get(i).getString("department").equals("Education")) {
-                ContractorEducator CE = new ContractorEducator(SalariesperCategory.get(i).getString("firstName"),
-                        SalariesperCategory.get(i).getString("lastName"), SalariesperCategory.get(i).getString("address"),
-                        SalariesperCategory.get(i).getInt("phoneNumber"), SalariesperCategory.get(i).getDate("beginHiringDate"), SalariesperCategory.get(i).getInt("CEId"));
-                sortedSalaryperStaffCategory.add(CE);
-            }
+    public ArrayList<Employee> addCESalaries(ArrayList<Employee> sortedSalaryperStaffCategory) throws SQLException {
+        PreparedStatement statement1 = selectStatement(connector,
+                "SELECT * FROM Employee");
+        ResultSet resultEmployee = statement1.executeQuery();
+        if (resultEmployee.next() == false)
+            return sortedSalaryperStaffCategory;
+        else {
+            ContractorEducator cEducator = null;
+            PreparedStatement statement2 = selectStatement(connector,
+                    "SELECT * FROM ContractorEducator");
+            ResultSet resultCE = statement2.executeQuery();
+            do {
+                if (resultCE.next() == false) {
+                    System.out.println("No CEs");
+                } else {
+                    do {
+                        cEducator = new ContractorEducator(resultEmployee.getString("firstName"),
+                                resultEmployee.getString("lastName"), resultEmployee.getString("address"),
+                                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultCE.getInt("CEId"));
+                        sortedSalaryperStaffCategory.add(cEducator);
+                    } while (resultCE.next());
+                }
+            } while (resultEmployee.next());
         }
-
         return sortedSalaryperStaffCategory;
     }
 
-    public ArrayList<Employee> sortSalaryperStaffCategory(ArrayList<ResultSet> SalariesperCategory, ArrayList<Employee> sortedSalaryperStaffCategory) throws SQLException {
-
-        sortedSalaryperStaffCategory = sortSalaryperStaffCategoryPM(SalariesperCategory, sortedSalaryperStaffCategory);
-        sortedSalaryperStaffCategory = sortSalaryperStaffCategoryPE(SalariesperCategory, sortedSalaryperStaffCategory);
-        sortedSalaryperStaffCategory = sortSalaryperStaffCategoryCM(SalariesperCategory, sortedSalaryperStaffCategory);
-        sortedSalaryperStaffCategory = sortSalaryperStaffCategoryCE(SalariesperCategory, sortedSalaryperStaffCategory);
-
-        return sortedSalaryperStaffCategory;
-    }
-
-    public int getMinSalary(ArrayList<ResultSet> SalariesperCategory, ArrayList<Employee> SalaryCat) throws SQLException {
-        SalaryCat = sortSalaryperStaffCategoryPM(SalariesperCategory, SalaryCat);
-        int minSalary = SalaryCat.get(0).getEmployeesSalary().getSalary();
-        for (int i = 0; i < SalaryCat.size(); ++i) {
-            if (SalaryCat.get(i).getEmployeesSalary().getSalary() < minSalary)
-                minSalary = SalaryCat.get(i).getEmployeesSalary().getSalary();
-        }
-        return minSalary;
-    }
-
-    public int getMaxSalary(ArrayList<ResultSet> SalariesperCategory, ArrayList<Employee> SalaryPM) throws SQLException {
-        SalaryPM = sortSalaryperStaffCategoryPM(SalariesperCategory, SalaryPM);
-        int maxSalary = -1;
-        for (int i = 0; i < SalaryPM.size(); ++i) {
-            if (SalaryPM.get(i).getEmployeesSalary().getSalary() > maxSalary)
-                maxSalary = SalaryPM.get(i).getEmployeesSalary().getSalary();
-        }
-        return maxSalary;
-    }
-
-    public int getAverageSalary(ArrayList<ResultSet> SalariesperCategory, ArrayList<Employee> SalaryCat) throws SQLException {
-        SalaryCat = sortSalaryperStaffCategoryPM(SalariesperCategory, SalaryCat);
-        int averageSalary = 0;
-        for (int i = 0; i < SalaryCat.size(); ++i)
-            averageSalary += SalaryCat.get(i).getEmployeesSalary().getSalary();
-
-        return averageSalary / SalaryCat.size();
-    }
+//    public int getMinSalary(ArrayList<Employee> SalaryCat) throws SQLException {
+//        SalaryCat = sortSalaryperStaffCategoryPM(SalariesperCategory, SalaryCat);
+//        int minSalary = SalaryCat.get(0).getEmployeesSalary().getSalary();
+//        for (int i = 0; i < SalaryCat.size(); ++i) {
+//            if (SalaryCat.get(i).getEmployeesSalary().getSalary() < minSalary)
+//                minSalary = SalaryCat.get(i).getEmployeesSalary().getSalary();
+//        }
+//        return minSalary;
+//    }
+//
+//    public int getMaxSalary(ArrayList<ResultSet> SalariesperCategory, ArrayList<Employee> SalaryPM) throws SQLException {
+//        SalaryPM = sortSalaryperStaffCategoryPM(SalariesperCategory, SalaryPM);
+//        int maxSalary = -1;
+//        for (int i = 0; i < SalaryPM.size(); ++i) {
+//            if (SalaryPM.get(i).getEmployeesSalary().getSalary() > maxSalary)
+//                maxSalary = SalaryPM.get(i).getEmployeesSalary().getSalary();
+//        }
+//        return maxSalary;
+//    }
+//
+//    public int getAverageSalary(ArrayList<ResultSet> SalariesperCategory, ArrayList<Employee> SalaryCat) throws SQLException {
+//        SalaryCat = sortSalaryperStaffCategoryPM(SalariesperCategory, SalaryCat);
+//        int averageSalary = 0;
+//        for (int i = 0; i < SalaryCat.size(); ++i)
+//            averageSalary += SalaryCat.get(i).getEmployeesSalary().getSalary();
+//
+//        return averageSalary / SalaryCat.size();
+//    }
 
     public ArrayList<Integer> getSalaryStatisticsperCategory() throws SQLException {
         int EmployeeId = 0;
@@ -152,71 +198,71 @@ public class ServerRequest {
                 "SELECT * FROM Employee where EmployeeId=?");
         statement1.setInt(1, EmployeeId);
         ResultSet resultEmployee = statement1.executeQuery();
-        //Employees.add(resultEmployee);
+
         while (resultEmployee.next())
             Employees.add(resultEmployee);
-
-        sortedSalaryEmployees = sortSalaryperStaffCategoryPM(Employees, sortedSalaryEmployees);
-        sortedSalaries.add(getMinSalary(Employees, sortedSalaryEmployees));
-        sortedSalaries.add(getMaxSalary(Employees, sortedSalaryEmployees));
-        sortedSalaries.add(getAverageSalary(Employees, sortedSalaryEmployees));
-
-        sortedSalaryEmployees.clear();
-        sortedSalaryEmployees = sortSalaryperStaffCategoryPE(Employees, sortedSalaryEmployees);
-        sortedSalaries.add(getMinSalary(Employees, sortedSalaryEmployees));
-        sortedSalaries.add(getMaxSalary(Employees, sortedSalaryEmployees));
-        sortedSalaries.add(getAverageSalary(Employees, sortedSalaryEmployees));
-
-        sortedSalaryEmployees.clear();
-        sortedSalaryEmployees = sortSalaryperStaffCategoryCM(Employees, sortedSalaryEmployees);
-        sortedSalaries.add(getMinSalary(Employees, sortedSalaryEmployees));
-        sortedSalaries.add(getMaxSalary(Employees, sortedSalaryEmployees));
-        sortedSalaries.add(getAverageSalary(Employees, sortedSalaryEmployees));
-
-        sortedSalaryEmployees.clear();
-        sortedSalaryEmployees = sortSalaryperStaffCategoryCE(Employees, sortedSalaryEmployees);
-        sortedSalaries.add(getMinSalary(Employees, sortedSalaryEmployees));
-        sortedSalaries.add(getMaxSalary(Employees, sortedSalaryEmployees));
-        sortedSalaries.add(getAverageSalary(Employees, sortedSalaryEmployees));
+//
+//        sortedSalaryEmployees = sortSalaryperStaffCategoryPM(Employees, sortedSalaryEmployees);
+//        sortedSalaries.add(getMinSalary(Employees, sortedSalaryEmployees));
+//        sortedSalaries.add(getMaxSalary(Employees, sortedSalaryEmployees));
+//        sortedSalaries.add(getAverageSalary(Employees, sortedSalaryEmployees));
+//
+//        sortedSalaryEmployees.clear();
+//        sortedSalaryEmployees = sortSalaryperStaffCategoryPE(Employees, sortedSalaryEmployees);
+//        sortedSalaries.add(getMinSalary(Employees, sortedSalaryEmployees));
+//        sortedSalaries.add(getMaxSalary(Employees, sortedSalaryEmployees));
+//        sortedSalaries.add(getAverageSalary(Employees, sortedSalaryEmployees));
+//
+//        sortedSalaryEmployees.clear();
+//        sortedSalaryEmployees = sortSalaryperStaffCategoryCM(Employees, sortedSalaryEmployees);
+//        sortedSalaries.add(getMinSalary(Employees, sortedSalaryEmployees));
+//        sortedSalaries.add(getMaxSalary(Employees, sortedSalaryEmployees));
+//        sortedSalaries.add(getAverageSalary(Employees, sortedSalaryEmployees));
+//
+//        sortedSalaryEmployees.clear();
+//        sortedSalaryEmployees = sortSalaryperStaffCategoryCE(Employees, sortedSalaryEmployees);
+//        sortedSalaries.add(getMinSalary(Employees, sortedSalaryEmployees));
+//        sortedSalaries.add(getMaxSalary(Employees, sortedSalaryEmployees));
+//        sortedSalaries.add(getAverageSalary(Employees, sortedSalaryEmployees));
 
         return sortedSalaries;
     }
 
     public ArrayList<Employee> getSalaryperStaffCategory() throws SQLException {
-        int EmployeeId = 0;
-        ArrayList<ResultSet> SalariesperCategory = new ArrayList<>();
         ArrayList<Employee> sortedSalaryperStaffCategory = new ArrayList<>();
 
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM Employee where EmployeeId=?");
-        statement1.setInt(1, EmployeeId);
-        ResultSet resultEmployee = statement1.executeQuery();
-        //SalariesperCategory.add(resultEmployee);
-        while (resultEmployee.next())
-            SalariesperCategory.add(resultEmployee);
+        sortedSalaryperStaffCategory = addPMSalaries(sortedSalaryperStaffCategory);
+        sortedSalaryperStaffCategory = addPESalaries(sortedSalaryperStaffCategory);
+        sortedSalaryperStaffCategory = addCMSalaries(sortedSalaryperStaffCategory);
+        sortedSalaryperStaffCategory = addCESalaries(sortedSalaryperStaffCategory);
 
-        sortedSalaryperStaffCategory = sortSalaryperStaffCategory(SalariesperCategory, sortedSalaryperStaffCategory);
         return sortedSalaryperStaffCategory;
     }
 
-    public EmployeesSalary getEmployeeSalaryData(int EmployeeId) throws SQLException {
+    public Employee getEmployeeSalaryData(int EmployeeId) throws SQLException {
         PreparedStatement statement1 = selectStatement(connector,
                 "SELECT * FROM Employee where EmployeeId=?");
         statement1.setInt(1, EmployeeId);
         ResultSet resultEmployee = statement1.executeQuery();
-        ResultSet resultES = null;
-        EmployeesSalary employeesSalary = null;
         if (resultEmployee.next() == false)
-            System.out.println("Empty Result Set");
-        else {
-            PreparedStatement statement2 = selectStatement(connector,
-                    "SELECT * FROM EmployeesSalary where EmployeeId=?");
-            statement2.setInt(1, EmployeeId);
-            resultES = statement2.executeQuery();
-            if (resultES.next() == false)
-                System.out.println("Empty Result Set");
-            employeesSalary = new EmployeesSalary(resultES.getInt("basicSalary"), resultES.getInt("contractSalary"), resultES.getInt("salaryId"));
-        }
-        return employeesSalary;
+            return null;
+
+        Employee result = getPE(EmployeeId);
+//   Implementations tis Konstantinas ta gets apo edw kai katw otan einai etoima uncomment
+//        if (result == null)
+//            result = getPM(EmployeeId);
+//        if (result == null)
+//            result = getCM(EmployeeId);
+//        if (result == null)
+//            result = getCE(EmployeeId);
+
+        PreparedStatement statement2 = selectStatement(connector,
+                "SELECT * FROM EmployeesSalary where EmployeeId=?");
+        statement2.setInt(1, EmployeeId);
+        ResultSet resultES = statement2.executeQuery();
+        if (resultES.next() == false)
+            System.out.println("[FATAL!] EMPLOYEE COULD NOT BE VERIFIED IN EMPLOYEESSALARY FROM DB");
+
+        return result;
     }
 }

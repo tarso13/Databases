@@ -74,12 +74,11 @@ public abstract class Employee {
 
     public abstract String toString();
 
-    public EmployeesSalary setEmployeesSalary(EmployeesSalary employeesSalary) {
+    public void setEmployeesSalary(EmployeesSalary employeesSalary) {
         this.employeesSalary = employeesSalary;
     }
 
     public EmployeesSalary getEmployeesSalary() {
         return this.employeesSalary;
     }
-
 }
