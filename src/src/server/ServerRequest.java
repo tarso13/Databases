@@ -16,13 +16,11 @@ public class ServerRequest {
     }
 
     public PreparedStatement selectStatement(Connector c, String q) throws SQLException {
-        return c.getConnection().prepareStatement(q, ResultSet.TYPE_SCROLL_SENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
+        return c.getConnection().prepareStatement(q, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
     }
 
     public void hirePM(int PMId, int EmployeeId) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "INSERT INTO PermanentManager (PMId, EmployeeId,username,password) VALUES (?,?,?,?)");
+        PreparedStatement statement1 = selectStatement(connector, "INSERT INTO PermanentManager (PMId, EmployeeId,username,password) VALUES (?,?,?,?)");
         statement1.setInt(1, PMId);
         statement1.setInt(2, EmployeeId);
         statement1.setString(3, "PMId");
@@ -31,129 +29,132 @@ public class ServerRequest {
     }
 
     public PermanentEducator getPE(int EmployeeId) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM Employee where EmployeeId=?");
+        PreparedStatement statement1 = selectStatement(connector, "SELECT * FROM Employee where EmployeeId=?");
         statement1.setInt(1, EmployeeId);
         ResultSet resultEmployee = statement1.executeQuery();
         resultEmployee.next();
-        PreparedStatement statement2 = selectStatement(connector,
-                "SELECT * FROM PermanentEducator where EmployeeId=?");
+        PreparedStatement statement2 = selectStatement(connector, "SELECT * FROM PermanentEducator where EmployeeId=?");
         statement2.setInt(1, EmployeeId);
         ResultSet resultPE = statement2.executeQuery();
         PermanentEducator pEducator = null;
         if (resultPE.next() == false) {
             System.out.println("ResultSet in empty in Java");
         } else
-            pEducator = new PermanentEducator(resultEmployee.getString("firstName"),
-                    resultEmployee.getString("lastName"), resultEmployee.getString("address"),
-                    resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultPE.getInt("PEId"));
+            pEducator = new PermanentEducator(resultEmployee.getString("firstName"), resultEmployee.getString("lastName"), resultEmployee.getString("address"), resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultPE.getInt("PEId"));
         return pEducator;
     }
 
 
     public ArrayList<Employee> addPESalaries(ArrayList<Employee> sortedSalaryperStaffCategory) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM Employee");
+        PreparedStatement statement1 = selectStatement(connector, "SELECT * FROM PermanentEducator");
         ResultSet resultEmployee = statement1.executeQuery();
+
         if (resultEmployee.next() == false) {
             return sortedSalaryperStaffCategory;
         } else {
-            PreparedStatement statement2 = selectStatement(connector,
-                    "SELECT * FROM PermanentEducator");
-            ResultSet resultPE = statement2.executeQuery();
-            PermanentEducator pEducator = null;
+            ResultSet resultPE;
+            int EmployeeId;
+            PermanentEducator pEducator;
             do {
-                if (resultPE.next() == false) {
-                  return sortedSalaryperStaffCategory;
-                } else {
-                    do {
-                        pEducator = new PermanentEducator(resultEmployee.getString("firstName"),
-                                resultEmployee.getString("lastName"), resultEmployee.getString("address"),
-                                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultPE.getInt("PEId"));
+                do {
+                    EmployeeId = resultEmployee.getInt("EmployeeId");
+                    PreparedStatement statement2 = selectStatement(connector, "SELECT * FROM Employee where EmployeeId=?");
+                    statement2.setInt(1, EmployeeId);
+                    resultPE = statement2.executeQuery();
+                    if (resultPE.next() == false) {
+                        return sortedSalaryperStaffCategory;
+                    } else {
+                        pEducator = new PermanentEducator(resultPE.getString("firstName"), resultPE.getString("lastName"), resultPE.getString("address"), resultPE.getInt("phoneNumber"), resultPE.getDate("beginHiringDate"), resultEmployee.getInt("PEId"));
                         sortedSalaryperStaffCategory.add(pEducator);
-                    } while (resultPE.next());
-                }
+
+                    }
+                } while (resultPE.next());
             } while (resultEmployee.next());
         }
         return sortedSalaryperStaffCategory;
     }
 
-    public ArrayList<Employee> addPMSalaries(ArrayList<Employee> sortedSalaryperStaffCategory) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM Employee");
+    public ArrayList<Employee> addPMSalaries(ArrayList<Employee> sortedSalaryperStaffCategory) throws
+            SQLException {
+
+        PreparedStatement statement1 = selectStatement(connector, "SELECT * FROM PermanentManager");
         ResultSet resultEmployee = statement1.executeQuery();
+
         if (resultEmployee.next() == false) {
             return sortedSalaryperStaffCategory;
         } else {
+            ResultSet resultPM;
+            int EmployeeId;
+            PermanentManager pManager;
             do {
-                PreparedStatement statement2 = selectStatement(connector,
-                        "SELECT * FROM PermanentManager");
-                ResultSet resultPM = statement2.executeQuery();
-                PermanentManager pManager = null;
-                if (resultPM.next() == false) {
-                    return sortedSalaryperStaffCategory;
-                } else {
-                    do {
-                        pManager = new PermanentManager(resultEmployee.getString("firstName"),
-                                resultEmployee.getString("lastName"), resultEmployee.getString("address"),
-                                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultPM.getInt("PMId"));
+                do {
+                    EmployeeId = resultEmployee.getInt("EmployeeId");
+                    PreparedStatement statement2 = selectStatement(connector, "SELECT * FROM Employee where EmployeeId=?");
+                    statement2.setInt(1, EmployeeId);
+                    resultPM = statement2.executeQuery();
+                    if (resultPM.next() == false) {
+                        return sortedSalaryperStaffCategory;
+                    } else {
+                        pManager = new PermanentManager(resultPM.getString("firstName"), resultPM.getString("lastName"), resultPM.getString("address"), resultPM.getInt("phoneNumber"), resultPM.getDate("beginHiringDate"), resultEmployee.getInt("PMId"));
                         sortedSalaryperStaffCategory.add(pManager);
-                    } while (resultPM.next());
-                }
+                    }
+                } while (resultPM.next());
             } while (resultEmployee.next());
         }
         return sortedSalaryperStaffCategory;
     }
 
-    public ArrayList<Employee> addCMSalaries(ArrayList<Employee> sortedSalaryperStaffCategory) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM Employee");
+    public ArrayList<Employee> addCMSalaries(ArrayList<Employee> sortedSalaryperStaffCategory) throws
+            SQLException {
+        PreparedStatement statement1 = selectStatement(connector, "SELECT * FROM ContractorManager");
         ResultSet resultEmployee = statement1.executeQuery();
-        if (resultEmployee.next() == false)
-            return sortedSalaryperStaffCategory;
+
+        if (resultEmployee.next() == false) return sortedSalaryperStaffCategory;
         else {
-            PreparedStatement statement2 = selectStatement(connector,
-                    "SELECT * FROM ContractorManager");
-            ResultSet resultCM = statement2.executeQuery();
-            ContractorManager cManager = null;
+            ResultSet resultCM;
+            int EmployeeId;
+            ContractorManager cManager;
             do {
-                if (resultCM.next() == false) {
-                    return sortedSalaryperStaffCategory;
-                } else {
-                    do {
-                        cManager = new ContractorManager(resultEmployee.getString("firstName"),
-                                resultEmployee.getString("lastName"), resultEmployee.getString("address"),
-                                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultCM.getInt("CMId"));
+                EmployeeId = resultEmployee.getInt("EmployeeId");
+                PreparedStatement statement2 = selectStatement(connector, "SELECT * FROM Employee where EmployeeId=?");
+                statement2.setInt(1, EmployeeId);
+                resultCM = statement2.executeQuery();
+                do {
+                    if (resultCM.next() == false) {
+                        return sortedSalaryperStaffCategory;
+                    } else {
+                        cManager = new ContractorManager(resultCM.getString("firstName"), resultCM.getString("lastName"), resultCM.getString("address"), resultCM.getInt("phoneNumber"), resultCM.getDate("beginHiringDate"), resultEmployee.getInt("CMId"));
                         sortedSalaryperStaffCategory.add(cManager);
-                    } while (resultCM.next());
-                }
+                    }
+                } while (resultCM.next());
             } while (resultEmployee.next());
         }
         return sortedSalaryperStaffCategory;
     }
 
-    public ArrayList<Employee> addCESalaries(ArrayList<Employee> sortedSalaryperStaffCategory) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM Employee");
+    public ArrayList<Employee> addCESalaries(ArrayList<Employee> sortedSalaryperStaffCategory) throws
+            SQLException {
+        PreparedStatement statement1 = selectStatement(connector, "SELECT * FROM ContractorEducator");
         ResultSet resultEmployee = statement1.executeQuery();
-        if (resultEmployee.next() == false)
-            return sortedSalaryperStaffCategory;
+
+        if (resultEmployee.next() == false) return sortedSalaryperStaffCategory;
         else {
-            ContractorEducator cEducator = null;
-            PreparedStatement statement2 = selectStatement(connector,
-                    "SELECT * FROM ContractorEducator");
-            ResultSet resultCE = statement2.executeQuery();
+            ResultSet resultCE;
+            int EmployeeId;
+            ContractorEducator cEducator;
             do {
-                if (resultCE.next() == false) {
-                    return sortedSalaryperStaffCategory;
-                } else {
-                    do {
-                        cEducator = new ContractorEducator(resultEmployee.getString("firstName"),
-                                resultEmployee.getString("lastName"), resultEmployee.getString("address"),
-                                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultCE.getInt("CEId"));
+                EmployeeId = resultEmployee.getInt("EmployeeId");
+                PreparedStatement statement2 = selectStatement(connector, "SELECT * FROM Employee where EmployeeId=?");
+                statement2.setInt(1, EmployeeId);
+                resultCE = statement2.executeQuery();
+                do {
+                    if (resultCE.next() == false) {
+                        return sortedSalaryperStaffCategory;
+                    } else {
+                        cEducator = new ContractorEducator(resultCE.getString("firstName"), resultCE.getString("lastName"), resultCE.getString("address"), resultCE.getInt("phoneNumber"), resultCE.getDate("beginHiringDate"), resultEmployee.getInt("CEId"));
                         sortedSalaryperStaffCategory.add(cEducator);
-                    } while (resultCE.next());
-                }
+                    }
+                } while (resultCE.next());
             } while (resultEmployee.next());
         }
         return sortedSalaryperStaffCategory;
@@ -194,13 +195,11 @@ public class ServerRequest {
         ArrayList<Employee> sortedSalaryEmployees = new ArrayList<>();
         ArrayList<Integer> sortedSalaries = new ArrayList<>();
 
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM Employee where EmployeeId=?");
+        PreparedStatement statement1 = selectStatement(connector, "SELECT * FROM Employee where EmployeeId=?");
         statement1.setInt(1, EmployeeId);
         ResultSet resultEmployee = statement1.executeQuery();
 
-        while (resultEmployee.next())
-            Employees.add(resultEmployee);
+        while (resultEmployee.next()) Employees.add(resultEmployee);
 //
 //        sortedSalaryEmployees = sortSalaryperStaffCategoryPM(Employees, sortedSalaryEmployees);
 //        sortedSalaries.add(getMinSalary(Employees, sortedSalaryEmployees));
@@ -240,12 +239,10 @@ public class ServerRequest {
     }
 
     public Employee getEmployeeSalaryData(int EmployeeId) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM Employee where EmployeeId=?");
+        PreparedStatement statement1 = selectStatement(connector, "SELECT * FROM Employee where EmployeeId=?");
         statement1.setInt(1, EmployeeId);
         ResultSet resultEmployee = statement1.executeQuery();
-        if (resultEmployee.next() == false)
-            return null;
+        if (resultEmployee.next() == false) return null;
 
         Employee result = getPE(EmployeeId);
 //   Implementations tis Konstantinas ta gets apo edw kai katw otan einai etoima uncomment
@@ -256,8 +253,7 @@ public class ServerRequest {
 //        if (result == null)
 //            result = getCE(EmployeeId);
 
-        PreparedStatement statement2 = selectStatement(connector,
-                "SELECT * FROM EmployeesSalary where EmployeeId=?");
+        PreparedStatement statement2 = selectStatement(connector, "SELECT * FROM EmployeesSalary where EmployeeId=?");
         statement2.setInt(1, EmployeeId);
         ResultSet resultES = statement2.executeQuery();
         if (resultES.next() == false)
