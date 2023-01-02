@@ -7,8 +7,8 @@ public class ContractorManager extends Employee{
     private String password;
     private final int CMId;
 
-    public ContractorManager(String firstName, String lastName, String address, int phoneNumber, Date beginHiringDate, int CMId) {
-        super(firstName, lastName, address, phoneNumber, beginHiringDate);
+    public ContractorManager(String firstName, String lastName, String address, int phoneNumber, Date beginHiringDate, int CMId, int employeeId) {
+        super(firstName, lastName, address, phoneNumber, beginHiringDate, employeeId);
         this.CMId= CMId;
     }
 

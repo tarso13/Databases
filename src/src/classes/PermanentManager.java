@@ -7,8 +7,8 @@ public class PermanentManager extends Employee{
     private String password;
     private final int PMId;
 
-    public PermanentManager(String firstName, String lastName, String address, int phoneNumber, Date beginHiringDate, int PMId) {
-        super(firstName, lastName, address, phoneNumber, beginHiringDate);
+    public PermanentManager(String firstName, String lastName, String address, int phoneNumber, Date beginHiringDate, int PMId, int employeeId) {
+        super(firstName, lastName, address, phoneNumber, beginHiringDate, employeeId);
         this.PMId= PMId;
     }
 

@@ -15,17 +15,18 @@ public abstract class Employee {
     private String address;
     private int phoneNumber;
     private FamilyState familyState;
-
+    private int employeeId;
     private BankInfo bankInfo;
 
     private Bonus bonus;
 
-    Employee(String firstName, String lastName, String address, int phoneNumber, Date beginHiringDate) {
+    Employee(String firstName, String lastName, String address, int phoneNumber, Date beginHiringDate, int employeeId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.beginHiringDate = beginHiringDate;
+        this.employeeId = employeeId;
     }
 
     public String getFirstName() {
@@ -47,7 +48,9 @@ public abstract class Employee {
     public int getPhoneNumber() {
         return this.phoneNumber;
     }
-
+    public int getEmployeeId() {
+        return this.employeeId;
+    }
     public void setFamilyState(FamilyState state) {
         this.familyState = state;
     }

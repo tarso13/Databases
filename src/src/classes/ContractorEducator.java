@@ -7,8 +7,8 @@ public class ContractorEducator extends Employee{
     private String password;
     private final int CEId;
 
-    public ContractorEducator(String firstName, String lastName, String address, int phoneNumber, Date beginHiringDate, int CEId) {
-        super(firstName, lastName, address, phoneNumber, beginHiringDate);
+    public ContractorEducator(String firstName, String lastName, String address, int phoneNumber, Date beginHiringDate, int CEId, int employeeId) {
+        super(firstName, lastName, address, phoneNumber, beginHiringDate, employeeId);
         this.CEId= CEId;
     }
 
