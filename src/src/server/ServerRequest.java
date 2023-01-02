@@ -64,7 +64,7 @@ public class ServerRequest {
             PermanentEducator pEducator = null;
             do {
                 if (resultPE.next() == false) {
-                    System.out.println("No PEs");
+                  return sortedSalaryperStaffCategory;
                 } else {
                     do {
                         pEducator = new PermanentEducator(resultEmployee.getString("firstName"),
@@ -91,7 +91,7 @@ public class ServerRequest {
                 ResultSet resultPM = statement2.executeQuery();
                 PermanentManager pManager = null;
                 if (resultPM.next() == false) {
-                    System.out.println("No PMs");
+                    return sortedSalaryperStaffCategory;
                 } else {
                     do {
                         pManager = new PermanentManager(resultEmployee.getString("firstName"),
@@ -118,7 +118,7 @@ public class ServerRequest {
             ContractorManager cManager = null;
             do {
                 if (resultCM.next() == false) {
-                    System.out.println("No CMs");
+                    return sortedSalaryperStaffCategory;
                 } else {
                     do {
                         cManager = new ContractorManager(resultEmployee.getString("firstName"),
@@ -145,7 +145,7 @@ public class ServerRequest {
             ResultSet resultCE = statement2.executeQuery();
             do {
                 if (resultCE.next() == false) {
-                    System.out.println("No CEs");
+                    return sortedSalaryperStaffCategory;
                 } else {
                     do {
                         cEducator = new ContractorEducator(resultEmployee.getString("firstName"),

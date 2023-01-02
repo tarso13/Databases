@@ -15,10 +15,10 @@ public class Main {
         // GUI.loginPage();
         request = new ServerRequest();
 
-        Employee employee = request.getEmployeeSalaryData(2);
-        System.out.println(employee.getFirstName() + " " + employee.getLastName() + employee.getEmployeesSalary());
-//        ArrayList<Employee> getSalaryperStaffCategory = request.getSalaryperStaffCategory();
-//        for (int i = 0; i < getSalaryperStaffCategory.size(); ++i)
-//            System.out.println(getSalaryperStaffCategory.get(i).JobDepartment() + " " + getSalaryperStaffCategory.get(i).groupEmployer() + " " + getSalaryperStaffCategory.get(i).getEmployeesSalary());
+//        Employee employee = request.getEmployeeSalaryData(2);
+//        System.out.println(employee.getFirstName() + " " + employee.getLastName() + employee.getEmployeesSalary());
+        ArrayList<Employee> getSalaryperStaffCategory = request.getSalaryperStaffCategory();
+        for (int i = 0; i < getSalaryperStaffCategory.size(); ++i)
+            System.out.println(getSalaryperStaffCategory.get(i).getFirstName() + " " + getSalaryperStaffCategory.get(i).getLastName() + " " + getSalaryperStaffCategory.get(i).groupEmployer() + " " + getSalaryperStaffCategory.get(i).JobDepartment() + " " + getSalaryperStaffCategory.get(i).getEmployeesSalary());
     }
 }
