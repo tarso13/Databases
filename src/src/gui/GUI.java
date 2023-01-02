@@ -1,9 +1,70 @@
 package gui;
 
+import classes.Employee;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class GUI {
+    private void showResultsEmployees(ArrayList<Employee> Employees, JFrame frame) {
+        JButton ok = new JButton("OK");
+        JButton[] options = {ok};
+        frame = new JFrame();
+        frame.setLocation(200, 200);
+        frame.setResizable(false);
+        String employeeEntries="";
+        for (int i = 0; i < Employees.size(); ++i)
+            employeeEntries += (Employees.get(i).getFirstName() + " " +
+                    Employees.get(i).getLastName()+ " " + Employees.get(i).getAddress() + " " + Employees.get(i).getPhoneNumber() + " " + Employees.get(i).getBeginHiringDate() +
+                    " " + Employees.get(i).getEmployeeId() +"\n");
+        int n = JOptionPane.showOptionDialog(frame, employeeEntries,
+                "Results",
+                JOptionPane.OK_OPTION,
+                0,
+                null,
+                options,
+                options[0]);
+
+        JFrame finalFrame = frame;
+        ok.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                finalFrame.setVisible(false);
+                finalFrame.dispose();
+            }
+        });
+    }
+
+    private void showResultsSalaries(ArrayList<Integer> Salaries, JFrame frame) {
+        JButton ok = new JButton("OK");
+        JButton[] options = {ok};
+        frame = new JFrame();
+        frame.setLocation(200, 200);
+        frame.setResizable(false);
+        String salaries="";
+        for (int i = 0; i < Salaries.size(); ++i)
+            salaries += (Salaries.get(i).toString() + "\n");
+        int n = JOptionPane.showOptionDialog(frame, salaries,
+                "Results",
+                JOptionPane.OK_OPTION,
+                0,
+                null,
+                options,
+                options[0]);
+
+        JFrame finalFrame = frame;
+        ok.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                finalFrame.setVisible(false);
+                finalFrame.dispose();
+            }
+        });
+    }
+
     private static void displayQueries(JFrame queriesFrame) {
         JPanel panel;
         JButton[] buttons = new JButton[8];
