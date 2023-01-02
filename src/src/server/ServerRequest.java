@@ -2,6 +2,7 @@ package server;
 
 import classes.PermanentEducator;
 import classes.*;
+import jdk.jfr.Category;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -160,69 +161,84 @@ public class ServerRequest {
         return sortedSalaryperStaffCategory;
     }
 
-//    public int getMinSalary(ArrayList<Employee> SalaryCat) throws SQLException {
-//        SalaryCat = sortSalaryperStaffCategoryPM(SalariesperCategory, SalaryCat);
-//        int minSalary = SalaryCat.get(0).getEmployeesSalary().getSalary();
-//        for (int i = 0; i < SalaryCat.size(); ++i) {
-//            if (SalaryCat.get(i).getEmployeesSalary().getSalary() < minSalary)
-//                minSalary = SalaryCat.get(i).getEmployeesSalary().getSalary();
-//        }
-//        return minSalary;
-//    }
-//
-//    public int getMaxSalary(ArrayList<ResultSet> SalariesperCategory, ArrayList<Employee> SalaryPM) throws SQLException {
-//        SalaryPM = sortSalaryperStaffCategoryPM(SalariesperCategory, SalaryPM);
-//        int maxSalary = -1;
-//        for (int i = 0; i < SalaryPM.size(); ++i) {
-//            if (SalaryPM.get(i).getEmployeesSalary().getSalary() > maxSalary)
-//                maxSalary = SalaryPM.get(i).getEmployeesSalary().getSalary();
-//        }
-//        return maxSalary;
-//    }
-//
-//    public int getAverageSalary(ArrayList<ResultSet> SalariesperCategory, ArrayList<Employee> SalaryCat) throws SQLException {
-//        SalaryCat = sortSalaryperStaffCategoryPM(SalariesperCategory, SalaryCat);
-//        int averageSalary = 0;
-//        for (int i = 0; i < SalaryCat.size(); ++i)
-//            averageSalary += SalaryCat.get(i).getEmployeesSalary().getSalary();
-//
-//        return averageSalary / SalaryCat.size();
-//    }
+    private ArrayList<Employee> defineCategory(ArrayList<Employee> SalaryCat, String Category) throws SQLException {
+        switch (Category) {
+            case "PM":
+                SalaryCat = addPMSalaries(SalaryCat);
+                break;
+            case "PE":
+                SalaryCat = addPESalaries(SalaryCat);
+                break;
+            case "CM":
+                SalaryCat = addCMSalaries(SalaryCat);
+                break;
+            case "CE":
+                SalaryCat = addCESalaries(SalaryCat);
+                break;
+            default:
+                assert (false);
+        }
+        return SalaryCat;
+    }
+
+
+    public int getMinSalary(ArrayList<Employee> SalaryCat, String Category) throws SQLException {
+        SalaryCat = defineCategory(SalaryCat, Category);
+        if(SalaryCat.size() == 0)
+            return 0;
+        int minSalary = SalaryCat.get(0).getEmployeesSalary().getSalary();
+        for (int i = 0; i < SalaryCat.size(); ++i) {
+            if (SalaryCat.get(i).getEmployeesSalary().getSalary() < minSalary)
+                minSalary = SalaryCat.get(i).getEmployeesSalary().getSalary();
+        }
+        return minSalary;
+    }
+
+    public int getMaxSalary(ArrayList<Employee> SalaryCat, String Category) throws SQLException {
+        SalaryCat = defineCategory(SalaryCat, Category);
+        if(SalaryCat.size() == 0)
+            return 0;
+        int maxSalary = -1;
+        for (int i = 0; i < SalaryCat.size(); ++i) {
+            if (SalaryCat.get(i).getEmployeesSalary().getSalary() > maxSalary)
+                maxSalary = SalaryCat.get(i).getEmployeesSalary().getSalary();
+        }
+        return maxSalary;
+    }
+
+    public int getAverageSalary(ArrayList<Employee> SalaryCat, String Category) throws SQLException {
+        SalaryCat = defineCategory(SalaryCat, Category);
+        if(SalaryCat.size() == 0)
+            return 0;
+        int averageSalary = 0;
+        for (int i = 0; i < SalaryCat.size(); ++i)
+            averageSalary += SalaryCat.get(i).getEmployeesSalary().getSalary();
+
+        return averageSalary / SalaryCat.size();
+    }
 
     public ArrayList<Integer> getSalaryStatisticsperCategory() throws SQLException {
-        int EmployeeId = 0;
-        ArrayList<ResultSet> Employees = new ArrayList<>();
-        ArrayList<Employee> sortedSalaryEmployees = new ArrayList<>();
         ArrayList<Integer> sortedSalaries = new ArrayList<>();
+        ArrayList<Employee> Employees = new ArrayList<>();
 
-        PreparedStatement statement1 = selectStatement(connector, "SELECT * FROM Employee where EmployeeId=?");
-        statement1.setInt(1, EmployeeId);
-        ResultSet resultEmployee = statement1.executeQuery();
+        sortedSalaries.add(getMinSalary(Employees, "PM"));
+        sortedSalaries.add(getMaxSalary(Employees, "PM"));
+        sortedSalaries.add(getAverageSalary(Employees, "PM"));
 
-        while (resultEmployee.next()) Employees.add(resultEmployee);
-//
-//        sortedSalaryEmployees = sortSalaryperStaffCategoryPM(Employees, sortedSalaryEmployees);
-//        sortedSalaries.add(getMinSalary(Employees, sortedSalaryEmployees));
-//        sortedSalaries.add(getMaxSalary(Employees, sortedSalaryEmployees));
-//        sortedSalaries.add(getAverageSalary(Employees, sortedSalaryEmployees));
-//
-//        sortedSalaryEmployees.clear();
-//        sortedSalaryEmployees = sortSalaryperStaffCategoryPE(Employees, sortedSalaryEmployees);
-//        sortedSalaries.add(getMinSalary(Employees, sortedSalaryEmployees));
-//        sortedSalaries.add(getMaxSalary(Employees, sortedSalaryEmployees));
-//        sortedSalaries.add(getAverageSalary(Employees, sortedSalaryEmployees));
-//
-//        sortedSalaryEmployees.clear();
-//        sortedSalaryEmployees = sortSalaryperStaffCategoryCM(Employees, sortedSalaryEmployees);
-//        sortedSalaries.add(getMinSalary(Employees, sortedSalaryEmployees));
-//        sortedSalaries.add(getMaxSalary(Employees, sortedSalaryEmployees));
-//        sortedSalaries.add(getAverageSalary(Employees, sortedSalaryEmployees));
-//
-//        sortedSalaryEmployees.clear();
-//        sortedSalaryEmployees = sortSalaryperStaffCategoryCE(Employees, sortedSalaryEmployees);
-//        sortedSalaries.add(getMinSalary(Employees, sortedSalaryEmployees));
-//        sortedSalaries.add(getMaxSalary(Employees, sortedSalaryEmployees));
-//        sortedSalaries.add(getAverageSalary(Employees, sortedSalaryEmployees));
+        Employees.clear();
+        sortedSalaries.add(getMinSalary(Employees, "PE"));
+        sortedSalaries.add(getMaxSalary(Employees, "PE"));
+        sortedSalaries.add(getAverageSalary(Employees, "PE"));
+
+        Employees.clear();
+        sortedSalaries.add(getMinSalary(Employees, "CM"));
+        sortedSalaries.add(getMaxSalary(Employees, "CM"));
+        sortedSalaries.add(getAverageSalary(Employees, "CM"));
+
+        Employees.clear();
+        sortedSalaries.add(getMinSalary(Employees, "CE"));
+        sortedSalaries.add(getMaxSalary(Employees, "CE"));
+        sortedSalaries.add(getAverageSalary(Employees, "CE"));
 
         return sortedSalaries;
     }
