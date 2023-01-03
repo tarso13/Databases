@@ -1,44 +1,54 @@
 package classes;
 
-public class EmployeesSalary {
-    private int basicSalary;
-    private int contractSalary;
+import com.sun.source.tree.ReturnTree;
 
-    private Employee employee;
+import java.sql.SQLException;
+
+public class EmployeesSalary {
+
+    private double initialBSalary;
+
+    private double initialCSalary;
+    private double basicSalary;
+    private double contractSalary;
+
+    private int monthsContract;
 
     private int SalaryID;
-
-    EmployeesSalary(int basicSalary, int contractSalary, int salaryID){
+    
+    public EmployeesSalary(double basicSalary, double contractSalary, int monthsContract, int salaryID){
         this.basicSalary = basicSalary;
         this.contractSalary = contractSalary;
+        this.monthsContract = monthsContract;
         this.SalaryID = salaryID;
     }
 
-    public int getBasicSalary(){
+    public void setInitialSalary(double basicSalary, double contractSalary) {
+        this.initialBSalary = basicSalary;
+        this.initialCSalary = contractSalary;
+    }
+
+    public double getInitialBSalary(){
+        return this.initialBSalary;
+    }
+
+    public double getInitialCSalary(){
+        return this.initialCSalary;
+    }
+
+    public double getBasicSalary(){
         return this.basicSalary;
     }
 
-    public int getContractSalary(){
+    public double getContractSalary(){
         return this.contractSalary;
+    }
+
+    public int getMonthsContract(){
+        return this.monthsContract;
     }
 
     public int getSalaryID(){
         return this.SalaryID;
     }
-
-    public void setEmployee(Employee employee){
-        this.employee = employee;
-    }
-
-    public Employee getEmployee(){
-        return this.employee;
-    }
-
-    public int getSalary(){
-        if (employee.groupEmployer() == "Permanent") {
-            return basicSalary;
-        }
-        return contractSalary;
-    }
-
 }
