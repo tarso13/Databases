@@ -1,6 +1,9 @@
 package classes;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 public class FamilyState {
 
@@ -11,12 +14,15 @@ public class FamilyState {
 
     private EmployeesSalary salary;
 
-    private  List<Integer> ages;
+    private  String ages;
 
-    FamilyState(String state, int numberKids, List<Integer> ages, int StateID){
+    private List<Integer> kidsAges;
+
+    public FamilyState(String state, int numberKids, String ages, int StateID){
         this.state = state;
         this.numberKids = numberKids;
         this.ages = ages;
+        setKidsAges();
         this.StateID = StateID;
     }
 
@@ -28,8 +34,17 @@ public class FamilyState {
         return this.numberKids;
     }
 
-    public List<Integer> getAges() {
-        return this.ages;
+    public void setKidsAges() {
+        Scanner scanner = new Scanner(this.ages);
+        List<Integer> list = new ArrayList<Integer>();
+        while (scanner.hasNextInt()) {
+            list.add(scanner.nextInt());
+        }
+        this.kidsAges = list;
+    }
+
+    public List<Integer> getKidsAges(){
+        return this.kidsAges;
     }
 
     public int getStateID() {
@@ -44,21 +59,11 @@ public class FamilyState {
         return this.salary;
     }
 
-    public String toString(){
+    public String toString() {
         return "FamilyState{" +
                 "state" + state +
                 ", numberKids" + numberKids +
                 ", ages of kids " + ages +
                 "}";
-    }
-
-    public int setFamilyBonus(){
-        int bonus=0;
-
-        for (int i=0; i<numberKids; i++){
-            bonus += 0.05 * salary.getSalary();
-        }
-
-        return bonus;
     }
 }
