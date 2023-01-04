@@ -127,8 +127,8 @@ public class ServerRequest {
         ResultSet resultBank = statement1.executeQuery();
         if (!resultBank.next()) return null;
 
-        BankInfo info = new BankInfo(resultBank.getInt("IBAN"),
-                resultBank.getString("bankName"), bankId);
+        BankInfo info = new BankInfo(bankId,resultBank.getInt("IBAN"),
+                resultBank.getString("bankName"));
         return info;
     }
 
@@ -199,7 +199,7 @@ public class ServerRequest {
         statement1.setString(3,bankName);
         statement1.execute();
 
-        BankInfo bankInfo= new BankInfo(IBAN, bankName, bankId);
+        BankInfo bankInfo= new BankInfo(bankId,IBAN, bankName);
         return bankInfo;
     }
 
@@ -344,7 +344,7 @@ public class ServerRequest {
         statement4.execute();
     }
 
-    public void changeFamilyState(String state, int kids, String ages, int stateId, int EmployeeId,EmployeesSalary salary) throws SQLException{
+    public void changeFamilyState(String state, int kids, String ages, int stateId, int EmployeeId) throws SQLException{
         if (!check_EmployeeId_In_Database(EmployeeId)){
             System.err.println("The Person does not work in UOC!\n");
             return;

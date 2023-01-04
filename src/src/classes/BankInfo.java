@@ -11,7 +11,7 @@ public class BankInfo {
 
     private Map<String, EmployeesSalary> payment;
 
-    BankInfo(int bankID, int IBAN, String bankName){
+    public BankInfo(int bankID, int IBAN, String bankName){
         this.bankID = bankID;
         this.IBAN = IBAN;
         this.bankName = bankName;
