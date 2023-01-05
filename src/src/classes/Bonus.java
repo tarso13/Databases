@@ -8,11 +8,11 @@ public class Bonus {
 
     private int BonusId;
 
-    public Bonus(double familyBonus, double searchBonus, double libraryBonus, int BonusId){
+    public Bonus(int BonusId, double familyBonus, double searchBonus, double libraryBonus){
+        this.BonusId = BonusId;
         this.familyBonus = familyBonus;
         this.searchBonus = searchBonus;
         this.libraryBonus = libraryBonus;
-        this.BonusId = BonusId;
     }
 
     public double getFamilyBonus() {

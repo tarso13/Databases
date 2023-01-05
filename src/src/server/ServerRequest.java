@@ -19,32 +19,35 @@ public class ServerRequest {
                 ResultSet.CONCUR_UPDATABLE);
     }
 
-    public void login(String userName, String password)  throws SQLException{
-        if (check_null_username_password(userName,password)) return;
+    public int login(String userName, String password)  throws SQLException{
+        if (check_null_username_password(userName,password)) return -1;
+        int id;
 
-        PermanentEducator permanentEducator = loginPE(userName, password);
-        if (permanentEducator == null){ //if all category of employees return null, cannot hire anyone, must have username, password
-            System.out.println("The person is not PE employer!\n");
-            return;
-        }
-        System.out.println(permanentEducator.toString());
+        id = loginPE(userName, password);
+        if (id != -1) return id;
+
+        id = loginPM(userName, password);
+        if (id != -1) return id;
+
+        id = loginCE(userName, password);
+        if (id != -1) return id;
+
+        id = loginCM(userName, password);
+        return id;
     }
 
     /*login Employee with username password*/
-    public PermanentEducator loginPE(String userName, String password) throws SQLException {
+    public int loginPE(String userName, String password) throws SQLException {
         PreparedStatement statement = selectStatement(connector,
                 "SELECT password,EmployeeId FROM PermanentEducator WHERE username=?");
         statement.setString(1, userName);
         ResultSet result = statement.executeQuery();
-        if (!result.next()) return null;
+        if (!result.next()) return -1;
         String pass = result.getString("password");
         PermanentEducator pe = getPE(result.getInt("EmployeeId"));
-        if (!password.equals(pass) || pe == null) return null;
+        if (!password.equals(pass) || pe == null) return -1;
 
-        /*NOT USED IN THIS PROJECT:
-        pe.setUserName(userName);
-        pe.setPassword(pass); */
-        return pe;
+        return result.getInt("EmployeeId");
     }
 
     /*select information from tables*/
@@ -54,7 +57,7 @@ public class ServerRequest {
         statement1.setInt(1, EmployeeId);
         ResultSet resultEmployee = statement1.executeQuery();
         if (!resultEmployee.next()){
-            System.out.println("The person is not hired yet!\n");
+            System.out.println("The person is not a UOC employee!\n");
             return null;
         }
 
@@ -78,16 +81,127 @@ public class ServerRequest {
         BankInfo bankInfo = getBankInfo(resultEmployee.getInt("BankId"));
         pEducator.setBankInfo(bankInfo);
 
-        EmployeesSalary salary = new EmployeesSalary(1500,600,6,0);
-        pEducator.setEmployeesSalary(salary);
-
-        if (state != null){
-            EmployeesSalary salary2 = pEducator.getEmployeesSalary();
-            salary = insertEmployeesSalary(state.getStateID(), salary2.getBasicSalary(),salary2.getContractSalary(),salary2.getMonthsContract());
-            state.setFamilyStateSalary(salary);
-            pEducator.setSalary();
-        }
+//        EmployeesSalary salary = new EmployeesSalary(1500,600,6,0);
+//        pEducator.setEmployeesSalary(salary);
+//
+//        if (state != null){
+//            EmployeesSalary salary2 = pEducator.getEmployeesSalary();
+//            salary = insertEmployeesSalary(state.getStateID(), salary2.getBasicSalary(),salary2.getContractSalary(),salary2.getMonthsContract());
+//            state.setFamilyStateSalary(salary);
+//            pEducator.setSalary();
+//        }
         return pEducator;
+    }
+
+    public int loginPM(String userName, String password) throws SQLException {
+        PreparedStatement statement = selectStatement(connector,
+                "SELECT password,EmployeeId FROM PermanentManager WHERE username=?");
+        statement.setString(1, userName);
+        ResultSet result = statement.executeQuery();
+        if (!result.next()) return -1;
+        String pass = result.getString("password");
+        PermanentManager pm = getPM(result.getInt("EmployeeId"));
+        if (!password.equals(pass) || pm == null) return -1;
+
+        System.out.println(pm.toString());
+        return result.getInt("EmployeeId");
+    }
+
+    public PermanentManager getPM(int EmployeeId) throws SQLException {
+        PreparedStatement statement1 = selectStatement(connector,
+                "SELECT * FROM Employee WHERE EmployeeId=?");
+        statement1.setInt(1, EmployeeId);
+        ResultSet resultEmployee = statement1.executeQuery();
+        if (!resultEmployee.next()) {
+            System.out.println("The person is not a UOC employee!\n");
+            return null;
+        }
+
+        PreparedStatement statement2 = selectStatement(connector,
+                "SELECT * FROM PermanentManager WHERE EmployeeId=?");
+        statement2.setInt(1, EmployeeId);
+        ResultSet resultPM = statement2.executeQuery();
+        resultPM.next();
+
+        PermanentManager pManager = new PermanentManager(resultEmployee.getString("firstName"),
+                resultEmployee.getString("lastName"), resultEmployee.getString("address"),
+                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultPM.getInt("PMId"));
+
+        return pManager;
+    }
+
+    public int loginCE(String userName, String password) throws SQLException {
+        PreparedStatement statement = selectStatement(connector,
+                "SELECT password,EmployeeId FROM ContractorEducator WHERE username=?");
+        statement.setString(1, userName);
+        ResultSet result = statement.executeQuery();
+        if (!result.next()) return -1;
+        String pass = result.getString("password");
+        ContractorEducator ce = getCE(result.getInt("EmployeeId"));
+        if (!password.equals(pass) || ce == null) return -1;
+
+        System.out.println(ce.toString());
+        return result.getInt("EmployeeId");
+    }
+
+    public ContractorEducator getCE(int EmployeeId) throws SQLException {
+        PreparedStatement statement1 = selectStatement(connector,
+                "SELECT * FROM Employee WHERE EmployeeId=?");
+        statement1.setInt(1, EmployeeId);
+        ResultSet resultEmployee = statement1.executeQuery();
+        if (!resultEmployee.next()) {
+            System.out.println("The person is not a UOC employee!\n");
+            return null;
+        }
+
+        PreparedStatement statement2 = selectStatement(connector,
+                "SELECT * FROM ContractorEducator WHERE EmployeeId=?");
+        statement2.setInt(1, EmployeeId);
+        ResultSet resultCE = statement2.executeQuery();
+        resultCE.next();
+
+        ContractorEducator cEducator = new ContractorEducator(resultEmployee.getString("firstName"),
+                resultEmployee.getString("lastName"), resultEmployee.getString("address"),
+                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultCE.getInt("CEId"));
+
+        return cEducator;
+    }
+
+    public int loginCM(String userName, String password) throws SQLException {
+        PreparedStatement statement = selectStatement(connector,
+                "SELECT password,EmployeeId FROM ContractorManager WHERE username=?");
+        statement.setString(1, userName);
+        ResultSet result = statement.executeQuery();
+        if (!result.next()) return -1;
+        String pass = result.getString("password");
+        ContractorManager cm = getCM(result.getInt("EmployeeId"));
+        if (!password.equals(pass) || cm == null) return -1;
+
+        System.out.println(cm.toString());
+        return result.getInt("EmployeeId");
+    }
+
+    public ContractorManager getCM(int EmployeeId) throws SQLException {
+        PreparedStatement statement1 = selectStatement(connector,
+                "SELECT * FROM Employee WHERE EmployeeId=?");
+        statement1.setInt(1, EmployeeId);
+        ResultSet resultEmployee = statement1.executeQuery();
+        if (!resultEmployee.next()) {
+            System.out.println("The person is not a UOC employee!\n");
+            return null;
+        }
+
+        PreparedStatement statement2 = selectStatement(connector,
+                "SELECT * FROM ContractorManager WHERE EmployeeId=?");
+        statement2.setInt(1, EmployeeId);
+        ResultSet resultCM = statement2.executeQuery();
+        resultCM.next();
+
+        ContractorManager cManager = new ContractorManager(resultEmployee.getString("firstName"),
+                resultEmployee.getString("lastName"), resultEmployee.getString("address"),
+                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultCM.getInt("CMId"));
+
+        return cManager;
     }
 
     public Bonus getBonus(int BonusId, double familyBonus) throws SQLException{
@@ -103,8 +217,8 @@ public class ServerRequest {
         ResultSet resultBonus = statement2.executeQuery();
         if (!resultBonus.next()) return null;
 
-        Bonus bonus = new Bonus(familyBonus, resultBonus.getDouble("searchBonus"),
-                resultBonus.getDouble("libraryBonus"), BonusId);
+        Bonus bonus = new Bonus(BonusId, familyBonus, resultBonus.getDouble("searchBonus"),
+                resultBonus.getDouble("libraryBonus"));
         return bonus;
     }
 
@@ -139,8 +253,8 @@ public class ServerRequest {
         int bonusId = insertBonus(employee.calculateFamilyBonus(),employee.getBonus().getSearchBonus(),employee.getBonus().getSearchBonus()).getBonusId();
 
         String[] infoEmployeeString={employee.getFirstName(), employee.getLastName(), employee.getAddress()};
-        int[] infoEmployeeInteger={employee.getPhoneNumber(),state.getStateID(),bankInfo.getBankID(),bonusId,employee.getEmployeesSalary().getSalaryID()};
-        insertEmployee(EmployeeId, infoEmployeeString, employee.getBeginHiringDate(), infoEmployeeInteger);
+        //int[] infoEmployeeInteger={employee.getPhoneNumber(),state.getStateID(),bankInfo.getBankID(),bonusId,employee.getEmployeesSalary().getSalaryID()};
+        //insertEmployee(EmployeeId, infoEmployeeString, employee.getBeginHiringDate(), infoEmployeeInteger);
 
         PreparedStatement statement1 = selectStatement(connector,
                 "INSERT INTO PermanentEducator (username,password,PEId,EmployeeId) VALUES (?,?,?,?)");
@@ -217,7 +331,7 @@ public class ServerRequest {
         statement1.setDouble(4, libBonus);
         statement1.execute();
 
-        Bonus bankInfo = new Bonus(famBonus, searchBonus, libBonus,i);
+        Bonus bankInfo = new Bonus(i, famBonus, searchBonus, libBonus);
         return bankInfo;
     }
 
@@ -327,23 +441,6 @@ public class ServerRequest {
         statement1.execute();
     }
 
-    public void changeEmployeesSalary(int stateId, int EmployeeId) throws SQLException{
-        PreparedStatement statement3 = selectStatement(connector,
-                "SELECT SalaryId FROM FamilyState WHERE stateId=?");
-        statement3.setInt(1, stateId);
-        ResultSet resultFamState = statement3.executeQuery();
-        resultFamState.next();
-
-        PermanentEducator permanentEducator = getPE(EmployeeId);
-
-        PreparedStatement statement4 = selectStatement(connector,
-                "UPDATE EmployeesSalary SET basicSalary=?, contractSalary=? WHERE SalaryID=?");
-        statement4.setDouble(1, permanentEducator.getEmployeesSalary().getBasicSalary());
-        statement4.setDouble(2, permanentEducator.getEmployeesSalary().getContractSalary());
-        statement4.setInt(3, resultFamState.getInt("SalaryId"));
-        statement4.execute();
-    }
-
     public void changeFamilyState(String state, int kids, String ages, int stateId, int EmployeeId) throws SQLException{
         if (!check_EmployeeId_In_Database(EmployeeId)){
             System.err.println("The Person does not work in UOC!\n");
@@ -363,8 +460,6 @@ public class ServerRequest {
         statement2.setString(3, ages);
         statement2.setInt(4, stateId);
         statement2.execute();
-
-        changeEmployeesSalary(stateId, EmployeeId);
     }
 
     int findEmployeeId() throws SQLException {
