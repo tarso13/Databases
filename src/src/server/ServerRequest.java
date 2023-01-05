@@ -1,7 +1,9 @@
 package server;
 
 import classes.*;
+import util.HelperFunctions;
 
+import java.awt.desktop.SystemEventListener;
 import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,7 +22,8 @@ public class ServerRequest {
     }
 
     public int login(String userName, String password)  throws SQLException{
-        if (check_null_username_password(userName,password)) return -1;
+        HelperFunctions check = new HelperFunctions();
+        if (check.check_null_username_password(userName,password)) return -1;
         int id;
 
         id = loginPE(userName, password);
@@ -36,7 +39,7 @@ public class ServerRequest {
         return id;
     }
 
-    /*login Employee with username password*/
+    /*login Employees with username password*/
     public int loginPE(String userName, String password) throws SQLException {
         PreparedStatement statement = selectStatement(connector,
                 "SELECT password,EmployeeId FROM PermanentEducator WHERE username=?");
@@ -71,25 +74,7 @@ public class ServerRequest {
                 resultEmployee.getString("lastName"),resultEmployee.getString("address"),
                 resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultPE.getInt("PEId"));
 
-        /*select information from getTABLENAME from database and set the specific employee this info*/
-        FamilyState state = getFamilyState(resultEmployee.getInt("StateId"));
-        pEducator.setFamilyState(state);
-
-        Bonus bonus = getBonus(resultEmployee.getInt("BonusId"), pEducator.calculateFamilyBonus());
-        pEducator.setBonus(bonus);
-
-        BankInfo bankInfo = getBankInfo(resultEmployee.getInt("BankId"));
-        pEducator.setBankInfo(bankInfo);
-
-//        EmployeesSalary salary = new EmployeesSalary(1500,600,6,0);
-//        pEducator.setEmployeesSalary(salary);
-//
-//        if (state != null){
-//            EmployeesSalary salary2 = pEducator.getEmployeesSalary();
-//            salary = insertEmployeesSalary(state.getStateID(), salary2.getBasicSalary(),salary2.getContractSalary(),salary2.getMonthsContract());
-//            state.setFamilyStateSalary(salary);
-//            pEducator.setSalary();
-//        }
+        System.out.println(pEducator.toString());
         return pEducator;
     }
 
@@ -204,6 +189,57 @@ public class ServerRequest {
         return cManager;
     }
 
+
+    /*update information in base*/
+    public void changeAddress(String address, int EmployeeId) throws SQLException{
+        if (!check_EmployeeId_In_Database(EmployeeId)){
+            System.out.println("The Person does not work in UOC!\n");
+            return;
+        }
+
+        PreparedStatement statement1 = selectStatement(connector,
+                "UPDATE Employee SET address=? WHERE EmployeeId=?");
+        statement1.setString(1, address);
+        statement1.setInt(2, EmployeeId);
+        statement1.execute();
+    }
+
+    public void changePhoneNumber(int number, int EmployeeId) throws SQLException{
+        if (!check_EmployeeId_In_Database(EmployeeId)){
+            System.err.println("The Person does not work in UOC!\n");
+            return;
+        }
+
+        PreparedStatement statement1 = selectStatement(connector,
+                "UPDATE Employee SET phoneNumber=? WHERE EmployeeId=?");
+        statement1.setInt(1, number);
+        statement1.setInt(2, EmployeeId);
+        statement1.execute();
+    }
+
+    public void changeFamilyState(String state, int kids, String ages, int stateId, int EmployeeId, double salary) throws SQLException{
+        if (!check_EmployeeId_In_Database(EmployeeId)){
+            System.err.println("The Person does not work in UOC!\n");
+            return;
+        }
+
+        PreparedStatement statement1 = selectStatement(connector,
+                "UPDATE Employee SET stateId=? WHERE EmployeeId=?");
+        statement1.setInt(1, stateId);
+        statement1.setInt(2, EmployeeId);
+        statement1.execute();
+
+        PreparedStatement statement2 = selectStatement(connector,
+                "UPDATE FamilyState SET state=?, numberKids=?, ages=? WHERE stateId=?");
+        statement2.setString(1, state);
+        statement2.setInt(2, kids);
+        statement2.setString(3, ages);
+        statement2.setInt(4, stateId);
+        statement2.execute();
+
+        //call Marilena's function changeFamilyBonus to calculate FamilyBonus and UPDATE bonus table
+    }
+
     public Bonus getBonus(int BonusId, double familyBonus) throws SQLException{
         PreparedStatement statement1 = selectStatement(connector,
                 "UPDATE Bonus SET familyBonus=? WHERE BonusId=?");
@@ -249,7 +285,8 @@ public class ServerRequest {
 
     /*insert columns into tables*/
     public int hirePermanentEmployee(PermanentEducator employee,String username, String password,BankInfo bankInfo,FamilyState state) throws SQLException {
-        int EmployeeId = findEmployeeId();
+        HelperFunctions helper = new HelperFunctions();
+        int EmployeeId = helper.findEmployeeId();
         int bonusId = insertBonus(employee.calculateFamilyBonus(),employee.getBonus().getSearchBonus(),employee.getBonus().getSearchBonus()).getBonusId();
 
         String[] infoEmployeeString={employee.getFirstName(), employee.getLastName(), employee.getAddress()};
@@ -284,16 +321,15 @@ public class ServerRequest {
     }
 
     public FamilyState insertFamilyState(String state, int numberKids, String ages, EmployeesSalary salary) throws SQLException {
-        int stateId = findStateId();
-        int salaryId = findSalaryId();
+        HelperFunctions helper = new HelperFunctions();
+        int stateId = helper.findStateId();
 
         PreparedStatement statement1 = selectStatement(connector,
-                "INSERT INTO FamilyState (state,numberKids,ages,StateID,SalaryId) VALUES (?,?,?,?,?)");
+                "INSERT INTO FamilyState (state,numberKids,ages,StateID,SalaryId) VALUES (?,?,?,?)");
         statement1.setString(1,state);
         statement1.setInt(2,numberKids);
         statement1.setString(3,ages);
         statement1.setInt(4,stateId);
-        statement1.setInt(5,salaryId);
         statement1.execute();
 
         EmployeesSalary salary1 = insertEmployeesSalary(stateId,salary.getBasicSalary(),salary.getContractSalary(),salary.getMonthsContract());
@@ -304,7 +340,8 @@ public class ServerRequest {
     }
 
     public BankInfo insertBankInfo(int IBAN, String bankName) throws SQLException{
-        int bankId = findBankId();
+        HelperFunctions helper = new HelperFunctions();
+        int bankId = helper.findBankId();
 
         PreparedStatement statement1 = selectStatement(connector,
                 "INSERT INTO BankInfo (bankID,IBAN,bankName) VALUES (?,?,?)");
@@ -385,16 +422,6 @@ public class ServerRequest {
         return false;
     }
 
-    public boolean check_SalaryId_In_Database(int salaryId) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM EmployeesSalary WHERE SalaryId=?");
-        statement1.setInt(1, salaryId);
-        ResultSet resultSalary = statement1.executeQuery();
-
-        if (resultSalary.next()) return true;
-        return false;
-    }
-
     public boolean check_BonusId_In_Database(int bonusId) throws SQLException {
 
         PreparedStatement statement1 = selectStatement(connector,
@@ -405,94 +432,5 @@ public class ServerRequest {
         if (resultBonus.next()) return true;
         return false;
     }
-
-    public boolean check_null_username_password(String username, String password) {
-        if (username == null || password == null || username.isEmpty() || password.isEmpty()){
-            System.err.println("Cannot give a username and password that is null!\n");
-            return true;
-        }
-        return false;
-    }
-
-    /*update information in base*/
-    public void changeAddress(String address, int EmployeeId) throws SQLException{
-        if (!check_EmployeeId_In_Database(EmployeeId)){
-            System.out.println("The Person does not work in UOC!\n");
-            return;
-        }
-
-        PreparedStatement statement1 = selectStatement(connector,
-                "UPDATE Employee SET address=? WHERE EmployeeId=?");
-        statement1.setString(1, address);
-        statement1.setInt(2, EmployeeId);
-        statement1.execute();
-    }
-
-    public void changePhoneNumber(int number, int EmployeeId) throws SQLException{
-        if (!check_EmployeeId_In_Database(EmployeeId)){
-            System.err.println("The Person does not work in UOC!\n");
-            return;
-        }
-
-        PreparedStatement statement1 = selectStatement(connector,
-                "UPDATE Employee SET phoneNumber=? WHERE EmployeeId=?");
-        statement1.setInt(1, number);
-        statement1.setInt(2, EmployeeId);
-        statement1.execute();
-    }
-
-    public void changeFamilyState(String state, int kids, String ages, int stateId, int EmployeeId) throws SQLException{
-        if (!check_EmployeeId_In_Database(EmployeeId)){
-            System.err.println("The Person does not work in UOC!\n");
-            return;
-        }
-
-        PreparedStatement statement1 = selectStatement(connector,
-                "UPDATE Employee SET stateId=? WHERE EmployeeId=?");
-        statement1.setInt(1, stateId);
-        statement1.setInt(2, EmployeeId);
-        statement1.execute();
-
-        PreparedStatement statement2 = selectStatement(connector,
-                "UPDATE FamilyState SET state=?, numberKids=?, ages=? WHERE stateId=?");
-        statement2.setString(1, state);
-        statement2.setInt(2, kids);
-        statement2.setString(3, ages);
-        statement2.setInt(4, stateId);
-        statement2.execute();
-    }
-
-    int findEmployeeId() throws SQLException {
-        int i=0;
-        while (check_EmployeeId_In_Database(i)){
-            i++;
-        }
-        return i;
-    }
-
-    int findBankId() throws SQLException {
-        int i=0;
-        while (check_BankId_In_Database(i)){
-            i++;
-        }
-        return i;
-    }
-
-    int findStateId() throws SQLException {
-        int i=0;
-        while (check_StateId_In_Database(i)){
-            i++;
-        }
-        return i;
-    }
-
-    int findSalaryId() throws SQLException {
-        int i=0;
-        while (check_SalaryId_In_Database(i)){
-            i++;
-        }
-        return i;
-    }
-
 
 }

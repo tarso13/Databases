@@ -44,7 +44,8 @@ public class ContractorManager extends Employee{
 
     @Override
     public String toString() {
-        return "firstname: " + getFirstName() +
+        return "ContractorManager{" +
+                "firstname: " + getFirstName() +
                 ",lastname: " + getLastName() +
                 ",address: " + getAddress() +
                 ",phoneNumber: " + getPhoneNumber() +
