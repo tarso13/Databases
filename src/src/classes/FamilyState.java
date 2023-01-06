@@ -12,8 +12,6 @@ public class FamilyState {
 
     private final int StateID;
 
-    private EmployeesSalary salary;
-
     private  String ages;
 
     private List<Integer> kidsAges;
@@ -49,14 +47,6 @@ public class FamilyState {
 
     public int getStateID() {
         return this.StateID;
-    }
-
-    public void setFamilyStateSalary(EmployeesSalary salary) {
-        this.salary = salary;
-    }
-
-    public EmployeesSalary getFamilyStateSalary() {
-        return this.salary;
     }
 
     public String toString() {

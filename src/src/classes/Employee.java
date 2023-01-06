@@ -4,8 +4,6 @@ import java.sql.SQLException;
 import java.util.Date;
 
 public abstract class Employee {
-
-    public enum employee {PE, PM, CE, CM}
     private final String firstName;
     private final String lastName;
 
@@ -77,16 +75,6 @@ public abstract class Employee {
     }
 
     public abstract String toString();
-
-    public employee findEmployee(){
-        if (groupEmployer().equals("Permanent")){
-            if (JobDepartment().equals("Educator")) return employee.PE;
-            return employee.PM;
-        } else{
-            if (JobDepartment().equals("Educator")) return employee.CE;
-            return employee.CM;
-        }
-    }
 
     public double calculateFamilyBonus() {
         int underageKids=0;
