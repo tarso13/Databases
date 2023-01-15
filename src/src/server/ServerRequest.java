@@ -80,7 +80,20 @@ public class ServerRequest {
         ResultSet resultEmployee = statement1.executeQuery();
         if (resultEmployee.next() == false)
             return -1;
-        return (category.equals("PM") || category.equals("PE")) ? resultEmployee.getInt("basicSalary") : resultEmployee.getInt("contractSalary");
+
+        int BonusId = resultEmployee.getInt("BonusId");
+        PreparedStatement statement2 = selectStatement(connector, "SELECT * FROM Bonus where BonusId=?");
+        statement2.setInt(1, BonusId);
+        ResultSet resultBonus = statement2.executeQuery();
+        if (resultBonus.next() == false)
+            return -1;
+
+        int salary = (category.equals("PM") || category.equals("PE")) ? resultEmployee.getInt("basicSalary") : resultEmployee.getInt("contractSalary");
+        int final_salary = 0;
+//        final_salary += FamilyBonus;
+        final_salary += resultBonus.getDouble("libraryBonus");
+        final_salary += resultBonus.getDouble("searchBonus");
+        return final_salary;
     }
 
 
@@ -214,11 +227,12 @@ public class ServerRequest {
         if (SalaryCat.size() == 0)
             return 0;
         int maxSalary = -1;
+        int salary = 0;
         for (int i = 0; i < SalaryCat.size(); ++i) {
 //            if (SalaryCat.get(i).getEmployeesSalary().getSalary() > maxSalary)
 //                maxSalary = SalaryCat.get(i).getEmployeesSalary().getSalary();
             //if this is not set then alternative:
-            int salary = getSalary(SalaryCat.get(0).getEmployeeId(), Category);
+            salary = getSalary(SalaryCat.get(0).getEmployeeId(), Category);
             if (salary > maxSalary)
                 maxSalary = salary;
 
