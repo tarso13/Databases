@@ -14,7 +14,7 @@ import java.sql.SQLException;
 public class Main {
     static ServerRequest request;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         request = new ServerRequest();
 
         GUI.loginPage();

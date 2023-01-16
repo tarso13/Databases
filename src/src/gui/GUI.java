@@ -1,15 +1,28 @@
 package gui;
 
 import classes.Employee;
+import server.ServerRequest;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Spliterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GUI {
+    static ServerRequest request = new ServerRequest();
+    static int employeeId = 0;
+    static JFrame proceduresFrame = new JFrame("Procedures");
+    static double libraryBonus = 300.15; //only for CE employees
+    static double searchBonus = 250.82; //only for PE employees/CE
+    static double basicSALARY = 1500; //only for PE/PM employees
+    static double contractSALARY = 600; //only for CE/CM employees
+    static Date currentDate = new Date(1990-10-10);
+
     private void showResultsEmployees(ArrayList<Employee> Employees, JFrame frame) {
         JButton ok = new JButton("OK");
         JButton[] options = {ok};
@@ -17,10 +30,10 @@ public class GUI {
         frame.setLocation(200, 200);
         frame.setResizable(false);
         String employeeEntries = "";
-        for (int i = 0; i < Employees.size(); ++i)
-            employeeEntries += (Employees.get(i).getFirstName() + " " +
-                    Employees.get(i).getLastName() + " " + Employees.get(i).getAddress() + " " + Employees.get(i).getPhoneNumber() + " " + Employees.get(i).getBeginHiringDate() +
-                    " " + Employees.get(i).getEmployeeId() + "\n");
+//        for (int i = 0; i < Employees.size(); ++i)
+//            employeeEntries += (Employees.get(i).getFirstName() + " " +
+//                    Employees.get(i).getLastName() + " " + Employees.get(i).getAddress() + " " + Employees.get(i).getPhoneNumber() + " " + Employees.get(i).getBeginHiringDate() +
+//                    " " + Employees.get(i).getEmployeeId() + "\n");
         int n = JOptionPane.showOptionDialog(frame, employeeEntries,
                 "Results",
                 JOptionPane.OK_OPTION,
@@ -80,7 +93,11 @@ public class GUI {
                 String choice = e.getActionCommand();
                 switch (choice) {
                     case "Back to Login Page":
-                        loginPage();
+                        try {
+                            loginPage();
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         break;
                     case "Payment State per Staff Category":
                         break;
@@ -131,7 +148,11 @@ public class GUI {
                     case "Back to Login Page":
                         proceduresFrame.dispose();
                         should_dispose.set(true);
-                        loginPage();
+                        try {
+                            loginPage();
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         break;
                     case "New Hire":
                         if (!root) {
@@ -139,7 +160,11 @@ public class GUI {
                             break;
                         }
                         should_dispose.set(true);
-                        displayHire();
+                        try {
+                            displayHire();
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         break;
                     case "Payments":
                         if (!root) {
@@ -152,7 +177,11 @@ public class GUI {
                         break;
                     case "Change Employee Info":
                         should_dispose.set(true);
-                        displayChangeInfo();
+                        try {
+                            displayChangeInfo();
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         break;
                     case "Change Salary/Bonuses":
                         if (!root) {
@@ -160,7 +189,11 @@ public class GUI {
                             break;
                         }
                         should_dispose.set(true);
-                        displayChangeSalaryBonuses();
+                        try {
+                            displayChangeSalaryBonuses();
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         break;
                     case "New Fire/Retirement":
                         if (!root) {
@@ -168,7 +201,11 @@ public class GUI {
                             break;
                         }
                         should_dispose.set(true);
-                        displayFireRetire();
+                        try {
+                            displayFireRetire();
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         break;
                     default:
                         assert (false);
@@ -185,62 +222,146 @@ public class GUI {
         proceduresFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    public static void loginPage() {
+    public static void loginPage() throws SQLException {
         JTextField username = new JTextField();
         JTextField password = new JTextField();
+
         Object[] message = {
                 "Username:", username,
                 "Password:", password
         };
 
         int option = JOptionPane.showConfirmDialog(null, message, "Login Page", JOptionPane.OK_CANCEL_OPTION);
-
-        JFrame proceduresFrame = new JFrame("Procedures");
         if (option == JOptionPane.OK_OPTION) {
             //change correct credentials
             if (username.getText().equals("root") && password.getText().equals("root"))
                 displayProcedures(proceduresFrame, true);
             else {
-                if (false /* INCORRECT LOGIN*/) {
+                employeeId = request.login(username.getText(), password.getText());
+                if (employeeId == -1) {
                     JOptionPane.showMessageDialog(null, "Incorrect login");
                     loginPage();
                 }
+                JOptionPane.showMessageDialog(null, "Employee with id " + employeeId + " made a successful login!");
                 displayProcedures(proceduresFrame, false);
             }
         } else
             JOptionPane.showMessageDialog(null, "Login cancelled");
     }
 
-    public static void displayHire() {
+    public static boolean check_correct_IBAN_category(String IBAN, String groupEmployer, String jobDepartment){
+        if (IBAN.length() == 0 ||!IBAN.matches("[0-9]+") ||  Integer.parseInt(IBAN) > 2147483647){
+            JOptionPane.showMessageDialog(null, "Incorrect data from Employee's IBAN!");
+            return false;
+        }
+
+        if (!groupEmployer.equals("Permanent") && !groupEmployer.equals("Contractor") && !jobDepartment.equals("Educator") && !jobDepartment.equals("Manager")){
+            JOptionPane.showMessageDialog(null, "Incorrect data from Employee's category!");
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean check_correct_family_state(String ages, String kids, String state){
+        String[] splitKidsAges = ages.split(",");
+        if (!kids.matches("[0-9]+") || Integer.parseInt(kids) > 10){
+            JOptionPane.showMessageDialog(null, "Incorrect data from Employee's family state!");
+            return false;
+        }
+
+        int kidsNumber = Integer.parseInt(kids);
+        if ((splitKidsAges.length != kidsNumber && kidsNumber != 0) || (kidsNumber !=0 && state=="unmarried") || (kidsNumber ==0 && state=="married")){
+            JOptionPane.showMessageDialog(null, "Incorrect data from Employee's family state!");
+            return false;
+        }
+
+        for (int i=0; i<kidsNumber; i++){
+            if (Integer.parseInt(splitKidsAges[i]) <= 0 || Integer.parseInt(splitKidsAges[i]) >= 100){
+                JOptionPane.showMessageDialog(null, "Incorrect data from Employee's family state!");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static boolean check_correct_phoneNumber(String phoneNumber){
+        if (phoneNumber.length()==0 || !phoneNumber.matches("[0-9]+") ||  Integer.parseInt(phoneNumber) > 2147483647){
+            JOptionPane.showMessageDialog(null, "Incorrect data from Employee's phoneNumber!");
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean check_rest_info(String firstName, String lastName, String username, String password, String address, String bankName){
+        if (firstName.length() == 0 || lastName.length() == 0 || username.length() == 0
+                || password.length() == 0 || address.length() == 0 || bankName.length() == 0){
+            JOptionPane.showMessageDialog(null, "Not given data for Employye's information!");
+            return false;
+        }
+        return true;
+    }
+
+    public static void displayHire() throws SQLException {
         JTextField firstName = new JTextField();
         JTextField lastName = new JTextField();
+        JTextField username = new JTextField();
+        JTextField password = new JTextField();
         JTextField address = new JTextField();
-        JTextField groupDepartment = new JTextField();
+        JTextField phoneNumber = new JTextField();
+        JTextField groupEmployer = new JTextField();
         JTextField jobDepartment = new JTextField();
         JTextField married = new JTextField();
         JTextField kids = new JTextField();
         JTextField kidsAgesWithCommas = new JTextField();
+        JTextField IBAN = new JTextField();
+        JTextField bankName = new JTextField();
         Object[] message = {
                 "First Name:", firstName,
                 "Last Name:", lastName,
+                "Username: ", username,
+                "Password: ", password,
                 "Address: ", address,
-                "Group Department: ", groupDepartment,
+                "Phone number: ", phoneNumber,
+                "Group Department: ", groupEmployer,
                 "Job Department: ", jobDepartment,
                 "Married: ", married,
                 "Kids: ", kids,
-                "Kids' Ages (With Commas!)", kidsAgesWithCommas
+                "Kids' Ages (With Commas!)", kidsAgesWithCommas,
+                "IBAN:", IBAN,
+                "Bank name:", bankName
         };
 
         int option = JOptionPane.showConfirmDialog(null, message, "Hire", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            // firstName.getText() etc get your info and call hire Konstantina
+            if (!check_correct_family_state(kidsAgesWithCommas.getText(),kids.getText(),married.getText())
+                || !check_correct_IBAN_category(IBAN.getText(), groupEmployer.getText(), jobDepartment.getText())
+                || !check_rest_info(firstName.getText(),lastName.getText(),username.getText(),password.getText(),address.getText(),bankName.getText())
+                || !check_correct_phoneNumber(phoneNumber.getText()))
+                displayProcedures(proceduresFrame,false);
+            else {
+                int bankId = request.insertBankInfo(Integer.parseInt(IBAN.getText()),bankName.getText());
+                int bonusId = request.insertBonus(0.15, searchBonus, libraryBonus); //calculateFamilyBonus instead of 0.15
+                int stateId = request.insertFamilyState(married.getText(),Integer.parseInt(kids.getText()),kidsAgesWithCommas.getText());
+
+                int[] infoInt = {Integer.parseInt(phoneNumber.getText()),bankId,stateId,bonusId};
+                String[] infoStr = {firstName.getText(),lastName.getText(),address.getText()};
+
+                if (groupEmployer.getText().equals("Permanent"))
+                    employeeId = request.insertEmployee(infoStr,currentDate, infoInt, basicSALARY);
+                else
+                    employeeId = request.insertEmployee(infoStr,currentDate, infoInt, contractSALARY);
+
+                request.hireEmployee(employeeId, "Contractor", "Educator", username.getText(), password.getText());
+            }
         } else {
             loginPage();
         }
 
     }
 
-    public static void displayFireRetire() throws NumberFormatException {
+    public static void displayFireRetire() throws NumberFormatException, SQLException {
         JTextField employeeId = new JTextField();
         JTextField fireRetire = new JTextField();
         Object[] message = {
@@ -262,23 +383,15 @@ public class GUI {
 
     }
 
-    public static void displayChangeInfo() {
-        JTextField searchBonus = new JTextField();
-        JTextField libraryBonus = new JTextField();
-        JTextField basicSalary = new JTextField();
-        JTextField contractSalary = new JTextField();
+    public static void displayChangeInfo() throws SQLException {
         JTextField address = new JTextField();
-        JTextField currentDate = new JTextField();
+        JTextField phoneNumber = new JTextField();
         JTextField married = new JTextField();
         JTextField kids = new JTextField();
         JTextField kidsAgesWithCommas = new JTextField();
         Object[] message = {
-                "First Name:", searchBonus,
-                "Last Name:", libraryBonus,
-                "Group Department: ", basicSalary,
-                "Job Department: ", contractSalary,
                 "Address: ", address,
-                "Current Date (Payments): ", currentDate,
+                "Phone number: ", phoneNumber,
                 "Married: ", married,
                 "Kids: ", kids,
                 "Kids' Ages (With Commas!)", kidsAgesWithCommas
@@ -286,25 +399,26 @@ public class GUI {
 
         int option = JOptionPane.showConfirmDialog(null, message, "Change Employee Info", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            // firstName.getText() etc get your info
+            if (address.getText().length() != 0) request.changeAddress(address.getText(), employeeId);
+            if (!check_correct_phoneNumber(phoneNumber.getText())) request.changePhoneNumber(Integer.parseInt(phoneNumber.getText()), employeeId);
+            if (!check_correct_family_state(kidsAgesWithCommas.getText(), kids.getText(), married.getText()))
+                request.changeFamilyState(married.getText(), Integer.parseInt(kids.getText()), kidsAgesWithCommas.getText(), employeeId, basicSALARY, contractSALARY);
         } else {
             loginPage();
         }
 
     }
 
-    public static void displayChangeSalaryBonuses() {
+    public static void displayChangeSalaryBonuses() throws SQLException {
         JTextField searchBonus = new JTextField();
         JTextField libraryBonus = new JTextField();
         JTextField basicSalary = new JTextField();
         JTextField contractSalary = new JTextField();
-        JTextField employeeId = new JTextField();
         Object[] message = {
-                "First Name:", searchBonus,
-                "Last Name:", libraryBonus,
-                "Group Department: ", basicSalary,
-                "Job Department: ", contractSalary,
-                "Employee Id: ", employeeId,
+                "Search Bonus:", searchBonus,
+                "Library Bonus:", libraryBonus,
+                "Basic Salary: ", basicSalary,
+                "Contract Salary: ", contractSalary,
         };
 
         int option = JOptionPane.showConfirmDialog(null, message, "Change Employee Info", JOptionPane.OK_CANCEL_OPTION);
