@@ -1,12 +1,7 @@
 package server;
 
 import classes.*;
-import util.HelperFunctions;
-
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class ServerRequest {
     Connector connector;
@@ -28,9 +23,16 @@ public class ServerRequest {
         statement.execute();
     }
 
+    public boolean check_null_username_password(String username, String password) {
+        if (username == null || password == null || username.isEmpty() || password.isEmpty()){
+            System.err.println("Cannot give a username and password that is null!\n");
+            return true;
+        }
+        return false;
+    }
+
     public int login(String userName, String password)  throws SQLException{
-        HelperFunctions check = new HelperFunctions();
-        if (check.check_null_username_password(userName,password)) return -1;
+        if (check_null_username_password(userName,password)) return -1;
         int id;
 
         id = loginPE(userName, password);
@@ -249,12 +251,12 @@ public class ServerRequest {
 
 
     /*insert columns into tables*/
-    public void insertEmployee(int EmployeeId, String[] infoStr, Date date, int[] infoInt, double salary) throws SQLException {
+    public int insertEmployee(String[] infoStr, Date date, int[] infoInt, double salary) throws SQLException {
         //infoStr contains firstName, lastName, address
         //infoInt contains phoneNumber, BankId, StateId, BonusId
-        PreparedStatement statement1 = selectStatement(connector,
-                "INSERT INTO Employee (EmployeeId,firstName,lastName,beginHiringDate,address,phoneNumber,salary,BankId,StateId,BonusId) VALUES (?,?,?,?,?,?,?,?,?,?)");
-        statement1.setInt(1,EmployeeId);
+        PreparedStatement statement1 = connector.getConnection().prepareStatement(
+                "INSERT INTO Employee (EmployeeId,firstName,lastName,beginHiringDate,address,phoneNumber,salary,BankId,StateId,BonusId) VALUES (?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+        statement1.setString(1,null);
         statement1.setString(2,infoStr[0]);
         statement1.setString(3,infoStr[1]);
         statement1.setDate(4, date);
@@ -264,116 +266,111 @@ public class ServerRequest {
         statement1.setInt(8,infoInt[1]);
         statement1.setInt(9,infoInt[2]);
         statement1.setInt(10,infoInt[3]);
-        statement1.execute();
+        statement1.executeUpdate();
+
+        ResultSet resultEmployee = statement1.getGeneratedKeys();
+        if (!resultEmployee.next()) return -1;
+        return resultEmployee.getInt(1);
     }
 
-    public int hirePermanentEducator(String username, String password, int PEId) throws SQLException {
-        HelperFunctions helper = new HelperFunctions();
-        int EmployeeId = helper.findEmployeeId();
-
-        PreparedStatement statement1 = selectStatement(connector,
-                "INSERT INTO PermanentEducator (username,password,PEId,EmployeeId) VALUES (?,?,?,?)");
-        statement1.setString(1,username);
-        statement1.setString(2,password);
-        statement1.setInt(3,PEId);
-        statement1.setInt(4,EmployeeId);
-        statement1.execute();
-
-        return EmployeeId;
+    public void hireEmployee(int EmployeeId,String groupEmployer, String JobDepartment, String username, String password) throws SQLException {
+        if (groupEmployer.equals("Permanent")){
+            if (JobDepartment.equals("Educator"))
+                hirePermanentEducator(EmployeeId, username, password);
+            else
+                hirePermanentManager(EmployeeId, username, password);
+        } else{
+            if (JobDepartment.equals("Educator"))
+                hireContractorEducator(EmployeeId, username, password);
+            else
+                hireContractorManager(EmployeeId, username, password);
+        }
     }
 
-    public int hirePermanentManager(String username, String password, int PMId) throws SQLException {
-        HelperFunctions helper = new HelperFunctions();
-        int EmployeeId = helper.findEmployeeId();
-
-        PreparedStatement statement1 = selectStatement(connector,
-                "INSERT INTO PermanentManager (username,password,PMId,EmployeeId) VALUES (?,?,?,?)");
+    public void hirePermanentEducator(int EmployeeId, String username, String password) throws SQLException {
+        PreparedStatement statement1 = connector.getConnection().prepareStatement(
+                "INSERT INTO PermanentEducator (username,password,PEId,EmployeeId) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
         statement1.setString(1,username);
         statement1.setString(2,password);
-        statement1.setInt(3,PMId);
+        statement1.setString(3,null);
         statement1.setInt(4,EmployeeId);
-        statement1.execute();
-
-        return EmployeeId;
+        statement1.executeUpdate();
     }
 
-    public int hireContractorEducator(String username, String password, int CEId) throws SQLException {
-        HelperFunctions helper = new HelperFunctions();
-        int EmployeeId = helper.findEmployeeId();
-
-        PreparedStatement statement1 = selectStatement(connector,
-                "INSERT INTO ContractorEducator (username,password,CEId,EmployeeId) VALUES (?,?,?,?)");
+    public void hirePermanentManager(int EmployeeId, String username, String password) throws SQLException {
+        PreparedStatement statement1 = connector.getConnection().prepareStatement(
+                "INSERT INTO PermanentManager (username,password,PMId,EmployeeId) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
         statement1.setString(1,username);
         statement1.setString(2,password);
-        statement1.setInt(3,CEId);
+        statement1.setString(3,null);
         statement1.setInt(4,EmployeeId);
-        statement1.execute();
-
-        return EmployeeId;
+        statement1.executeUpdate();
     }
 
-    public int hireContractorManager(String username, String password, int CMId) throws SQLException {
-        HelperFunctions helper = new HelperFunctions();
-        int EmployeeId = helper.findEmployeeId();
-
-        PreparedStatement statement1 = selectStatement(connector,
-                "INSERT INTO ContractorManager (username,password,CMId,EmployeeId) VALUES (?,?,?,?)");
+    public void hireContractorEducator(int EmployeeId, String username, String password) throws SQLException {
+        PreparedStatement statement1 = connector.getConnection().prepareStatement(
+                "INSERT INTO ContractorEducator (username,password,CEId,EmployeeId) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
         statement1.setString(1,username);
         statement1.setString(2,password);
-        statement1.setInt(3,CMId);
+        statement1.setString(3,null);
         statement1.setInt(4,EmployeeId);
-        statement1.execute();
+        statement1.executeUpdate();
+    }
 
-        return EmployeeId;
+    public void hireContractorManager(int EmployeeId, String username, String password) throws SQLException {
+        PreparedStatement statement1 = connector.getConnection().prepareStatement(
+                "INSERT INTO ContractorManager (username,password,CMId,EmployeeId) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+        statement1.setString(1,username);
+        statement1.setString(2,password);
+        statement1.setString(3,null);
+        statement1.setInt(4,EmployeeId);
+        statement1.executeUpdate();
     }
 
     public int insertFamilyState(String state, int numberKids, String ages) throws SQLException {
-        HelperFunctions helper = new HelperFunctions();
-        int stateId = helper.findStateId();
-
-        PreparedStatement statement1 = selectStatement(connector,
-                "INSERT INTO FamilyState (StateId,state,numberKids,ages) VALUES (?,?,?,?)");
-        statement1.setInt(1,stateId);
+        PreparedStatement statement1 = connector.getConnection().prepareStatement(
+                "INSERT INTO FamilyState (StateId,state,numberKids,ages) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+        statement1.setString(1,null);
         statement1.setString(2,state);
         statement1.setInt(3,numberKids);
         statement1.setString(4,ages);
-        statement1.execute();
+        statement1.executeUpdate();
 
-        return stateId;
+        ResultSet resultState = statement1.getGeneratedKeys();
+        if (!resultState.next()) return -1;
+        return resultState.getInt(1);
     }
 
     public int insertBankInfo(int IBAN, String bankName) throws SQLException{
-        HelperFunctions helper = new HelperFunctions();
-        int bankId = helper.findBankId();
-
-        PreparedStatement statement1 = selectStatement(connector,
-                "INSERT INTO BankInfo (BankID,IBAN,bankName) VALUES (?,?,?)");
-        statement1.setInt(1,bankId);
+        PreparedStatement statement1 = connector.getConnection().prepareStatement(
+                "INSERT INTO BankInfo (BankID,IBAN,bankName) VALUES (?,?,?)", Statement.RETURN_GENERATED_KEYS);
+        statement1.setString(1,null);
         statement1.setInt(2,IBAN);
         statement1.setString(3,bankName);
-        statement1.execute();
+        statement1.executeUpdate();
 
-        return bankId;
+        ResultSet resultBankInfo = statement1.getGeneratedKeys();
+        if (!resultBankInfo.next()) return -1;
+        return resultBankInfo.getInt(1);
     }
 
     public int insertBonus(double famBonus, double searchBonus, double libBonus) throws SQLException {
-        HelperFunctions helper = new HelperFunctions();
-        int bonusId = helper.findBonusId();
-
         //double famBonus = calculateFamilyBonus();
 
-        PreparedStatement statement1 = selectStatement(connector,
-                "INSERT INTO Bonus (BonusId,familyBonus,searchBonus,libraryBonus) VALUES (?,?,?,?)");
-        statement1.setInt(1, bonusId);
+        PreparedStatement statement1 = connector.getConnection().prepareStatement(
+                "INSERT INTO Bonus (BonusId,familyBonus,searchBonus,libraryBonus) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+        statement1.setString(1, null);
         statement1.setDouble(2, famBonus);
         statement1.setDouble(3, searchBonus);
         statement1.setDouble(4, libBonus);
-        statement1.execute();
+        statement1.executeUpdate();
 
-        return bonusId;
+        ResultSet resultBonus = statement1.getGeneratedKeys();
+        if (!resultBonus.next()) return -1;
+        return resultBonus.getInt(1);
     }
 
-    /*check methods: helper functions*/
+    /*Check EmployeeId in Database to change info of Employee*/
     public boolean check_EmployeeId_In_Database(int EmployeeId) throws SQLException {
         PreparedStatement statement1 = selectStatement(connector,
                 "SELECT * FROM Employee WHERE EmployeeId=?");
@@ -383,75 +380,4 @@ public class ServerRequest {
         if (resultEmployee.next()) return true;
         return false;
     }
-
-    public boolean check_PMId_In_Database(int PMId) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM PermanentManager WHERE PMId=?");
-        statement1.setInt(1, PMId);
-        ResultSet resultEmployee = statement1.executeQuery();
-
-        if (resultEmployee.next()) return true;
-        return false;
-    }
-
-    public boolean check_PEId_In_Database(int PEId) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM PermanentEducator WHERE PEId=?");
-        statement1.setInt(1, PEId);
-        ResultSet resultEmployee = statement1.executeQuery();
-
-        if (resultEmployee.next()) return true;
-        return false;
-    }
-
-    public boolean check_CMId_In_Database(int CMId) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM ContractorManager WHERE CMId=?");
-        statement1.setInt(1, CMId);
-        ResultSet resultEmployee = statement1.executeQuery();
-
-        if (resultEmployee.next()) return true;
-        return false;
-    }
-
-    public boolean check_CEId_In_Database(int CEId) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM ContractorEducator WHERE CEId=?");
-        statement1.setInt(1, CEId);
-        ResultSet resultEmployee = statement1.executeQuery();
-
-        if (resultEmployee.next()) return true;
-        return false;
-    }
-
-    public boolean check_BankId_In_Database(int bankId) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM BankInfo WHERE BankId=?");
-        statement1.setInt(1, bankId);
-        ResultSet resultBank = statement1.executeQuery();
-
-        if (resultBank.next()) return true;
-        return false;
-    }
-
-    public boolean check_StateId_In_Database(int stateId) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM FamilyState WHERE StateId=?");
-        statement1.setInt(1, stateId);
-        ResultSet resultState = statement1.executeQuery();
-
-        if (resultState.next()) return true;
-        return false;
-    }
-
-    public boolean check_BonusId_In_Database(int bonusId) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM Bonus WHERE BonusId=?");
-        statement1.setInt(1, bonusId);
-        ResultSet resultBonus = statement1.executeQuery();
-
-        if (resultBonus.next()) return true;
-        return false;
-    }
-
 }
