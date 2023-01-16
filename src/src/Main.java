@@ -43,12 +43,12 @@ public class Main {
         /*test login Employee*/
         int id=request.login("15","15a");
 
-        /*test change Employee's info, such as address, phoneNumber and FamilyState*/
+        /*test change Employee's info, such as address, phoneNumber and FamilyState
         request.changeAddress("hulk",id);
         request.changePhoneNumber(21212121,id);
         request.changeFamilyState("unmarried",0,"", 5,3,basicSalary);
 
-        /*test hire Employee*/
+        /*test hire Employee
         //basicSalary as an example, it will be the result of calculateSalary
         int bankId = request.insertBankInfo(666,"fi");
         int bonusId = request.insertBonus(0.1, searchBonus, libraryBonus); //calculateFamilyBonus instead of 0.15
@@ -58,6 +58,6 @@ public class Main {
         String[] infoStr = {"Rafaela","Mari","Syntagma"};
         int employeeId = request.insertEmployee(infoStr,currentDate, infoInt, basicSalary);
 
-        request.hireEmployee(employeeId, "Contractor", "Educator", "ce", "ce");
+        request.hireEmployee(employeeId, "Contractor", "Educator", "ce", "ce");*/
     }
 }
