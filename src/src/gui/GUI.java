@@ -23,7 +23,18 @@ public class GUI {
     static double contractSALARY = 600; //only for CE/CM employees
     static Date currentDate = new Date(1990-10-10);
 
-    private void showResultsEmployees(ArrayList<Employee> Employees, JFrame frame) {
+    private static void validateExit(boolean root) throws SQLException {
+        Object[] message = {
+                "Would you like to exit?\n[Yes: Redirects to login page, No: Redirects to previous page]"
+        };
+        int option = JOptionPane.showConfirmDialog(null, message, "Hire", JOptionPane.YES_NO_OPTION);
+        if (option == JOptionPane.YES_OPTION)
+            loginPage();
+        else
+            displayProcedures(root);
+    }
+
+    private static void showResultsEmployees(ArrayList<Employee> Employees, JFrame frame, boolean root) {
         JButton ok = new JButton("OK");
         JButton[] options = {ok};
         frame = new JFrame();
@@ -48,11 +59,16 @@ public class GUI {
             public void actionPerformed(ActionEvent e) {
                 finalFrame.setVisible(false);
                 finalFrame.dispose();
+                try {
+                    validateExit(root);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
     }
 
-    private void showResultsSalaries(ArrayList<Integer> Salaries, JFrame frame) {
+    private static void showResultsSalaries(ArrayList<Integer> Salaries, JFrame frame, boolean root) {
         JButton ok = new JButton("OK");
         JButton[] options = {ok};
         frame = new JFrame();
@@ -75,11 +91,16 @@ public class GUI {
             public void actionPerformed(ActionEvent e) {
                 finalFrame.setVisible(false);
                 finalFrame.dispose();
+                try {
+                    validateExit(root);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
     }
 
-    private static void displayQueries(JFrame queriesFrame) {
+    private static void displayQueries(JFrame queriesFrame, boolean root) {
         JPanel panel;
         JButton[] buttons = new JButton[8];
         panel = new JPanel(new GridLayout(8, 1));
@@ -92,6 +113,9 @@ public class GUI {
             buttons[i].addActionListener(e -> {
                 String choice = e.getActionCommand();
                 switch (choice) {
+                    case "Back to Previous Page":
+                        displayProcedures(root);
+                        break;
                     case "Back to Login Page":
                         try {
                             loginPage();
@@ -127,7 +151,8 @@ public class GUI {
         queriesFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    private static void displayProcedures(JFrame proceduresFrame, boolean root) {
+    private static void displayProcedures(boolean root) {
+        JFrame proceduresFrame = new JFrame("Procedures");
         JPanel panel;
         JButton[] buttons = new JButton[7];
         panel = new JPanel(new GridLayout(7, 1));
@@ -142,7 +167,7 @@ public class GUI {
                 switch (choice) {
                     case "Queries":
                         JFrame queriesFrame = new JFrame("Queries Supported");
-                        displayQueries(queriesFrame);
+                        displayQueries(queriesFrame, root);
                         should_dispose.set(true);
                         break;
                     case "Back to Login Page":
@@ -161,7 +186,7 @@ public class GUI {
                         }
                         should_dispose.set(true);
                         try {
-                            displayHire();
+                            displayHire(root);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -178,7 +203,7 @@ public class GUI {
                     case "Change Employee Info":
                         should_dispose.set(true);
                         try {
-                            displayChangeInfo();
+                            displayChangeInfo(proceduresFrame, root);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -190,10 +215,11 @@ public class GUI {
                         }
                         should_dispose.set(true);
                         try {
-                            displayChangeSalaryBonuses();
+                            displayChangeSalaryBonuses(proceduresFrame, root);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
+
                         break;
                     case "New Fire/Retirement":
                         if (!root) {
@@ -202,7 +228,7 @@ public class GUI {
                         }
                         should_dispose.set(true);
                         try {
-                            displayFireRetire();
+                            displayFireRetire(root);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -215,7 +241,6 @@ public class GUI {
             });
             panel.add(buttons[i]);
         }
-
         proceduresFrame.add(panel);
         proceduresFrame.pack();
         proceduresFrame.setVisible(true);
@@ -232,18 +257,20 @@ public class GUI {
         };
 
         int option = JOptionPane.showConfirmDialog(null, message, "Login Page", JOptionPane.OK_CANCEL_OPTION);
+
         if (option == JOptionPane.OK_OPTION) {
             //change correct credentials
             if (username.getText().equals("root") && password.getText().equals("root"))
-                displayProcedures(proceduresFrame, true);
+                displayProcedures( true);
             else {
                 employeeId = request.login(username.getText(), password.getText());
                 if (employeeId == -1) {
                     JOptionPane.showMessageDialog(null, "Incorrect login");
                     loginPage();
                 }
+
                 JOptionPane.showMessageDialog(null, "Employee with id " + employeeId + " made a successful login!");
-                displayProcedures(proceduresFrame, false);
+                displayProcedures(false);
             }
         } else
             JOptionPane.showMessageDialog(null, "Login cancelled");
@@ -303,7 +330,7 @@ public class GUI {
         return true;
     }
 
-    public static void displayHire() throws SQLException {
+    private static void displayHire(boolean root) throws SQLException {
         JTextField firstName = new JTextField();
         JTextField lastName = new JTextField();
         JTextField username = new JTextField();
@@ -339,7 +366,7 @@ public class GUI {
                 || !check_correct_IBAN_category(IBAN.getText(), groupEmployer.getText(), jobDepartment.getText())
                 || !check_rest_info(firstName.getText(),lastName.getText(),username.getText(),password.getText(),address.getText(),bankName.getText())
                 || !check_correct_phoneNumber(phoneNumber.getText()))
-                displayProcedures(proceduresFrame,false);
+                displayProcedures(false);
             else {
                 int bankId = request.insertBankInfo(Integer.parseInt(IBAN.getText()),bankName.getText());
                 int bonusId = request.insertBonus(0.15, searchBonus, libraryBonus); //calculateFamilyBonus instead of 0.15
@@ -361,7 +388,7 @@ public class GUI {
 
     }
 
-    public static void displayFireRetire() throws NumberFormatException, SQLException {
+    private static void displayFireRetire(boolean root) throws NumberFormatException, SQLException {
         JTextField employeeId = new JTextField();
         JTextField fireRetire = new JTextField();
         Object[] message = {
@@ -377,13 +404,18 @@ public class GUI {
         if (option == JOptionPane.OK_OPTION) {
             //call fire request Marilena or retire
             // !! fireRetire.getText() should be either "Fire" or "Retire"
+            displayProcedures(root);
         } else {
-            loginPage();
+            validateExit(root);
         }
 
     }
 
-    public static void displayChangeInfo() throws SQLException {
+    private static void displayChangeInfo(JFrame proceduresFrame, boolean root) throws SQLException {
+        JTextField searchBonus = new JTextField();
+        JTextField libraryBonus = new JTextField();
+        JTextField basicSalary = new JTextField();
+        JTextField contractSalary = new JTextField();
         JTextField address = new JTextField();
         JTextField phoneNumber = new JTextField();
         JTextField married = new JTextField();
@@ -409,7 +441,7 @@ public class GUI {
 
     }
 
-    public static void displayChangeSalaryBonuses() throws SQLException {
+    private static void displayChangeSalaryBonuses(JFrame proceduresFrame, boolean root) throws SQLException {
         JTextField searchBonus = new JTextField();
         JTextField libraryBonus = new JTextField();
         JTextField basicSalary = new JTextField();
@@ -424,9 +456,8 @@ public class GUI {
         int option = JOptionPane.showConfirmDialog(null, message, "Change Employee Info", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             // firstName.getText() etc get your info
-        } else {
-            loginPage();
-        }
-
+            displayProcedures(root);
+        } else
+            validateExit(root);
     }
 }
