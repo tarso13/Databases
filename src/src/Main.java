@@ -26,5 +26,5 @@ public class Main {
 //            System.out.println(SalaryStatistics.get(i));
 //    }
         GUI.loginPage();
-}
+    }
 }

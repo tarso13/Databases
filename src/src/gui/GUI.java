@@ -10,7 +10,19 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GUI {
-    private void showResultsEmployees(ArrayList<Employee> Employees, JFrame frame) {
+    private static void validateExit(boolean root) {
+        Object[] message = {
+                "Would you like to exit?\n[Yes: Redirects to login page, No: Redirects to previous page]"
+        };
+        int option = JOptionPane.showConfirmDialog(null, message, "Hire", JOptionPane.YES_NO_OPTION);
+        if (option == JOptionPane.YES_OPTION)
+            loginPage();
+        else
+            displayProcedures(root);
+
+    }
+
+    private static void showResultsEmployees(ArrayList<Employee> Employees, JFrame frame, boolean root) {
         JButton ok = new JButton("OK");
         JButton[] options = {ok};
         frame = new JFrame();
@@ -35,11 +47,12 @@ public class GUI {
             public void actionPerformed(ActionEvent e) {
                 finalFrame.setVisible(false);
                 finalFrame.dispose();
+                validateExit(root);
             }
         });
     }
 
-    private void showResultsSalaries(ArrayList<Integer> Salaries, JFrame frame) {
+    private static void showResultsSalaries(ArrayList<Integer> Salaries, JFrame frame, boolean root) {
         JButton ok = new JButton("OK");
         JButton[] options = {ok};
         frame = new JFrame();
@@ -62,11 +75,12 @@ public class GUI {
             public void actionPerformed(ActionEvent e) {
                 finalFrame.setVisible(false);
                 finalFrame.dispose();
+                validateExit(root);
             }
         });
     }
 
-    private static void displayQueries(JFrame queriesFrame) {
+    private static void displayQueries(JFrame queriesFrame, boolean root) {
         JPanel panel;
         JButton[] buttons = new JButton[8];
         panel = new JPanel(new GridLayout(8, 1));
@@ -79,6 +93,9 @@ public class GUI {
             buttons[i].addActionListener(e -> {
                 String choice = e.getActionCommand();
                 switch (choice) {
+                    case "Back to Previous Page":
+                        displayProcedures(root);
+                        break;
                     case "Back to Login Page":
                         loginPage();
                         break;
@@ -110,7 +127,8 @@ public class GUI {
         queriesFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    private static void displayProcedures(JFrame proceduresFrame, boolean root) {
+    private static void displayProcedures(boolean root) {
+        JFrame proceduresFrame = new JFrame("Procedures");
         JPanel panel;
         JButton[] buttons = new JButton[7];
         panel = new JPanel(new GridLayout(7, 1));
@@ -125,7 +143,7 @@ public class GUI {
                 switch (choice) {
                     case "Queries":
                         JFrame queriesFrame = new JFrame("Queries Supported");
-                        displayQueries(queriesFrame);
+                        displayQueries(queriesFrame, root);
                         should_dispose.set(true);
                         break;
                     case "Back to Login Page":
@@ -139,7 +157,7 @@ public class GUI {
                             break;
                         }
                         should_dispose.set(true);
-                        displayHire();
+                        displayHire(root);
                         break;
                     case "Payments":
                         if (!root) {
@@ -152,7 +170,7 @@ public class GUI {
                         break;
                     case "Change Employee Info":
                         should_dispose.set(true);
-                        displayChangeInfo();
+                        displayChangeInfo(proceduresFrame, root);
                         break;
                     case "Change Salary/Bonuses":
                         if (!root) {
@@ -160,7 +178,7 @@ public class GUI {
                             break;
                         }
                         should_dispose.set(true);
-                        displayChangeSalaryBonuses();
+                        displayChangeSalaryBonuses(proceduresFrame, root);
                         break;
                     case "New Fire/Retirement":
                         if (!root) {
@@ -168,7 +186,7 @@ public class GUI {
                             break;
                         }
                         should_dispose.set(true);
-                        displayFireRetire();
+                        displayFireRetire(root);
                         break;
                     default:
                         assert (false);
@@ -178,7 +196,6 @@ public class GUI {
             });
             panel.add(buttons[i]);
         }
-
         proceduresFrame.add(panel);
         proceduresFrame.pack();
         proceduresFrame.setVisible(true);
@@ -195,23 +212,22 @@ public class GUI {
 
         int option = JOptionPane.showConfirmDialog(null, message, "Login Page", JOptionPane.OK_CANCEL_OPTION);
 
-        JFrame proceduresFrame = new JFrame("Procedures");
         if (option == JOptionPane.OK_OPTION) {
             //change correct credentials
             if (username.getText().equals("root") && password.getText().equals("root"))
-                displayProcedures(proceduresFrame, true);
+                displayProcedures( true);
             else {
                 if (false /* INCORRECT LOGIN*/) {
                     JOptionPane.showMessageDialog(null, "Incorrect login");
                     loginPage();
                 }
-                displayProcedures(proceduresFrame, false);
+                displayProcedures(false);
             }
         } else
             JOptionPane.showMessageDialog(null, "Login cancelled");
     }
 
-    public static void displayHire() {
+    private static void displayHire(boolean root) {
         JTextField firstName = new JTextField();
         JTextField lastName = new JTextField();
         JTextField address = new JTextField();
@@ -234,13 +250,13 @@ public class GUI {
         int option = JOptionPane.showConfirmDialog(null, message, "Hire", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             // firstName.getText() etc get your info and call hire Konstantina
-        } else {
-            loginPage();
-        }
+            displayProcedures(root);
+        } else
+            validateExit(root);
 
     }
 
-    public static void displayFireRetire() throws NumberFormatException {
+    private static void displayFireRetire(boolean root) throws NumberFormatException {
         JTextField employeeId = new JTextField();
         JTextField fireRetire = new JTextField();
         Object[] message = {
@@ -256,13 +272,14 @@ public class GUI {
         if (option == JOptionPane.OK_OPTION) {
             //call fire request Marilena or retire
             // !! fireRetire.getText() should be either "Fire" or "Retire"
+            displayProcedures(root);
         } else {
-            loginPage();
+            validateExit(root);
         }
 
     }
 
-    public static void displayChangeInfo() {
+    private static void displayChangeInfo(JFrame proceduresFrame, boolean root) {
         JTextField searchBonus = new JTextField();
         JTextField libraryBonus = new JTextField();
         JTextField basicSalary = new JTextField();
@@ -287,13 +304,14 @@ public class GUI {
         int option = JOptionPane.showConfirmDialog(null, message, "Change Employee Info", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             // firstName.getText() etc get your info
-        } else {
-            loginPage();
-        }
+            displayProcedures(root);
+        } else
+            validateExit(root);
+
 
     }
 
-    public static void displayChangeSalaryBonuses() {
+    private static void displayChangeSalaryBonuses(JFrame proceduresFrame, boolean root) {
         JTextField searchBonus = new JTextField();
         JTextField libraryBonus = new JTextField();
         JTextField basicSalary = new JTextField();
@@ -310,9 +328,10 @@ public class GUI {
         int option = JOptionPane.showConfirmDialog(null, message, "Change Employee Info", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             // firstName.getText() etc get your info
-        } else {
-            loginPage();
-        }
+            displayProcedures(root);
+        } else
+            validateExit(root);
+
 
     }
 }
