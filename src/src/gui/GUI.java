@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Spliterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GUI {
@@ -293,18 +292,18 @@ public class GUI {
     public static boolean check_correct_family_state(String ages, String kids, String state){
         String[] splitKidsAges = ages.split(",");
         if (!kids.matches("[0-9]+") || Integer.parseInt(kids) > 10){
-            JOptionPane.showMessageDialog(null, "Incorrect data from Employee's family state!");
+            JOptionPane.showMessageDialog(null, "Incorrect data or not exists from Employee's family state!");
             return false;
         }
 
         int kidsNumber = Integer.parseInt(kids);
-        if ((splitKidsAges.length != kidsNumber && kidsNumber != 0) || (kidsNumber !=0 && state=="unmarried") || (kidsNumber ==0 && state=="married")){
+        if ((splitKidsAges.length != kidsNumber && kidsNumber != 0) || (kidsNumber != 0 && state=="unmarried") || (kidsNumber == 0 && state=="married")){
             JOptionPane.showMessageDialog(null, "Incorrect data from Employee's family state!");
             return false;
         }
 
         for (int i=0; i<kidsNumber; i++){
-            if (Integer.parseInt(splitKidsAges[i]) <= 0 || Integer.parseInt(splitKidsAges[i]) >= 100){
+            if (state=="married" && (Integer.parseInt(splitKidsAges[i]) <= 0 || Integer.parseInt(splitKidsAges[i]) >= 100)){
                 JOptionPane.showMessageDialog(null, "Incorrect data from Employee's family state!");
                 return false;
             }
@@ -315,7 +314,7 @@ public class GUI {
 
     public static boolean check_correct_phoneNumber(String phoneNumber){
         if (phoneNumber.length()==0 || !phoneNumber.matches("[0-9]+") ||  Integer.parseInt(phoneNumber) > 2147483647){
-            JOptionPane.showMessageDialog(null, "Incorrect data from Employee's phoneNumber!");
+            JOptionPane.showMessageDialog(null, "Incorrect data or not given data from Employee's phoneNumber!");
             return false;
         }
         return true;
@@ -324,7 +323,7 @@ public class GUI {
     public static boolean check_rest_info(String firstName, String lastName, String username, String password, String address, String bankName){
         if (firstName.length() == 0 || lastName.length() == 0 || username.length() == 0
                 || password.length() == 0 || address.length() == 0 || bankName.length() == 0){
-            JOptionPane.showMessageDialog(null, "Not given data for Employye's information!");
+            JOptionPane.showMessageDialog(null, "Not given data for Employee's information!");
             return false;
         }
         return true;
@@ -432,8 +431,8 @@ public class GUI {
         int option = JOptionPane.showConfirmDialog(null, message, "Change Employee Info", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             if (address.getText().length() != 0) request.changeAddress(address.getText(), employeeId);
-            if (!check_correct_phoneNumber(phoneNumber.getText())) request.changePhoneNumber(Integer.parseInt(phoneNumber.getText()), employeeId);
-            if (!check_correct_family_state(kidsAgesWithCommas.getText(), kids.getText(), married.getText()))
+            if (check_correct_phoneNumber(phoneNumber.getText())) request.changePhoneNumber(Integer.parseInt(phoneNumber.getText()), employeeId);
+            if (check_correct_family_state(kidsAgesWithCommas.getText(), kids.getText(), married.getText()))
                 request.changeFamilyState(married.getText(), Integer.parseInt(kids.getText()), kidsAgesWithCommas.getText(), employeeId, basicSALARY, contractSALARY);
         } else {
             loginPage();
