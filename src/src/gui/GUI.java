@@ -26,7 +26,7 @@ public class GUI {
 
     public static JPanel panelForMessageDialog(String message){
         JPanel panel = new JPanel();
-        panel.setPreferredSize(new Dimension(600,500));
+        panel.setPreferredSize(new Dimension(600,600));
         JLabel label = new JLabel(message);
         label.setFont(new Font("Calibri", Font.ITALIC, 17));
         panel.add(label);
@@ -43,7 +43,7 @@ public class GUI {
         GridBagLayout grid =new GridBagLayout();
         GridBagConstraints gbc=new GridBagConstraints();
         panel.setLayout(grid);
-        panel.setPreferredSize(new Dimension(600,500));
+        panel.setPreferredSize(new Dimension(600,600));
 
         GridBagLayout layout=new GridBagLayout();
         panel.setLayout(layout);
@@ -84,7 +84,7 @@ public class GUI {
         GridBagLayout grid =new GridBagLayout();
         GridBagConstraints gbc=new GridBagConstraints();
         panel.setLayout(grid);
-        panel.setPreferredSize(new Dimension(600,500));
+        panel.setPreferredSize(new Dimension(600,600));
 
         GridBagLayout layout=new GridBagLayout();
         panel.setLayout(layout);
@@ -147,7 +147,7 @@ public class GUI {
         GridBagLayout grid =new GridBagLayout();
         GridBagConstraints gbc=new GridBagConstraints();
         panel.setLayout(grid);
-        panel.setPreferredSize(new Dimension(600,500));
+        panel.setPreferredSize(new Dimension(600,600));
 
         GridBagLayout layout=new GridBagLayout();
         panel.setLayout(layout);
@@ -217,6 +217,7 @@ public class GUI {
         fields[9].setPreferredSize(new Dimension(234,7));
         fields[10].setPreferredSize(new Dimension(234,7));
         fields[11].setPreferredSize(new Dimension(234,7));
+        fields[12].setPreferredSize(new Dimension(234,7));
         labels[0].setFont(new Font("Calibri", Font.ITALIC, 17));
         labels[1].setFont(new Font("Calibri", Font.ITALIC, 17));
         labels[2].setFont(new Font("Calibri", Font.ITALIC, 17));
@@ -229,12 +230,13 @@ public class GUI {
         labels[9].setFont(new Font("Calibri", Font.ITALIC, 17));
         labels[10].setFont(new Font("Calibri", Font.ITALIC, 17));
         labels[11].setFont(new Font("Calibri", Font.ITALIC, 17));
+        labels[12].setFont(new Font("Calibri", Font.ITALIC, 17));
 
         JPanel panel = new JPanel();
         GridBagLayout grid =new GridBagLayout();
         GridBagConstraints gbc=new GridBagConstraints();
         panel.setLayout(grid);
-        panel.setPreferredSize(new Dimension(600,500));
+        panel.setPreferredSize(new Dimension(600,600));
 
         GridBagLayout layout=new GridBagLayout();
         panel.setLayout(layout);
@@ -357,6 +359,16 @@ public class GUI {
         gbc.gridx=1;
         gbc.gridy=11;
         panel.add(fields[11],gbc);
+
+        gbc.fill=GridBagConstraints.HORIZONTAL;
+        gbc.ipady=20;
+        gbc.gridx=0;
+        gbc.gridy=12;
+        panel.add(labels[12],gbc);
+
+        gbc.gridx=1;
+        gbc.gridy=11;
+        panel.add(fields[12],gbc);
 
         return panel;
     }
@@ -511,7 +523,7 @@ public class GUI {
         }
 
         queriesFrame.add(panel);
-        queriesFrame.setPreferredSize(new Dimension(600,500));
+        queriesFrame.setPreferredSize(new Dimension(600,600));
         queriesFrame.pack();
         queriesFrame.setLocationRelativeTo(null);
         queriesFrame.setVisible(true);
@@ -698,8 +710,8 @@ public class GUI {
         JLabel labelKidsAgesWithCommas = new JLabel("Kids ages (Commas): ");
         JLabel labelIBAN = new JLabel("IBAN: ");
         JLabel labelBankName = new JLabel("Bank Name: ");
-        JTextField[] fields = {firstName,lastName,username,password,address,groupEmployer,jobDepartment,married,kids,kidsAgesWithCommas,IBAN,bankName};
-        JLabel[] labels = {labelFirstName,labelLastName,labelUsername,labelPassword,labelAddress,labelGroupEmployer,labelJobDepartment,labelMarried,
+        JTextField[] fields = {firstName,lastName,username,password,address,phoneNumber,groupEmployer,jobDepartment,married,kids,kidsAgesWithCommas,IBAN,bankName};
+        JLabel[] labels = {labelFirstName,labelLastName,labelUsername,labelPassword,labelAddress,labelPhoneNumber,labelGroupEmployer,labelJobDepartment,labelMarried,
                 labelKids,labelKidsAgesWithCommas,labelIBAN,labelBankName};
 
 
