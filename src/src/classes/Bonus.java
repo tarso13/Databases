@@ -1,4 +1,4 @@
-package classes;
+package src.classes;
 
 public class Bonus {
 
@@ -13,21 +13,5 @@ public class Bonus {
         this.familyBonus = familyBonus;
         this.searchBonus = searchBonus;
         this.libraryBonus = libraryBonus;
-    }
-
-    public double getFamilyBonus() {
-        return familyBonus;
-    }
-
-    public double getSearchBonus() {
-        return searchBonus;
-    }
-
-    public double getLibraryBonus() {
-        return libraryBonus;
-    }
-
-    public int getBonusId() {
-        return BonusId;
     }
 }

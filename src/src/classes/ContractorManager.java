@@ -1,8 +1,8 @@
-package classes;
+package src.classes;
 
 import java.util.Date;
 
-public class ContractorManager extends Employee{
+public class ContractorManager extends src.classes.Employee {
     private String userName;
     private String password;
     private final int CMId;

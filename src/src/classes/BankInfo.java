@@ -1,4 +1,4 @@
-package classes;
+package src.classes;
 
 import java.util.Map;
 
@@ -8,23 +8,13 @@ public class BankInfo {
     private int IBAN;
 
     private String bankName;
+    private int timesPaid;
 
-    public BankInfo(int bankID, int IBAN, String bankName){
+    public BankInfo(int bankID, int IBAN, String bankName,int timesPaid){
         this.bankID = bankID;
         this.IBAN = IBAN;
         this.bankName = bankName;
-    }
-
-    public int getBankID() {
-        return this.bankID;
-    }
-
-    public int getIBAN() {
-        return this.IBAN;
-    }
-
-    public String getNameBank() {
-        return this.bankName;
+        this.timesPaid = timesPaid;
     }
 }
 

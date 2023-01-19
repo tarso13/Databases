@@ -1,8 +1,8 @@
-package classes;
+package src.classes;
 
 import java.util.Date;
 
-public class PermanentEducator extends Employee{
+public class PermanentEducator extends src.classes.Employee {
     private String userName;
     private String password;
     private final int PEId;

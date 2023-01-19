@@ -1,8 +1,10 @@
-import com.mysql.cj.exceptions.DataReadException;
-import server.ServerRequest;
+package src;
+
+import src.server.ServerRequest;
 
 import java.sql.Date;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 public class Main {
@@ -11,53 +13,57 @@ public class Main {
     static double searchBonus = 250.82; //only for PE employees/CE
     static double basicSalary = 1500; //only for PE/PM employees
     static double contractSalary = 600; //only for CE/CM employees
-    static Date currentDate = new Date(1990-10-10);
+    static boolean allPaid = false;
+    static Date currentDate;
 
-    /* CHECK GIVEN INFO FROM GUI:
-     * TO CHANGE FAMILY STATE:
-     * Split ages into spaces
-     * String[] split = getText().split(" ");
-     * if (split.size() != kids || (kids !=0 && state=="unmarried") || (kids ==0 && state=="married")) System.out.println("Error giving correct number of ages!");
-     *
-     * int kids = Integer.parseString(getText());
-     * if (!getText().matches("[0-9]+") ||  kids > 6)) System.out.println("Error giving kids!");
-     *
-     * for (int i=0; i<kids; i++){
-     *     if (split[i] <= 0 || split[i] >=100) System.out.println("Error giving correct number of ages!");
-     * }
-     *
-     * TO CHANGE ADDRESS:
-     * int number = Integer.parseString(getText());
-     * if (!getText().matches("[0-9]+") ||  number > 2147483647)) System.out.println("Error giving number!");
-     *
-     * TO HIRE EMPLOYEES:
-     * check address/iban, familystate as above
-     * */
-
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, ParseException {
         request = new ServerRequest();
-        //Date date = new Date(1990-10-10);
-        //request.updateDate(currentDate);
-        //System.out.println(currentDate);
 
-        /*test login Employee*/
-        int id=request.login("15","15a");
+        currentDate = Date.valueOf("2023-02-01");
+        //int id=request.login("15","15a");
 
-        /*test change Employee's info, such as address, phoneNumber and FamilyState
-        request.changeAddress("hulk",id);
-        request.changePhoneNumber(21212121,id);
-        request.changeFamilyState("unmarried",0,"", 5,3,basicSalary);
+        /**
+         * Change each initial salary in actionListener of displayChangeBonusSalaryPage
+         * basicSalary = 1600;
+         * contractSalary = 2000;
+         * request.changeLibraryBonus(500); //in GUI in changeBonusSalary
+         * request.changeSearchBonus(600); //in GUI in changeBonusSalary
+         */
 
-        /*test hire Employee
-        //basicSalary as an example, it will be the result of calculateSalary
-        int bankId = request.insertBankInfo(666,"fi");
-        int bonusId = request.insertBonus(0.1, searchBonus, libraryBonus); //calculateFamilyBonus instead of 0.15
-        int stateId = request.insertFamilyState("married",1,"14");
+        currentDate = request.payEmployees(currentDate.toString(),basicSalary,contractSalary);
 
-        int[] infoInt = {222222,bankId,stateId,bonusId};
-        String[] infoStr = {"Rafaela","Mari","Syntagma"};
-        int employeeId = request.insertEmployee(infoStr,currentDate, infoInt, basicSalary);
+        /**
+         * In change bonus salary, do
+         * request.changSalary(Integer.parseInt(dateString[0]),basicSalary,contractSalary);
+         */
 
-        request.hireEmployee(employeeId, "Contractor", "Educator", "ce", "ce");*/
+        /** HIRE STATEMENT
+         * if (31/XX/XX and paidAll=false) payALL before you hire
+         * In hireEmployee, make searchBonus == 0 || libraryBonus == 0
+         * set beginHiringDate as new Date(currentDate.year()-currentDate.month()-01)
+         * currentDate 1
+         * paidAll = false
+         */
+
+        /**
+         * in changeInfo when call
+         * request.changeFamilyState(String state, int kids, String ages, int stateId, int EmployeeId);
+         * request.changeSalary(Integer.parseInt(dateString[0]),basicSalary,contractSalary);
+         * */
+
+        /**     CHECKED
+         * When pay Employees,
+         * if (paidAll == true) NEXT DAY: XXXX/XX/01
+         * pay Employees first
+         * set current date Month+1, if (month>12) then year+1
+         * 31/XX/XXXX
+         *
+         * paidAll = true; in gui file
+         */
+
+        /**
+         * CAN ONLY DELECT ALL INFO IN DATABASE;
+         * if (PAIDALL==true) employeeId has already been paid
+         */
     }
 }
