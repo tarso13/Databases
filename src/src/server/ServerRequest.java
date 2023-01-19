@@ -280,7 +280,8 @@ public class ServerRequest {
         int timesPaid = 0;
 
         String[] date=currentDate.split("-");
-        currentDate = (Integer.parseInt(date[0]) + 1) + "-" + date[1] + "-" + date[2];
+        currentDate = (Integer.parseInt(date[1]) +1 == 13) ? (Integer.parseInt(date[0]) + 1 + "-" + 01 + "-" + date[2])
+                : (date[0] + "-" + Integer.parseInt(date[1]) + 1 + "-" + date[2]);
 
         PreparedStatement statement = selectStatement(connector,
                 "SELECT * FROM Employee"); //salary,StateId,BonusId,beginHiringDate
@@ -536,11 +537,49 @@ public class ServerRequest {
         currentDate = (Integer.parseInt(date[0]) + 1) + "-" + date[1] + "-" + date[2];
 
         PreparedStatement statement = selectStatement(connector,
-                "SELECT salary FROM Employee WHERE EmployeeId=?");
+                "SELECT * FROM Employee WHERE EmployeeId=?");
         statement.setInt(1, employeeId);
         ResultSet resultEmployee = statement.executeQuery();
         resultEmployee.next();
 
+        PreparedStatement statement1 = connector.getConnection().prepareStatement(
+                "DELETE FROM Bonus WHERE BonusId=?");
+        statement1.setInt(1, resultEmployee.getInt("BonusId"));
+        statement1.execute();
 
+        PreparedStatement statement2 = connector.getConnection().prepareStatement(
+                "DELETE FROM FamilyState WHERE StateId=?");
+        statement2.setInt(1, resultEmployee.getInt("StateId"));
+        statement2.execute();
+
+        PreparedStatement statement3 = connector.getConnection().prepareStatement(
+                "DELETE FROM BankInfo WHERE BankId=?");
+        statement3.setInt(1, resultEmployee.getInt("BankId"));
+        statement3.execute();
+
+        PreparedStatement statement4 = connector.getConnection().prepareStatement(
+                "DELETE FROM Employee WHERE EmployeeId=?");
+        statement4.setInt(1, employeeId);
+        statement4.execute();
+
+        PreparedStatement statement5 = connector.getConnection().prepareStatement(
+                "DELETE FROM PermanentEducator WHERE EmployeeId=?");
+        statement5.setInt(1, employeeId);
+        statement5.execute();
+
+        PreparedStatement statement6 = connector.getConnection().prepareStatement(
+                "DELETE FROM PermanentManager WHERE EmployeeId=?");
+        statement6.setInt(1, employeeId);
+        statement6.execute();
+
+        PreparedStatement statement7 = connector.getConnection().prepareStatement(
+                "DELETE FROM ContractorEducator WHERE EmployeeId=?");
+        statement7.setInt(1, employeeId);
+        statement7.execute();
+
+        PreparedStatement statement8 = connector.getConnection().prepareStatement(
+                "DELETE FROM ContractorManager WHERE EmployeeId=?");
+        statement8.setInt(1, employeeId);
+        statement8.execute();
     }
 }

@@ -30,14 +30,19 @@ public class Main {
          * request.changeSearchBonus(600); //in GUI in changeBonusSalary
          */
 
-        currentDate = request.payEmployees(currentDate.toString(),basicSalary,contractSalary);
-
         /**
          * In change bonus salary, do
          * request.changSalary(Integer.parseInt(dateString[0]),basicSalary,contractSalary);
          */
 
+        /**
+         * in changeInfo when call
+         * request.changeFamilyState(String state, int kids, String ages, int stateId, int EmployeeId);
+         * request.changeSalary(Integer.parseInt(dateString[0]),basicSalary,contractSalary);
+         */
+
         /** HIRE STATEMENT
+         *  if (hireAlready==true) do not change date
          * if (31/XX/XX and paidAll=false) payALL before you hire
          * In hireEmployee, make searchBonus == 0 || libraryBonus == 0
          * set beginHiringDate as new Date(currentDate.year()-currentDate.month()-01)
@@ -45,24 +50,16 @@ public class Main {
          * paidAll = false
          */
 
-        /**
-         * in changeInfo when call
-         * request.changeFamilyState(String state, int kids, String ages, int stateId, int EmployeeId);
-         * request.changeSalary(Integer.parseInt(dateString[0]),basicSalary,contractSalary);
-         * */
-
         /**     CHECKED
          * When pay Employees,
          * if (paidAll == true) NEXT DAY: XXXX/XX/01
-         * pay Employees first
-         * set current date Month+1, if (month>12) then year+1
          * 31/XX/XXXX
          *
          * paidAll = true; in gui file
          */
 
-        /**
-         * CAN ONLY DELECT ALL INFO IN DATABASE;
+        /** FIRE EMPLOYEE
+         * if (fireAlready==true) do not change date
          * if (PAIDALL==true) employeeId has already been paid
          */
     }
