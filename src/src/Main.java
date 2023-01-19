@@ -22,7 +22,7 @@ public class Main {
         currentDate = Date.valueOf("2023-02-01");
         //int id=request.login("15","15a");
 
-        /**
+        /** CHECKED IN GUI
          * Change each initial salary in actionListener of displayChangeBonusSalaryPage
          * basicSalary = 1600;
          * contractSalary = 2000;
@@ -30,12 +30,12 @@ public class Main {
          * request.changeSearchBonus(600); //in GUI in changeBonusSalary
          */
 
-        /**
+        /** CHECKED IN GUI
          * In change bonus salary, do
          * request.changSalary(Integer.parseInt(dateString[0]),basicSalary,contractSalary);
          */
 
-        /**
+        /** CHECKED IN GUI
          * in changeInfo when call
          * request.changeFamilyState(String state, int kids, String ages, int stateId, int EmployeeId);
          * request.changeSalary(Integer.parseInt(dateString[0]),basicSalary,contractSalary);
@@ -50,7 +50,7 @@ public class Main {
          * paidAll = false
          */
 
-        /**     CHECKED
+        /** CHECKED, NOT GUI
          * When pay Employees,
          * if (paidAll == true) NEXT DAY: XXXX/XX/01
          * 31/XX/XXXX
