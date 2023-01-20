@@ -7,8 +7,8 @@ public class PermanentEducator extends Employee{
     private String password;
     private final int PEId;
 
-    public PermanentEducator(String firstName, String lastName, String address, int phoneNumber, Date beginHiringDate, int PEId) {
-        super(firstName, lastName, address, phoneNumber, beginHiringDate);
+    public PermanentEducator(String firstName, String lastName, String address, int phoneNumber, Date beginHiringDate, int PEId, int EmployeeId) {
+        super(firstName, lastName, address, phoneNumber, beginHiringDate, EmployeeId);
         this.PEId= PEId;
     }
 

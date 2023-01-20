@@ -14,13 +14,29 @@ public abstract class Employee {
     private FamilyState familyState;
     private BankInfo bankInfo;
     private Bonus bonus;
+    private int EmployeeId;
+    private double salary;
 
-    Employee(String firstName, String lastName, String address, int phoneNumber, Date beginHiringDate) {
+    Employee(String firstName, String lastName, String address, int phoneNumber, Date beginHiringDate, int EmployeeId) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.beginHiringDate = beginHiringDate;
+        this.EmployeeId = EmployeeId;
+    }
+
+    public void setSalary(double salary)
+    {
+        this.salary = salary;
+    }
+
+    public double getSalary(){
+        return this.salary;
+    }
+
+    public int getEmployeeId() {
+        return EmployeeId;
     }
 
     public String getFirstName() {
