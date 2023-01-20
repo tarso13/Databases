@@ -41,7 +41,7 @@ public class Main {
          * request.changeSalary(Integer.parseInt(dateString[0]),basicSalary,contractSalary);
          */
 
-        /** HIRE STATEMENT
+        /** HIRE STATEMENT, CHECK IN GUI
          *  if (hireAlready==true) do not change date
          * if (31/XX/XX and paidAll=false) payALL before you hire
          * In hireEmployee, make searchBonus == 0 || libraryBonus == 0
@@ -50,7 +50,7 @@ public class Main {
          * paidAll = false
          */
 
-        /** CHECKED, NOT GUI
+        /** CHECKED IN GUI
          * When pay Employees,
          * if (paidAll == true) NEXT DAY: XXXX/XX/01
          * 31/XX/XXXX
@@ -58,9 +58,25 @@ public class Main {
          * paidAll = true; in gui file
          */
 
-        /** FIRE EMPLOYEE
+        /** FIRE EMPLOYEE, CHECKED IN GUI
          * if (fireAlready==true) do not change date
          * if (PAIDALL==true) employeeId has already been paid
          */
+        
+        /** NOT CHECKED, ASSOCIATIONS BETWEEN HIRE-FIRE-PAYMENT
+        * HIRE <-> HIRE NOT CHANGE DATE, HIRE AS LONG AS I WANT
+        * PAYMENT <-> PAYMENT CHANGE DATE TO 1/NEXT_MONTH/YEAR_OR_NEXTYEAR
+        * FIRE <-> FIRE NOT CHANGE DATE, FIRE ALL YOU WANT
+        * 
+        * HIRE <-> PAYMENT, MAKE DATE=31/MONTH/YEAR
+        * PAYMENT <-> HIRE, MAKE DATE=1/NEXTMONTH/YEAR_OR_NEXTYEAR
+        * 
+        * HIRE <-> FIRE, PAY THIS EMPLOYEE
+        * FIRE <-> HIRE, MUST PAY EMPLOYEES AUTOMATICALLY
+        * 
+        * PAYMENT <-> FIRE, ALL GOOD
+        * FIRE <-> PAYMENT
+        *
+        */
     }
 }
