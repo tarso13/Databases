@@ -1,7 +1,7 @@
-package gui;
+package src.gui;
 
-import classes.Employee;
-import server.ServerRequest;
+import src.classes.Employee;
+import src.server.ServerRequest;
 
 import javax.swing.*;
 import java.awt.GridBagConstraints;
@@ -17,12 +17,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class GUI {
     static ServerRequest request = new ServerRequest();
     static int employeeId = 0;
-    static JFrame proceduresFrame = new JFrame("Procedures");
-    static double libraryBonus = 300.15; //only for CE employees
-    static double searchBonus = 250.82; //only for PE employees/CE
+    static double libraryBONUS = 300.15; //only for CE employees
+    static double searchBONUS = 250.82; //only for PE employees/CE
     static double basicSALARY = 1500; //only for PE/PM employees
     static double contractSALARY = 600; //only for CE/CM employees
-    static Date currentDate = new Date(1990-10-10);
+    static boolean paidEveryone = false;
+    static boolean hireAlready = false;
+    static Date currentDate;
 
     public static JPanel panelForMessageDialog(String message){
         JPanel panel = new JPanel();
@@ -39,6 +40,9 @@ public class GUI {
         firstLabel.setFont(new Font("Calibri", Font.ITALIC, 20));
         secondLabel.setFont(new Font("Calibri", Font.ITALIC, 20));
 
+        JLabel dateLabel = new JLabel("Current date: " + currentDate.toString());
+        dateLabel.setFont(new Font("Calibri", Font.ITALIC, 20));
+
         JPanel panel = new JPanel();
         GridBagLayout grid =new GridBagLayout();
         GridBagConstraints gbc=new GridBagConstraints();
@@ -48,23 +52,28 @@ public class GUI {
         GridBagLayout layout=new GridBagLayout();
         panel.setLayout(layout);
         gbc.fill=GridBagConstraints.HORIZONTAL;
-        gbc.ipady=20;
-        gbc.gridx=0;
-        gbc.gridy=0;
-        panel.add(firstLabel,gbc);
-
-        gbc.gridx=1;
-        gbc.gridy=0;
-        panel.add(firstField,gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(dateLabel,gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
         gbc.gridy=1;
-        panel.add(secondLabel,gbc);
+        panel.add(firstLabel,gbc);
 
         gbc.gridx=1;
         gbc.gridy=1;
+        panel.add(firstField,gbc);
+
+        gbc.fill=GridBagConstraints.HORIZONTAL;
+        gbc.ipady=20;
+        gbc.gridx=0;
+        gbc.gridy=2;
+        panel.add(secondLabel,gbc);
+
+        gbc.gridx=1;
+        gbc.gridy=2;
         panel.add(secondField,gbc);
 
         return panel;
@@ -80,6 +89,9 @@ public class GUI {
         labels[2].setFont(new Font("Calibri", Font.ITALIC, 20));
         labels[3].setFont(new Font("Calibri", Font.ITALIC, 20));
 
+        JLabel dateLabel = new JLabel("Current date: " + currentDate.toString());
+        dateLabel.setFont(new Font("Calibri", Font.ITALIC, 20));
+
         JPanel panel = new JPanel();
         GridBagLayout grid =new GridBagLayout();
         GridBagConstraints gbc=new GridBagConstraints();
@@ -89,43 +101,48 @@ public class GUI {
         GridBagLayout layout=new GridBagLayout();
         panel.setLayout(layout);
         gbc.fill=GridBagConstraints.HORIZONTAL;
-        gbc.ipady=20;
         gbc.gridx=0;
         gbc.gridy=0;
+        panel.add(dateLabel,gbc);
+
+        gbc.fill=GridBagConstraints.HORIZONTAL;
+        gbc.ipady=20;
+        gbc.gridx=0;
+        gbc.gridy=1;
         panel.add(labels[0],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=0;
+        gbc.gridy=1;
         panel.add(fields[0],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=1;
+        gbc.gridy=2;
         panel.add(labels[1],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=1;
+        gbc.gridy=2;
         panel.add(fields[1],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=2;
+        gbc.gridy=3;
         panel.add(labels[2],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=2;
+        gbc.gridy=3;
         panel.add(fields[2],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=3;
+        gbc.gridy=4;
         panel.add(labels[3],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=3;
+        gbc.gridy=4;
         panel.add(fields[3],gbc);
 
         return panel;
@@ -143,6 +160,9 @@ public class GUI {
         labels[3].setFont(new Font("Calibri", Font.ITALIC, 20));
         labels[4].setFont(new Font("Calibri", Font.ITALIC, 20));
 
+        JLabel dateLabel = new JLabel("Current date: " + currentDate.toString());
+        dateLabel.setFont(new Font("Calibri", Font.ITALIC, 20));
+
         JPanel panel = new JPanel();
         GridBagLayout grid =new GridBagLayout();
         GridBagConstraints gbc=new GridBagConstraints();
@@ -152,53 +172,58 @@ public class GUI {
         GridBagLayout layout=new GridBagLayout();
         panel.setLayout(layout);
         gbc.fill=GridBagConstraints.HORIZONTAL;
-        gbc.ipady=20;
         gbc.gridx=0;
         gbc.gridy=0;
+        panel.add(dateLabel);
+
+        gbc.fill=GridBagConstraints.HORIZONTAL;
+        gbc.ipady=20;
+        gbc.gridx=0;
+        gbc.gridy=1;
         panel.add(labels[0],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=0;
+        gbc.gridy=1;
         panel.add(fields[0],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=1;
+        gbc.gridy=2;
         panel.add(labels[1],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=1;
+        gbc.gridy=2;
         panel.add(fields[1],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=2;
+        gbc.gridy=3;
         panel.add(labels[2],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=2;
+        gbc.gridy=3;
         panel.add(fields[2],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=3;
+        gbc.gridy=4;
         panel.add(labels[3],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=3;
+        gbc.gridy=4;
         panel.add(fields[3],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=4;
+        gbc.gridy=5;
         panel.add(labels[4],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=4;
+        gbc.gridy=5;
         panel.add(fields[4],gbc);
 
         return panel;
@@ -232,6 +257,9 @@ public class GUI {
         labels[11].setFont(new Font("Calibri", Font.ITALIC, 17));
         labels[12].setFont(new Font("Calibri", Font.ITALIC, 17));
 
+        JLabel dateLabel = new JLabel("Current date: " + currentDate.toString());
+        dateLabel.setFont(new Font("Calibri", Font.ITALIC, 20));
+
         JPanel panel = new JPanel();
         GridBagLayout grid =new GridBagLayout();
         GridBagConstraints gbc=new GridBagConstraints();
@@ -241,133 +269,138 @@ public class GUI {
         GridBagLayout layout=new GridBagLayout();
         panel.setLayout(layout);
         gbc.fill=GridBagConstraints.HORIZONTAL;
-        gbc.ipady=20;
         gbc.gridx=0;
         gbc.gridy=0;
+        panel.add(dateLabel);
+
+        gbc.fill=GridBagConstraints.HORIZONTAL;
+        gbc.ipady=20;
+        gbc.gridx=0;
+        gbc.gridy=1;
         panel.add(labels[0],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=0;
+        gbc.gridy=1;
         panel.add(fields[0],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=1;
+        gbc.gridy=2;
         panel.add(labels[1],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=1;
+        gbc.gridy=2;
         panel.add(fields[1],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=2;
+        gbc.gridy=3;
         panel.add(labels[2],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=2;
+        gbc.gridy=3;
         panel.add(fields[2],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=3;
+        gbc.gridy=4;
         panel.add(labels[3],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=3;
+        gbc.gridy=4;
         panel.add(fields[3],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=4;
+        gbc.gridy=5;
         panel.add(labels[4],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=4;
+        gbc.gridy=5;
         panel.add(fields[4],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=5;
+        gbc.gridy=6;
         panel.add(labels[5],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=5;
+        gbc.gridy=6;
         panel.add(fields[5],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=6;
+        gbc.gridy=7;
         panel.add(labels[6],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=6;
+        gbc.gridy=7;
         panel.add(fields[6],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=7;
+        gbc.gridy=8;
         panel.add(labels[7],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=7;
+        gbc.gridy=8;
         panel.add(fields[7],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=8;
+        gbc.gridy=9;
         panel.add(labels[8],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=8;
+        gbc.gridy=9;
         panel.add(fields[8],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=9;
+        gbc.gridy=10;
         panel.add(labels[9],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=9;
+        gbc.gridy=10;
         panel.add(fields[9],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=10;
+        gbc.gridy=11;
         panel.add(labels[10],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=10;
+        gbc.gridy=11;
         panel.add(fields[10],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=11;
+        gbc.gridy=12;
         panel.add(labels[11],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=11;
+        gbc.gridy=12;
         panel.add(fields[11],gbc);
 
         gbc.fill=GridBagConstraints.HORIZONTAL;
         gbc.ipady=20;
         gbc.gridx=0;
-        gbc.gridy=12;
+        gbc.gridy=13;
         panel.add(labels[12],gbc);
 
         gbc.gridx=1;
-        gbc.gridy=11;
+        gbc.gridy=13;
         panel.add(fields[12],gbc);
 
         return panel;
@@ -380,7 +413,7 @@ public class GUI {
         JLabel labelUser = new JLabel("Username: ");
         JLabel labelPass = new JLabel("Password: ");
 
-
+        currentDate = Date.valueOf("2023-02-01");
         int option = JOptionPane.showConfirmDialog(null, panelLoginAndFirePage(username,password,labelUser,labelPass), "Login Page", JOptionPane.OK_CANCEL_OPTION);
 
         if (option == JOptionPane.OK_OPTION) {
@@ -403,8 +436,11 @@ public class GUI {
 
 
     private static void validateExit(boolean root) throws SQLException {
-        int option = JOptionPane.showConfirmDialog(null, panelForMessageDialog("\"Would you like to exit?\\n[Yes: Redirects to login page," +
-                " No: Redirects to previous page]\""), "Hire", JOptionPane.YES_NO_OPTION);
+        String message = "<html><body width='%1s'><h1>Exit?</h1><br><br>" +
+                "[Yes: Go to login page,<br><br>" +
+                "No: Go to previous page]<br><br>";
+
+        int option = JOptionPane.showConfirmDialog(null, panelForMessageDialog(message), "Hire", JOptionPane.YES_NO_OPTION);
         if (option == JOptionPane.YES_OPTION)
             loginPage();
         else
@@ -478,9 +514,13 @@ public class GUI {
     }
 
     private static void displayQueries(JFrame queriesFrame, boolean root) {
+        JLabel dateLabel = new JLabel("Current date: " + currentDate.toString());
+        dateLabel.setFont(new Font("Calibri", Font.ITALIC, 20));
+
         JPanel panel;
         JButton[] buttons = new JButton[8];
-        panel = new JPanel(new GridLayout(8, 1));
+        panel = new JPanel(new GridLayout(9, 1));
+        panel.add(dateLabel);
         String b[] = {"Payment State per Staff Category", "Max Salary per Staff Category", "Min Salary per Staff Category",
                 "Average Salary per Staff Category", "Average Salary and Bonus Increase", "Employee Data and Salary", "Total Salary Increase per Staff Category", "Back to Login Page"};
         for (int i = 0; i < buttons.length; i++) {
@@ -530,11 +570,26 @@ public class GUI {
         queriesFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
+    public static void displayPaymentInGUI(ArrayList<String> payments){
+        String message = "<html><body width='%1s'><h1>Payment Info</h1>";
+
+        for (int i=0; i<payments.size(); i++){
+            message += payments.get(i) + "<br><br>";
+        }
+
+        JOptionPane.showMessageDialog(null, panelForMessageDialog(String.format(message,500,500)),"Message",JOptionPane.INFORMATION_MESSAGE);
+
+    }
+
     private static void displayProcedures(boolean root) {
+        JLabel dateLabel = new JLabel("Current date: " + currentDate.toString());
+        dateLabel.setFont(new Font("Calibri", Font.ITALIC, 20));
+
         JFrame proceduresFrame = new JFrame("Procedures");
         JPanel panel;
         JButton[] buttons = new JButton[7];
-        panel = new JPanel(new GridLayout(7, 1));
+        panel = new JPanel(new GridLayout(8, 1));
+        panel.add(dateLabel);
         AtomicBoolean should_dispose = new AtomicBoolean(true);
         String b[] = {"New Hire", "New Fire/Retirement", "Change Salary/Bonuses", "Payments", "Change Employee Info", "Queries", "Back to Login Page"};
         for (int i = 0; i < buttons.length; i++) {
@@ -573,11 +628,22 @@ public class GUI {
                     case "Payments":
                         if (!root) {
                             should_dispose.set(false);
-                            // do what is needed
                             break;
                         }
                         should_dispose.set(true);
-                        // do what is needed
+                        String[] date=currentDate.toString().split("-");
+                        if (paidEveryone == true) currentDate = Date.valueOf((Integer.parseInt(date[1]) +1 == 13) ? (Integer.parseInt(date[0]) + 1 + "-" + 01 + "-" + date[2])
+                                : (date[0] + "-" + Integer.parseInt(date[1]) + 1 + "-" + date[2]));
+                        else{
+                            currentDate = Date.valueOf(date[0] + "-" + date[1] + "-31");
+                            try {
+                                ArrayList<String> payments = request.payEmployees(currentDate.toString(),basicSALARY,contractSALARY);
+                                displayPaymentInGUI(payments);
+                            } catch (SQLException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                            paidEveryone = true;
+                        }
                         break;
                     case "Change Employee Info":
                         should_dispose.set(true);
@@ -723,8 +789,20 @@ public class GUI {
                 || !check_correct_phoneNumber(phoneNumber.getText()))
                 displayProcedures(false);
             else {
+                String[] date = currentDate.toString().split("-");
+                if ((Integer.parseInt(date[2]) == 31) && !paidEveryone){
+                    ArrayList<String> payments = request.payEmployees(currentDate.toString(),basicSALARY,contractSALARY);
+                    displayPaymentInGUI(payments);
+                }
+
+                if (!hireAlready){
+                    String dateS = ((Integer.parseInt(date[1]) + 1) == 13) ? (Integer.parseInt(date[0]) + 1 + "-" + 01 + "-" + date[2])
+                            : (date[0] + "-" + Integer.parseInt(date[1]) + 1 + "-01");
+                    currentDate = Date.valueOf(dateS);
+                } else hireAlready = false;
+
                 int bankId = request.insertBankInfo(Integer.parseInt(IBAN.getText()),bankName.getText());
-                int bonusId = request.insertBonus(0.15, searchBonus, libraryBonus); //calculateFamilyBonus instead of 0.15
+                int bonusId = request.insertBonus(request.calculateFamilyBonus(married.getText().toString(), kids.getText().toString()), searchBONUS, libraryBONUS,groupEmployer.getText().toString(), jobDepartment.getText().toString()); //calculateFamilyBonus instead of 0.15
                 int stateId = request.insertFamilyState(married.getText(),Integer.parseInt(kids.getText()),kidsAgesWithCommas.getText());
 
                 int[] infoInt = {Integer.parseInt(phoneNumber.getText()),bankId,stateId,bonusId};
@@ -735,12 +813,14 @@ public class GUI {
                 else
                     employeeId = request.insertEmployee(infoStr,currentDate, infoInt, contractSALARY);
 
-                request.hireEmployee(employeeId, "Contractor", "Educator", username.getText(), password.getText());
+                request.hireEmployee(employeeId, groupEmployer.getText().toString(), jobDepartment.getText().toString(), username.getText(), password.getText());
+
+                paidEveryone = false;
+                hireAlready = true;
             }
         } else {
             loginPage();
         }
-
     }
 
     private static void displayFireRetire(boolean root) throws NumberFormatException, SQLException {
@@ -750,14 +830,21 @@ public class GUI {
         JLabel labelOption = new JLabel("Fire/Retire: ");
 
         int option = JOptionPane.showConfirmDialog(null, panelLoginAndFirePage(employeeId,fireRetire,labelId,labelOption), "Fire", JOptionPane.OK_CANCEL_OPTION);
-        int givenEmployeeId = Integer.parseInt(employeeId.getText());
-        if (givenEmployeeId < 0) {
-            JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect Employee Id"),"Message",JOptionPane.INFORMATION_MESSAGE);
-            return;
-        }
         if (option == JOptionPane.OK_OPTION) {
-            //call fire request Marilena or retire
-            // !! fireRetire.getText() should be either "Fire" or "Retire"
+            if (employeeId.getText().equals("") || Integer.parseInt(employeeId.getText()) < 0) {
+                JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect Employee Id"),"Message",JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            int givenEmployeeId = Integer.parseInt(employeeId.getText());
+            double payment = request.fireEmployee(givenEmployeeId);
+            if (paidEveryone == true){
+                JOptionPane.showMessageDialog(null, panelForMessageDialog("EmployeeID " + givenEmployeeId + " has already been paid with "
+                        + payment + " euros!"),"Message",JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+            JOptionPane.showMessageDialog(null, panelForMessageDialog("EmployeeID "+givenEmployeeId+
+                    " is " + fireRetire.getText().toString() + "d with " + payment +" euros!"),"Message",JOptionPane.INFORMATION_MESSAGE);
+
             displayProcedures(root);
         } else {
             validateExit(root);
@@ -783,8 +870,10 @@ public class GUI {
         if (option == JOptionPane.OK_OPTION) {
             if (address.getText().length() != 0) request.changeAddress(address.getText(), employeeId);
             if (check_correct_phoneNumber(phoneNumber.getText())) request.changePhoneNumber(Integer.parseInt(phoneNumber.getText()), employeeId);
-            if (check_correct_family_state(kidsAgesWithCommas.getText(), kids.getText(), married.getText()))
-                request.changeFamilyState(married.getText(), Integer.parseInt(kids.getText()), kidsAgesWithCommas.getText(), employeeId, basicSALARY, contractSALARY);
+            if (check_correct_family_state(kidsAgesWithCommas.getText(), kids.getText(), married.getText())){
+                request.changeFamilyState(married.getText(), Integer.parseInt(kids.getText()), kidsAgesWithCommas.getText(), employeeId);
+                request.changeSalary(currentDate.toString(),basicSALARY,contractSALARY);
+            }
         } else {
             loginPage();
         }
@@ -805,7 +894,17 @@ public class GUI {
 
         int option = JOptionPane.showConfirmDialog(null, panelChangeBonusSalaryPage(fields,labels), "Change Employee Info", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            // firstName.getText() etc get your info
+            if (!basicSalary.getText().equals("")) basicSALARY = Double.parseDouble(basicSalary.getText().toString());
+            if (!contractSalary.getText().equals("")) contractSALARY = Double.parseDouble(contractSalary.getText().toString());
+            if (!libraryBonus.getText().equals("")){
+                libraryBONUS = Double.parseDouble(libraryBonus.getText().toString());
+                request.changeLibraryBonus(libraryBONUS);
+            }
+            if (!searchBonus.getText().equals("")){
+                searchBONUS = Double.parseDouble(searchBonus.getText().toString());
+                request.changeSearchBonus(searchBONUS);
+            }
+            request.changeSalary(currentDate.toString(),basicSALARY,contractSALARY);
             displayProcedures(root);
         } else
             validateExit(root);

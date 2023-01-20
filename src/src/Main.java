@@ -1,11 +1,13 @@
-import classes.ContractorEducator;
-import classes.ContractorManager;
-import classes.PermanentEducator;
-import classes.PermanentManager;
-import classes.Employee;
+package src;
 
-import gui.GUI;
-import server.ServerRequest;
+import src.classes.ContractorEducator;
+import src.classes.ContractorManager;
+import src.classes.PermanentEducator;
+import src.classes.PermanentManager;
+import src.classes.Employee;
+
+import src.gui.GUI;
+import src.server.ServerRequest;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

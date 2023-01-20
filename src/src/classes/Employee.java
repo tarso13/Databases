@@ -1,26 +1,18 @@
-package classes;
+package src.classes;
 
 import java.util.Date;
 
 public abstract class Employee {
 
-    enum employee {PE, PM, CE, CM};
     private String firstName;
     private String lastName;
-
     public abstract String groupEmployer();
-
     public abstract String JobDepartment();
     private Date beginHiringDate;
-
     private String address;
-
     private int phoneNumber;
-
     private FamilyState familyState;
-
     private BankInfo bankInfo;
-
     private Bonus bonus;
 
     Employee(String firstName, String lastName, String address, int phoneNumber, Date beginHiringDate) {
@@ -76,15 +68,4 @@ public abstract class Employee {
     }
 
     public abstract String toString();
-
-    public employee findEmployee(){
-        if (groupEmployer().equals("Permanent")){
-            if (JobDepartment().equals("Educator")) return employee.PE;
-            return employee.PM;
-        } else{
-            if (JobDepartment().equals("Educator")) return employee.CE;
-            return employee.CM;
-        }
-    }
-
 }
