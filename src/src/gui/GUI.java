@@ -539,7 +539,6 @@ public class GUI {
                         }
                         break;
                     case "Payment State per Staff Category":
-                        displayResy
                         break;
                     case "Max Salary per Staff Category":
                         break;
@@ -717,7 +716,6 @@ public class GUI {
         int kidsNumber = Integer.parseInt(kids);
         if ((splitKidsAges.length != kidsNumber && kidsNumber != 0) || (kidsNumber != 0 && state == "unmarried") || (kidsNumber == 0 && state == "married")) {
             JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data from Employee's family state!"), "Message", JOptionPane.INFORMATION_MESSAGE);
-
             return false;
         }
 
@@ -786,7 +784,7 @@ public class GUI {
                     || !check_correct_IBAN_category(IBAN.getText(), groupEmployer.getText(), jobDepartment.getText())
                     || !check_rest_info(firstName.getText(), lastName.getText(), username.getText(), password.getText(), address.getText(), bankName.getText())
                     || !check_correct_phoneNumber(phoneNumber.getText()))
-                displayProcedures(false);
+               displayProcedures(root);
             else {
                 String[] date = currentDate.toString().split("-");
                 if ((Integer.parseInt(date[2]) == 31) && !paidEveryone) {
@@ -816,10 +814,11 @@ public class GUI {
 
                 paidEveryone = false;
                 hireAlready = true;
+                displayProcedures(root);
             }
         } else {
             try {
-                loginPage();
+                validateExit(root);
             }catch(SQLException ex){
                 throw new RuntimeException(ex);
             }
@@ -849,9 +848,8 @@ public class GUI {
                     " is " + fireRetire.getText().toString() + "d with " + payment + " euros!"), "Message", JOptionPane.INFORMATION_MESSAGE);
 
             displayProcedures(root);
-        } else {
+        } else
             validateExit(root);
-        }
 
     }
 
@@ -878,8 +876,9 @@ public class GUI {
                 request.changeFamilyState(married.getText(), Integer.parseInt(kids.getText()), kidsAgesWithCommas.getText(), employeeId);
                 request.changeSalary(currentDate.toString(), basicSALARY, contractSALARY);
             }
+            displayProcedures(root);
         } else {
-            loginPage();
+            validateExit(root);
         }
 
     }
