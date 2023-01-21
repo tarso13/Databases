@@ -465,12 +465,12 @@ public class GUI {
             }
         });
 
-        String employeeEntries = "First Name - Last Name - Address - Phone Number - Begin Hiring Date - Employee Id - Salary - Group/Job Department\n";
+        String employeeEntries = "First Name | Last Name | Address | Phone Number | Begin Hiring Date | Employee Id | Salary | Group/Job Department\n\n";
 
         for (int i = 0; i < Employees.size(); ++i)
-            employeeEntries += (Employees.get(i).getFirstName() + " " +
-                    Employees.get(i).getLastName() + " " + Employees.get(i).getAddress() + " " + Employees.get(i).getPhoneNumber() + " " + Employees.get(i).getBeginHiringDate() +
-                    " " + Employees.get(i).getEmployeeId() + " " + Categories.get(i) + "\n");
+            employeeEntries += (Employees.get(i).getFirstName() + " | " +
+                    Employees.get(i).getLastName() + " | " + Employees.get(i).getAddress() + " | " + Employees.get(i).getPhoneNumber() + " | " + Employees.get(i).getBeginHiringDate() +
+                    " | " + Employees.get(i).getEmployeeId() + " | " + Categories.get(i) + "\n");
 
         int option = JOptionPane.showOptionDialog(frame, employeeEntries,
                 "Results",
@@ -570,9 +570,9 @@ public class GUI {
                         break;
                     case "Payment State per Staff Category":
                         try {
-                            ArrayList<Employee> employees = request.getSalaryperStaffCategory();
-                            ArrayList<String> categories = null;
-                            //displayResultsEmployees(employees, categories, root);
+                            ArrayList<String> categories = new ArrayList<>();
+                            ArrayList<Employee> employees = request.getSalaryperStaffCategory(categories);
+                            displayResultsEmployees(employees, categories, root);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }

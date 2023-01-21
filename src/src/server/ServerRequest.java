@@ -603,7 +603,7 @@ public class ServerRequest {
         return salary;
     }
 
-    public ArrayList<Employee> addPESalaries(ArrayList<Employee> sortedSalaryperStaffCategory) throws SQLException {
+    public ArrayList<Employee> addPESalaries(ArrayList<Employee> sortedSalaryperStaffCategory, ArrayList<String> categories) throws SQLException {
         PreparedStatement statement1 = selectStatement(connector, "SELECT * FROM PermanentEducator");
         ResultSet resultEmployee = statement1.executeQuery();
 
@@ -625,6 +625,8 @@ public class ServerRequest {
                         pEducator = new PermanentEducator(resultPE.getString("firstName"), resultPE.getString("lastName"), resultPE.getString("address"), resultPE.getInt("phoneNumber"), resultPE.getDate("beginHiringDate"), resultEmployee.getInt("PEId"), resultEmployee.getInt("PEId"));
                         pEducator.setSalary(resultPE.getDouble("salary"));
                         sortedSalaryperStaffCategory.add(pEducator);
+                        if (categories != null)
+                            categories.add("Permanent Educator");
                     }
                 } while (resultPE.next());
             } while (resultEmployee.next());
@@ -632,7 +634,7 @@ public class ServerRequest {
         return sortedSalaryperStaffCategory;
     }
 
-    public ArrayList<Employee> addPMSalaries(ArrayList<Employee> sortedSalaryperStaffCategory) throws
+    public ArrayList<Employee> addPMSalaries(ArrayList<Employee> sortedSalaryperStaffCategory, ArrayList<String> categories) throws
             SQLException {
 
         PreparedStatement statement1 = selectStatement(connector, "SELECT * FROM PermanentManager");
@@ -656,6 +658,8 @@ public class ServerRequest {
                         pManager = new PermanentManager(resultPM.getString("firstName"), resultPM.getString("lastName"), resultPM.getString("address"), resultPM.getInt("phoneNumber"), resultPM.getDate("beginHiringDate"), resultEmployee.getInt("PMId"), resultEmployee.getInt("EmployeeId"));
                         pManager.setSalary(resultPM.getDouble("salary"));
                         sortedSalaryperStaffCategory.add(pManager);
+                        if (categories != null)
+                            categories.add("Permanent Manager");
                     }
                 } while (resultPM.next());
             } while (resultEmployee.next());
@@ -663,7 +667,7 @@ public class ServerRequest {
         return sortedSalaryperStaffCategory;
     }
 
-    public ArrayList<Employee> addCMSalaries(ArrayList<Employee> sortedSalaryperStaffCategory) throws
+    public ArrayList<Employee> addCMSalaries(ArrayList<Employee> sortedSalaryperStaffCategory, ArrayList<String> categories) throws
             SQLException {
         PreparedStatement statement1 = selectStatement(connector, "SELECT * FROM ContractorManager");
         ResultSet resultEmployee = statement1.executeQuery();
@@ -685,6 +689,8 @@ public class ServerRequest {
                         cManager = new ContractorManager(resultCM.getString("firstName"), resultCM.getString("lastName"), resultCM.getString("address"), resultCM.getInt("phoneNumber"), resultCM.getDate("beginHiringDate"), resultEmployee.getInt("CMId"), resultEmployee.getInt("EmployeeId"));
                         cManager.setSalary(resultCM.getDouble("salary"));
                         sortedSalaryperStaffCategory.add(cManager);
+                        if (categories != null)
+                            categories.add("Contractor Manager");
                     }
                 } while (resultCM.next());
             } while (resultEmployee.next());
@@ -692,7 +698,7 @@ public class ServerRequest {
         return sortedSalaryperStaffCategory;
     }
 
-    public ArrayList<Employee> addCESalaries(ArrayList<Employee> sortedSalaryperStaffCategory) throws
+    public ArrayList<Employee> addCESalaries(ArrayList<Employee> sortedSalaryperStaffCategory, ArrayList<String> categories) throws
             SQLException {
         PreparedStatement statement1 = selectStatement(connector, "SELECT * FROM ContractorEducator");
         ResultSet resultEmployee = statement1.executeQuery();
@@ -714,6 +720,9 @@ public class ServerRequest {
                         cEducator = new ContractorEducator(resultCE.getString("firstName"), resultCE.getString("lastName"), resultCE.getString("address"), resultCE.getInt("phoneNumber"), resultCE.getDate("beginHiringDate"), resultEmployee.getInt("CEId"), resultEmployee.getInt("EmployeeId"));
                         cEducator.setSalary(resultCE.getDouble("salary"));
                         sortedSalaryperStaffCategory.add(cEducator);
+
+                        if (categories != null)
+                            categories.add("Contractor Educator");
                     }
                 } while (resultCE.next());
             } while (resultEmployee.next());
@@ -724,16 +733,16 @@ public class ServerRequest {
     private ArrayList<Employee> defineCategory(ArrayList<Employee> SalaryCat, String Category) throws SQLException {
         switch (Category) {
             case "Permanent Manager":
-                SalaryCat = addPMSalaries(SalaryCat);
+                SalaryCat = addPMSalaries(SalaryCat, null);
                 break;
             case "Permanent Educator":
-                SalaryCat = addPESalaries(SalaryCat);
+                SalaryCat = addPESalaries(SalaryCat, null);
                 break;
             case "Contractor Manager":
-                SalaryCat = addCMSalaries(SalaryCat);
+                SalaryCat = addCMSalaries(SalaryCat, null);
                 break;
             case "Contractor Educator":
-                SalaryCat = addCESalaries(SalaryCat);
+                SalaryCat = addCESalaries(SalaryCat, null);
                 break;
             default:
                 assert (false);
@@ -836,13 +845,13 @@ public class ServerRequest {
         return sortedSalaries;
     }
 
-    public ArrayList<Employee> getSalaryperStaffCategory() throws SQLException {
+    public ArrayList<Employee> getSalaryperStaffCategory(ArrayList<String> categories) throws SQLException {
         ArrayList<Employee> sortedSalaryperStaffCategory = new ArrayList<>();
 
-        sortedSalaryperStaffCategory = addPMSalaries(sortedSalaryperStaffCategory);
-        sortedSalaryperStaffCategory = addPESalaries(sortedSalaryperStaffCategory);
-        sortedSalaryperStaffCategory = addCMSalaries(sortedSalaryperStaffCategory);
-        sortedSalaryperStaffCategory = addCESalaries(sortedSalaryperStaffCategory);
+        sortedSalaryperStaffCategory = addPMSalaries(sortedSalaryperStaffCategory, categories);
+        sortedSalaryperStaffCategory = addPESalaries(sortedSalaryperStaffCategory, categories);
+        sortedSalaryperStaffCategory = addCMSalaries(sortedSalaryperStaffCategory, categories);
+        sortedSalaryperStaffCategory = addCESalaries(sortedSalaryperStaffCategory, categories);
 
         return sortedSalaryperStaffCategory;
     }
@@ -872,7 +881,7 @@ public class ServerRequest {
             Category = "Contractor Educator";
         }
 
-        if(result == null) {
+        if (result == null) {
             JOptionPane.showMessageDialog(null, "Employee could not be found", "Incorrect Employee Id Given", JOptionPane.OK_OPTION);
             Category = "Undefined";
             return null;
