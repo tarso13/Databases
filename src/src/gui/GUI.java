@@ -624,16 +624,19 @@ public class GUI {
                         }
                         break;
                     case "Payments":
+                        //TODO check payment -> payment, payment -> hire, payment ->fire
                         if (!root) {
                             should_dispose.set(false);
                             break;
                         }
                         should_dispose.set(true);
+                        hireAlready = false;
                         String[] date = currentDate.toString().split("-");
-                        if (paidEveryone == true)
-                            currentDate = Date.valueOf((Integer.parseInt(date[1]) + 1 == 13) ? (Integer.parseInt(date[0]) + 1 + "-" + 01 + "-" + date[2])
-                                    : (date[0] + "-" + Integer.parseInt(date[1]) + 1 + "-" + date[2]));
-                        else {
+                        if (paidEveryone == true) {
+                            JOptionPane.showMessageDialog(null, panelForMessageDialog("Employees have already been paid!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+                            currentDate = Date.valueOf(((Integer.parseInt(date[1]) + 1) == 13) ? ((Integer.parseInt(date[0]) + 1) + "-01-" + date[2])
+                                    : (date[0] + "-" + (Integer.parseInt(date[1]) + 1) + "-01"));
+                        } else {
                             currentDate = Date.valueOf(date[0] + "-" + date[1] + "-31");
                             try {
                                 ArrayList<String> payments = request.payEmployees(currentDate.toString(), basicSALARY, contractSALARY);
@@ -787,17 +790,19 @@ public class GUI {
                displayProcedures(root);
             else {
                 String[] date = currentDate.toString().split("-");
-                if ((Integer.parseInt(date[2]) == 31) && !paidEveryone) {
+                //TODO below statement
+                if (!paidEveryone) { //employees are not paid, user's mistake
                     ArrayList<String> payments = request.payEmployees(currentDate.toString(), basicSALARY, contractSALARY);
                     displayPaymentInGUI(payments);
                 }
 
                 if (!hireAlready) {
-                    String dateS = ((Integer.parseInt(date[1]) + 1) == 13) ? (Integer.parseInt(date[0]) + 1 + "-" + 01 + "-" + date[2])
-                            : (date[0] + "-" + Integer.parseInt(date[1]) + 1 + "-01");
+                    String dateS = ((Integer.parseInt(date[1]) + 1) == 13) ? ((Integer.parseInt(date[0]) + 1) + "-01-" + date[2])
+                            : (date[0] + "-" + (Integer.parseInt(date[1]) + 1) + "-01");
                     currentDate = Date.valueOf(dateS);
-                } else hireAlready = false;
+                }
 
+                //TODO must check IBAN != all Employees in Database???
                 int bankId = request.insertBankInfo(Integer.parseInt(IBAN.getText()), bankName.getText());
                 int bonusId = request.insertBonus(request.calculateFamilyBonus(married.getText().toString(), kids.getText().toString()), searchBONUS, libraryBONUS, groupEmployer.getText().toString(), jobDepartment.getText().toString()); //calculateFamilyBonus instead of 0.15
                 int stateId = request.insertFamilyState(married.getText(), Integer.parseInt(kids.getText()), kidsAgesWithCommas.getText());
@@ -805,6 +810,7 @@ public class GUI {
                 int[] infoInt = {Integer.parseInt(phoneNumber.getText()), bankId, stateId, bonusId};
                 String[] infoStr = {firstName.getText(), lastName.getText(), address.getText()};
 
+                //TODO check string for groupEmployer and jobDepartment, in general all info given from user
                 if (groupEmployer.getText().equals("Permanent"))
                     employeeId = request.insertEmployee(infoStr, currentDate, infoInt, basicSALARY);
                 else
@@ -833,6 +839,8 @@ public class GUI {
 
         int option = JOptionPane.showConfirmDialog(null, panelLoginAndFirePage(employeeId, fireRetire, labelId, labelOption), "Fire", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
+            hireAlready = false;
+
             if (employeeId.getText().equals("") || Integer.parseInt(employeeId.getText()) < 0) {
                 JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect Employee Id"), "Message", JOptionPane.INFORMATION_MESSAGE);
                 return;
@@ -842,9 +850,8 @@ public class GUI {
             if (paidEveryone == true) {
                 JOptionPane.showMessageDialog(null, panelForMessageDialog("EmployeeID " + givenEmployeeId + " has already been paid with "
                         + payment + " euros!"), "Message", JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-            JOptionPane.showMessageDialog(null, panelForMessageDialog("EmployeeID " + givenEmployeeId +
+            } else
+                JOptionPane.showMessageDialog(null, panelForMessageDialog("EmployeeID " + givenEmployeeId +
                     " is " + fireRetire.getText().toString() + "d with " + payment + " euros!"), "Message", JOptionPane.INFORMATION_MESSAGE);
 
             displayProcedures(root);
@@ -869,6 +876,7 @@ public class GUI {
 
         int option = JOptionPane.showConfirmDialog(null, panelChangeInfoPage(fields, labels), "Change Employee Info", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
+            hireAlready = false;
             if (address.getText().length() != 0) request.changeAddress(address.getText(), employeeId);
             if (check_correct_phoneNumber(phoneNumber.getText()))
                 request.changePhoneNumber(Integer.parseInt(phoneNumber.getText()), employeeId);

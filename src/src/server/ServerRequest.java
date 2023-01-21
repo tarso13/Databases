@@ -398,8 +398,10 @@ public class ServerRequest {
         if (state.equals("married")) famBonus +=0.05;
 
         String[] split = kidsAges.split(",");
-        for (int i=0; i < split.length; i++){
-            if (!(split[i].equals("")) && Integer.parseInt(split[i]) <= 18) famBonus +=0.05;
+        if (!split[0].equals("")){
+            for (int i=0; i < split.length; i++){
+                if (Integer.parseInt(split[i]) < 18) famBonus +=0.05;
+            }
         }
 
         famBonus = new BigDecimal(famBonus).setScale(2, RoundingMode.DOWN).doubleValue();
@@ -500,10 +502,11 @@ public class ServerRequest {
 
     public int insertBankInfo(int IBAN, String bankName) throws SQLException{
         PreparedStatement statement1 = connector.getConnection().prepareStatement(
-                "INSERT INTO BankInfo (BankID,IBAN,bankName) VALUES (?,?,?)", Statement.RETURN_GENERATED_KEYS);
+                "INSERT INTO BankInfo (BankID,IBAN,bankName,timesPaid) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
         statement1.setString(1,null);
         statement1.setInt(2,IBAN);
         statement1.setString(3,bankName);
+        statement1.setInt(4,0);
         statement1.executeUpdate();
 
         ResultSet resultBankInfo = statement1.getGeneratedKeys();
