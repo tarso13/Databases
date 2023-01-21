@@ -1,5 +1,6 @@
 package src.gui;
 
+import jdk.jfr.Category;
 import src.classes.Employee;
 import src.server.ServerRequest;
 
@@ -9,9 +10,11 @@ import java.awt.GridBagLayout;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Array;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GUI {
@@ -445,18 +448,31 @@ public class GUI {
             displayProcedures(root);
     }
 
-    private static void displayResultsEmployees(ArrayList<Employee> Employees, JFrame frame, boolean root) {
+    private static void displayResultsEmployees(ArrayList<Employee> Employees, ArrayList<String> Categories, boolean root) {
         JButton ok = new JButton("OK");
         JButton[] options = {ok};
-        frame = new JFrame();
+        JFrame frame = new JFrame();
         frame.setLocation(200, 200);
         frame.setResizable(false);
-        String employeeEntries = "First Name - Last Name - Address - Phone Number - Begin Hiring Date - Employee Id - Salary\n";
+
+        ok.addActionListener(e -> {
+            frame.setVisible(false);
+            frame.dispose();
+            try {
+                validateExit(root);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        String employeeEntries = "First Name - Last Name - Address - Phone Number - Begin Hiring Date - Employee Id - Salary - Group/Job Department\n";
+
         for (int i = 0; i < Employees.size(); ++i)
             employeeEntries += (Employees.get(i).getFirstName() + " " +
                     Employees.get(i).getLastName() + " " + Employees.get(i).getAddress() + " " + Employees.get(i).getPhoneNumber() + " " + Employees.get(i).getBeginHiringDate() +
-                    " " + Employees.get(i).getEmployeeId() + "\n");
-        int n = JOptionPane.showOptionDialog(frame, employeeEntries,
+                    " " + Employees.get(i).getEmployeeId() + " " + Categories.get(i) + "\n");
+
+        int option = JOptionPane.showOptionDialog(frame, employeeEntries,
                 "Results",
                 JOptionPane.OK_OPTION,
                 0,
@@ -464,51 +480,65 @@ public class GUI {
                 options,
                 options[0]);
 
-        JFrame finalFrame = frame;
-        ok.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                finalFrame.setVisible(false);
-                finalFrame.dispose();
-                try {
-                    validateExit(root);
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        });
     }
 
-    private static void displayResultsSalaries(ArrayList<Integer> Salaries, JFrame frame, boolean root) {
+    private static void displayResultsSalaries(ArrayList<Double> Salaries, ArrayList<String> Categories, boolean root) throws SQLException {
         JButton ok = new JButton("OK");
         JButton[] options = {ok};
-        frame = new JFrame();
+        JFrame frame = new JFrame();
         frame.setLocation(200, 200);
         frame.setResizable(false);
+
+        ok.addActionListener(e -> {
+            frame.setVisible(false);
+            frame.dispose();
+            try {
+                validateExit(root);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
         String salaries = "";
+
         for (int i = 0; i < Salaries.size(); ++i)
-            salaries += (Salaries.get(i).toString() + "\n");
-        int n = JOptionPane.showOptionDialog(frame, salaries,
+            salaries += (Categories.get(i) + ": " + Salaries.get(i).toString() + "\n");
+
+        int option = JOptionPane.showOptionDialog(frame, salaries,
                 "Results",
                 JOptionPane.OK_OPTION,
                 0,
                 null,
                 options,
                 options[0]);
+    }
 
-        JFrame finalFrame = frame;
-        ok.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                finalFrame.setVisible(false);
-                finalFrame.dispose();
-                try {
-                    validateExit(root);
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        });
+    private static int getEmployeeId(boolean root) throws NumberFormatException {
+        JTextField employeeId = new JTextField();
+        Object[] message = {
+                "Give me the employee id you want to check:", employeeId
+        };
+
+        int option = JOptionPane.showConfirmDialog(null, message, "Employee Id", JOptionPane.OK_CANCEL_OPTION);
+        int givenEmployeeId = Integer.parseInt(employeeId.getText());
+        if (givenEmployeeId < 0) {
+            JOptionPane.showMessageDialog(null, "Incorrect Employee Id");
+            return -1;
+        }
+        if (option == JOptionPane.CANCEL_OPTION) {
+            displayProcedures(root);
+            return -1;
+        }
+        return givenEmployeeId;
+    }
+
+    private static ArrayList<String> initCategoriesForStats(ArrayList<String> categories) {
+        categories = new ArrayList<>();
+        categories.add("Permanent Manager");
+        categories.add("Permanent Educator");
+        categories.add("Contractor Manager");
+        categories.add("Contractor EducatorS");
+        return categories;
     }
 
     private static void displayQueries(JFrame queriesFrame, boolean root) {
@@ -539,16 +569,59 @@ public class GUI {
                         }
                         break;
                     case "Payment State per Staff Category":
+                        try {
+                            ArrayList<Employee> employees = request.getSalaryperStaffCategory();
+                            ArrayList<String> categories = null;
+                            //displayResultsEmployees(employees, categories, root);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         break;
                     case "Max Salary per Staff Category":
+                        try {
+                            ArrayList<String> categories = null;
+                            categories = initCategoriesForStats(categories);
+                            ArrayList<Double> maxSalaries = request.getMaxSalaryStatisticsperCategory();
+                            displayResultsSalaries(maxSalaries, categories, root);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         break;
                     case "Min Salary per Staff Category":
+                        try {
+                            ArrayList<String> categories = null;
+                            categories = initCategoriesForStats(categories);
+                            ArrayList<Double> minSalaries = request.getMinSalaryStatisticsperCategory();
+                            displayResultsSalaries(minSalaries, categories, root);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         break;
                     case "Average Salary per Staff Category":
+                        try {
+                            ArrayList<String> categories = null;
+                            categories = initCategoriesForStats(categories);
+                            ArrayList<Double> avgSalaries = request.getAverageSalaryStatisticsperCategory();
+                            displayResultsSalaries(avgSalaries, categories, root);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         break;
                     case "Average Salary and Bonus Increase":
                         break;
                     case "Employee Data and Salary":
+                        // try {
+//                            int employeeId = getEmployeeId(root);
+//                            String Category = "Undefined";
+//                            Employee employee = request.getEmployeeSalaryData(employeeId, Category);
+//                            ArrayList<Employee> employees = new ArrayList<>();
+//                            ArrayList<String> categories = new ArrayList<>();
+//                            employees.add(employee);
+//                            categories.add(Category);
+//                            displayResultsEmployees(employees, categories, root);
+                        //  } catch (SQLException ex) {
+                        //      throw new RuntimeException(ex);
+                        //  }
                         break;
                     case "Total Salary Increase per Staff Category":
                         break;
