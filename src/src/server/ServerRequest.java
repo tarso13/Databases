@@ -153,7 +153,7 @@ public class ServerRequest {
 
         ContractorEducator cEducator = new ContractorEducator(resultEmployee.getString("firstName"),
                 resultEmployee.getString("lastName"), resultEmployee.getString("address"),
-                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultCE.getInt("CEId"), resultEmployee.getInt("PEId"));
+                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultCE.getInt("CEId"), resultEmployee.getInt("EmployeeId"));
 
         return cEducator;
     }

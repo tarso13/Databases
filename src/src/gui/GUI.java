@@ -610,18 +610,18 @@ public class GUI {
                     case "Average Salary and Bonus Increase":
                         break;
                     case "Employee Data and Salary":
-                        // try {
-//                            int employeeId = getEmployeeId(root);
-//                            String Category = "Undefined";
-//                            Employee employee = request.getEmployeeSalaryData(employeeId, Category);
-//                            ArrayList<Employee> employees = new ArrayList<>();
-//                            ArrayList<String> categories = new ArrayList<>();
-//                            employees.add(employee);
-//                            categories.add(Category);
-//                            displayResultsEmployees(employees, categories, root);
-                        //  } catch (SQLException ex) {
-                        //      throw new RuntimeException(ex);
-                        //  }
+                         try {
+                            int employeeId = getEmployeeId(root);
+                            String Category = "Undefined";
+                            Employee employee = request.getEmployeeSalaryData(employeeId, Category);
+                            ArrayList<Employee> employees = new ArrayList<>();
+                            ArrayList<String> categories = new ArrayList<>();
+                            employees.add(employee);
+                            categories.add(Category);
+                            displayResultsEmployees(employees, categories, root);
+                          } catch (SQLException ex) {
+                              throw new RuntimeException(ex);
+                          }
                         break;
                     case "Total Salary Increase per Staff Category":
                         break;
