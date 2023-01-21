@@ -482,6 +482,33 @@ public class GUI {
 
     }
 
+    private static void EmployeeNotFound(boolean root) {
+        JButton ok = new JButton("OK");
+        JButton[] options = {ok};
+        JFrame frame = new JFrame();
+        frame.setLocation(200, 200);
+        frame.setResizable(false);
+
+        ok.addActionListener(e -> {
+            frame.setVisible(false);
+            frame.dispose();
+            try {
+                validateExit(root);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        int option = JOptionPane.showOptionDialog(frame, "Employee does not belong to any group/job department.",
+                "Results",
+                JOptionPane.OK_OPTION,
+                0,
+                null,
+                options,
+                options[0]);
+
+    }
+
     private static void displayResultsSalaries(ArrayList<Double> Salaries, ArrayList<String> Categories, boolean root) throws SQLException {
         JButton ok = new JButton("OK");
         JButton[] options = {ok};
@@ -557,6 +584,7 @@ public class GUI {
             buttons[i].setActionCommand(b[i]);
             buttons[i].addActionListener(e -> {
                 String choice = e.getActionCommand();
+                queriesFrame.dispose();
                 switch (choice) {
                     case "Back to Previous Page":
                         displayProcedures(root);
@@ -611,13 +639,15 @@ public class GUI {
                         break;
                     case "Employee Data and Salary":
                          try {
-                            int employeeId = getEmployeeId(root);
-                            String Category = "Undefined";
-                            Employee employee = request.getEmployeeSalaryData(employeeId, Category);
-                            ArrayList<Employee> employees = new ArrayList<>();
-                            ArrayList<String> categories = new ArrayList<>();
-                            employees.add(employee);
-                            categories.add(Category);
+                             int employeeId = getEmployeeId(root);
+                             ArrayList<Employee> employees = new ArrayList<>();
+                             ArrayList<String> categories = new ArrayList<>();
+                             Employee employee = request.getEmployeeSalaryData(employeeId,  categories);
+                             employees.add(employee);
+                            if(categories.get(0).equals("Undefined")){
+                                EmployeeNotFound(root);
+                                break;
+                            }
                             displayResultsEmployees(employees, categories, root);
                           } catch (SQLException ex) {
                               throw new RuntimeException(ex);
@@ -628,7 +658,6 @@ public class GUI {
                     default:
                         assert (false);
                 }
-                queriesFrame.dispose();
             });
             panel.add(buttons[i]);
         }
@@ -959,9 +988,8 @@ public class GUI {
                 request.changeSalary(currentDate.toString(), basicSALARY, contractSALARY);
             }
             displayProcedures(root);
-        } else {
+        } else
             validateExit(root);
-        }
 
     }
 

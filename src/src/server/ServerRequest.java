@@ -856,7 +856,7 @@ public class ServerRequest {
         return sortedSalaryperStaffCategory;
     }
 
-    public Employee getEmployeeSalaryData(int EmployeeId, String Category) throws SQLException {
+    public Employee getEmployeeSalaryData(int EmployeeId, ArrayList<String> categories) throws SQLException {
         PreparedStatement statement1 = selectStatement(connector, "SELECT * FROM Employee where EmployeeId=?");
         statement1.setInt(1, EmployeeId);
         ResultSet resultEmployee = statement1.executeQuery();
@@ -864,7 +864,7 @@ public class ServerRequest {
 
         Employee result = getPE(EmployeeId);
         double salary = resultEmployee.getDouble("salary");
-        Category = "Permanent Educator";
+        String Category = "Permanent Educator";
 
         if (result == null) {
             result = getPM(EmployeeId);
@@ -887,6 +887,7 @@ public class ServerRequest {
             return null;
         }
         result.setSalary(salary);
+        categories.add(Category);
         return result;
     }
 }
