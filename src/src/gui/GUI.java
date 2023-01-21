@@ -434,11 +434,11 @@ public class GUI {
 
 
     private static void validateExit(boolean root) throws SQLException {
-        String message = "<html><body width='%1s'><h1>Exit?</h1><br><br>" +
-                "[Yes: Go to login page,<br><br>" +
+        String message = "<html><body width='%1s'><h1>Would you like to exit?</h1><br><br>" +
+                "[Yes: Go to login page<br><br>" +
                 "No: Go to previous page]<br><br>";
 
-        int option = JOptionPane.showConfirmDialog(null, panelForMessageDialog(message), "Hire", JOptionPane.YES_NO_OPTION);
+        int option = JOptionPane.showConfirmDialog(null, panelForMessageDialog(message), "Exit", JOptionPane.YES_NO_OPTION);
         if (option == JOptionPane.YES_OPTION)
             loginPage();
         else
@@ -616,8 +616,8 @@ public class GUI {
                             should_dispose.set(false);
                             break;
                         }
-                        should_dispose.set(true);
                         try {
+                            should_dispose.set(true);
                             displayHire(root);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
@@ -646,6 +646,7 @@ public class GUI {
                             }
                             paidEveryone = true;
                         }
+                        displayProcedures(root);
                         break;
                     case "Change Employee Info":
                         should_dispose.set(true);
@@ -787,7 +788,7 @@ public class GUI {
                     || !check_correct_IBAN_category(IBAN.getText(), groupEmployer.getText(), jobDepartment.getText())
                     || !check_rest_info(firstName.getText(), lastName.getText(), username.getText(), password.getText(), address.getText(), bankName.getText())
                     || !check_correct_phoneNumber(phoneNumber.getText()))
-               displayProcedures(root);
+                displayProcedures(root);
             else {
                 String[] date = currentDate.toString().split("-");
                 //TODO below statement
@@ -825,7 +826,7 @@ public class GUI {
         } else {
             try {
                 validateExit(root);
-            }catch(SQLException ex){
+            } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
         }
@@ -852,7 +853,7 @@ public class GUI {
                         + payment + " euros!"), "Message", JOptionPane.INFORMATION_MESSAGE);
             } else
                 JOptionPane.showMessageDialog(null, panelForMessageDialog("EmployeeID " + givenEmployeeId +
-                    " is " + fireRetire.getText().toString() + "d with " + payment + " euros!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+                        " is " + fireRetire.getText().toString() + "d with " + payment + " euros!"), "Message", JOptionPane.INFORMATION_MESSAGE);
 
             displayProcedures(root);
         } else
