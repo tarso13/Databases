@@ -789,6 +789,34 @@ public class ServerRequest {
         return averageSalary / SalaryCat.size();
     }
 
+    public double getTotalSalary(ArrayList<Employee> SalaryCat, String Category) throws SQLException {
+        SalaryCat = defineCategory(SalaryCat, Category);
+        if (SalaryCat.size() == 0)
+            return 0;
+        double averageSalary = 0;
+        for (int i = 0; i < SalaryCat.size(); ++i)
+            averageSalary += SalaryCat.get(i).getSalary();
+        return averageSalary;
+    }
+
+    public ArrayList<Double> getTotalSalaryperCategory() throws SQLException {
+        ArrayList<Double> sortedSalaries = new ArrayList<>();
+        ArrayList<Employee> Employees = new ArrayList<>();
+
+        sortedSalaries.add(getTotalSalary(Employees, "PM"));
+
+        Employees.clear();
+        sortedSalaries.add(getTotalSalary(Employees, "PE"));
+
+
+        Employees.clear();
+        sortedSalaries.add(getTotalSalary(Employees, "CM"));
+
+        Employees.clear();
+        sortedSalaries.add(getTotalSalary(Employees, "CE"));
+
+        return sortedSalaries;
+    }
     public ArrayList<Double> getMinSalaryStatisticsperCategory() throws SQLException {
         ArrayList<Double> sortedSalaries = new ArrayList<>();
         ArrayList<Employee> Employees = new ArrayList<>();

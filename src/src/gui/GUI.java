@@ -654,7 +654,15 @@ public class GUI {
                               throw new RuntimeException(ex);
                           }
                         break;
-                    case "Total Salary Increase per Staff Category":
+                    case "Total Salary per Staff Category":
+                        try {
+                            ArrayList<String> categories = null;
+                            categories = initCategoriesForStats(categories);
+                            ArrayList<Double> totalSalaries = request.getTotalSalaryperCategory();
+                            displayResultsSalaries(totalSalaries, categories, root);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         break;
                     default:
                         assert (false);
