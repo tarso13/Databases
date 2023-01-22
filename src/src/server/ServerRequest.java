@@ -11,6 +11,8 @@ import java.util.HashMap;
 
 public class ServerRequest {
     src.server.Connector connector;
+    static double basic_SALARY = 1500; //only for PE/PM employees
+    static double contract_SALARY = 600; //only for CE/CM employees
 
     public ServerRequest() {
         connector = new src.server.Connector();
@@ -730,6 +732,41 @@ public class ServerRequest {
         return sortedSalaryperStaffCategory;
     }
 
+    private double getAverage(ArrayList<Double> doubles) {
+        double averageSalary = 0;
+        if (doubles.size() == 0)
+            return 0;
+        for (int i = 0; i < doubles.size(); ++i)
+            averageSalary += doubles.get(i);
+        return averageSalary / doubles.size();
+    }
+
+    public double getAverageSalaryBonusIncrease(String initialDate, String finalDate) throws SQLException {
+        int EmployeeId = 0;
+        PreparedStatement statement1 = selectStatement(connector, "SELECT * FROM Employee where EmployeeId=?");
+        statement1.setInt(1, EmployeeId);
+        ResultSet resultEmployee;
+
+        ArrayList<Double> salaryBonusIncreases = new ArrayList<>();
+        double finalSalaryBonusIncrease = 0;
+        double initialSalary = 0, currentSalary = 0;
+        do {
+            changeSalary(initialDate, basic_SALARY, contract_SALARY);
+            resultEmployee = statement1.executeQuery();
+            if (resultEmployee.next() == false)
+                return finalSalaryBonusIncrease;
+            initialSalary = resultEmployee.getDouble("salary");
+            changeSalary(finalDate, basic_SALARY, contract_SALARY);
+            resultEmployee = statement1.executeQuery();
+            currentSalary = resultEmployee.getDouble("salary");
+            salaryBonusIncreases.add(currentSalary - initialSalary);
+        } while (resultEmployee.next());
+
+        finalSalaryBonusIncrease = getAverage(salaryBonusIncreases);
+
+        return finalSalaryBonusIncrease;
+    }
+
     private ArrayList<Employee> defineCategory(ArrayList<Employee> SalaryCat, String Category) throws SQLException {
         switch (Category) {
             case "Permanent Manager":
@@ -815,6 +852,7 @@ public class ServerRequest {
         sortedSalaries.add(getTotalSalary(Employees, "Contractor Educator"));
         return sortedSalaries;
     }
+
     public ArrayList<Double> getMinSalaryStatisticsperCategory() throws SQLException {
         ArrayList<Double> sortedSalaries = new ArrayList<>();
         ArrayList<Employee> Employees = new ArrayList<>();

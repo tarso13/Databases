@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.sql.Array;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -408,6 +409,35 @@ public class GUI {
         return panel;
     }
 
+    private static ArrayList<String> getDates(boolean root) throws SQLException {
+        JTextField initialDate = new JTextField();
+        JTextField finalDate = new JTextField();
+        Object[] message = {
+                "Initial Date: ", initialDate,
+                "Final Date: ", finalDate
+        };
+
+        ArrayList<String> dates = new ArrayList<>();
+
+        currentDate = Date.valueOf(LocalDate.now());
+        int option = JOptionPane.showConfirmDialog(null,message, "Get Dates", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            dates.add(initialDate.getText());
+            dates.add(finalDate.getText());
+            if (dates.get(0).isEmpty() || dates.get(1).isEmpty()) {
+                int opt = JOptionPane.showConfirmDialog(null, panelForMessageDialog("Invalid Dates given!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+                if(opt == JOptionPane.OK_OPTION)
+                    displayProcedures(root);
+                else
+                    validateExit(root);
+                return null;
+            }
+            return dates;
+        } else
+            validateExit(root);
+        return dates;
+    }
+
     public static void loginPage() throws SQLException {
         JTextField username = new JTextField();
         JTextField password = new JTextField();
@@ -421,9 +451,10 @@ public class GUI {
         if (option == JOptionPane.OK_OPTION) {
             if (username.getText().equals("") || password.getText().equals("")) {
                 JOptionPane.showMessageDialog(null, panelForMessageDialog("Not given username or password!"), "Message", JOptionPane.INFORMATION_MESSAGE);
-            } else if (username.getText().equals("root") && password.getText().equals("root")) {
+                loginPage();
+            } else if (username.getText().equals("root") && password.getText().equals("root"))
                 displayProcedures(true);
-            } else {
+            else {
                 employeeId = request.login(username.getText(), password.getText());
                 if (employeeId == -1) {
                     JOptionPane.showMessageDialog(null, panelForMessageDialog("Login with false combination of username and password!"), "Message", JOptionPane.INFORMATION_MESSAGE);
@@ -560,6 +591,31 @@ public class GUI {
         return givenEmployeeId;
     }
 
+    private static void displayAverageSalaryBonusIncrease(boolean root, double result) throws NumberFormatException {
+        JButton ok = new JButton("OK");
+        JButton[] options = {ok};
+        JFrame frame = new JFrame();
+        frame.setLocation(200, 200);
+        frame.setResizable(false);
+
+        ok.addActionListener(e -> {
+            frame.setVisible(false);
+            frame.dispose();
+            try {
+                validateExit(root);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+
+        int option = JOptionPane.showOptionDialog(frame, "Average Salary and Bonus Increase for the given period of time is: " + result,
+                "Results",
+                JOptionPane.OK_OPTION,
+                0,
+                null,
+                options,
+                options[0]);
+    }
     private static ArrayList<String> initCategoriesForStats(ArrayList<String> categories) {
         categories = new ArrayList<>();
         categories.add("Permanent Manager");
@@ -637,22 +693,31 @@ public class GUI {
                         }
                         break;
                     case "Average Salary and Bonus Increase":
+                        try {
+                            ArrayList<String> dates = getDates(root);
+                            if (dates == null || dates.size() != 2)
+                                break;
+                            double result = request.getAverageSalaryBonusIncrease(dates.get(0), dates.get(1));
+                            displayAverageSalaryBonusIncrease(root, result);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         break;
                     case "Employee Data and Salary":
-                         try {
-                             int employeeId = getEmployeeId(root);
-                             ArrayList<Employee> employees = new ArrayList<>();
-                             ArrayList<String> categories = new ArrayList<>();
-                             Employee employee = request.getEmployeeSalaryData(employeeId,  categories);
-                             employees.add(employee);
-                            if(categories.get(0).equals("Undefined")){
+                        try {
+                            int employeeId = getEmployeeId(root);
+                            ArrayList<Employee> employees = new ArrayList<>();
+                            ArrayList<String> categories = new ArrayList<>();
+                            Employee employee = request.getEmployeeSalaryData(employeeId, categories);
+                            employees.add(employee);
+                            if (categories.get(0).equals("Undefined")) {
                                 EmployeeNotFound(root);
                                 break;
                             }
                             displayResultsEmployees(employees, categories, root);
-                          } catch (SQLException ex) {
-                              throw new RuntimeException(ex);
-                          }
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                         break;
                     case "Total Salary per Staff Category":
                         try {
@@ -690,11 +755,11 @@ public class GUI {
 
     }
 
-    public static void calculate_last_day_Month(String current){
+    public static void calculate_last_day_Month(String current) {
         String[] date = current.split("-");
         int month = Integer.parseInt(date[1]);
         if (month == 1 || month == 3 || month == 5 || month == 7
-            || month == 8 || month == 10 || month == 12) {
+                || month == 8 || month == 10 || month == 12) {
             currentDate = Date.valueOf(date[0] + "-" + date[1] + "-31");
         } else if (month == 4 || month == 6 || month == 9 || month == 11) {
             currentDate = Date.valueOf(date[0] + "-" + date[1] + "-30");
@@ -757,7 +822,8 @@ public class GUI {
                             currentDate = Date.valueOf(((Integer.parseInt(date[1]) + 1) == 13) ? ((Integer.parseInt(date[0]) + 1) + "-01-" + date[2])
                                     : (date[0] + "-" + (Integer.parseInt(date[1]) + 1) + "-01"));
                         } else {
-                            if (Integer.parseInt(date[2]) != 31 || Integer.parseInt(date[2]) != 30 || Integer.parseInt(date[2]) != 28) calculate_last_day_Month(currentDate.toString());
+                            if (Integer.parseInt(date[2]) != 31 || Integer.parseInt(date[2]) != 30 || Integer.parseInt(date[2]) != 28)
+                                calculate_last_day_Month(currentDate.toString());
                             try {
                                 ArrayList<String> payments = request.payEmployees(currentDate.toString(), basicSALARY, contractSALARY);
                                 displayPaymentInGUI(payments);
@@ -826,7 +892,7 @@ public class GUI {
             JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data from Employee's category (Permanent/Contractor)!"), "Message", JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
-        if (jobDepartment.equals("") || !jobDepartment.equals("Educator") && !jobDepartment.equals("Manager")){
+        if (jobDepartment.equals("") || !jobDepartment.equals("Educator") && !jobDepartment.equals("Manager")) {
             JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data from Employee's category (Educator/Manager)!"), "Message", JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
@@ -971,7 +1037,8 @@ public class GUI {
                         + payment + " euros!"), "Message", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 String[] date = currentDate.toString().split("-");
-                if (Integer.parseInt(date[2]) != 31 || Integer.parseInt(date[2]) != 30 || Integer.parseInt(date[2]) != 28) calculate_last_day_Month(currentDate.toString());
+                if (Integer.parseInt(date[2]) != 31 || Integer.parseInt(date[2]) != 30 || Integer.parseInt(date[2]) != 28)
+                    calculate_last_day_Month(currentDate.toString());
                 JOptionPane.showMessageDialog(null, panelForMessageDialog("EmployeeID " + givenEmployeeId +
                         " is " + fireRetire.getText().toString() + "d with " + payment + " euros!"), "Message", JOptionPane.INFORMATION_MESSAGE);
             }
@@ -1028,7 +1095,8 @@ public class GUI {
                     && !libraryBonus.getText().matches("(\\d*\\.?\\d+)") && !searchBonus.getText().matches("(\\d*\\.?\\d+)"))
                 return;
             if (!basicSalary.getText().equals("")) basicSALARY = Double.parseDouble(basicSalary.getText().toString());
-            if (!contractSalary.getText().equals("")) contractSALARY = Double.parseDouble(contractSalary.getText().toString());
+            if (!contractSalary.getText().equals(""))
+                contractSALARY = Double.parseDouble(contractSalary.getText().toString());
             if (!libraryBonus.getText().equals("")) {
                 libraryBONUS = Double.parseDouble(libraryBonus.getText().toString());
                 request.changeLibraryBonus(libraryBONUS);
