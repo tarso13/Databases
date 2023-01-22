@@ -508,7 +508,7 @@ public class GUI {
                 "Results",
                 JOptionPane.OK_OPTION,
                 0,
-                null,
+                new ImageIcon("download.jpeg"),
                 options,
                 options[0]);
 
@@ -567,7 +567,7 @@ public class GUI {
                 "Results",
                 JOptionPane.OK_OPTION,
                 0,
-                null,
+                new ImageIcon("download.jpeg"),
                 options,
                 options[0]);
     }
@@ -612,7 +612,7 @@ public class GUI {
                 "Results",
                 JOptionPane.OK_OPTION,
                 0,
-                null,
+                new ImageIcon("download.jpeg"),
                 options,
                 options[0]);
     }
