@@ -25,7 +25,6 @@ public class GUI {
     static double basicSALARY = 1500; //only for PE/PM employees
     static double contractSALARY = 600; //only for CE/CM employees
     static boolean paidEveryone = false;
-    static boolean hireAlready = false;
     static Date currentDate;
 
     public static JPanel panelForMessageDialog(String message) {
@@ -420,12 +419,14 @@ public class GUI {
         int option = JOptionPane.showConfirmDialog(null, panelLoginAndFirePage(username, password, labelUser, labelPass), "Login Page", JOptionPane.OK_CANCEL_OPTION);
 
         if (option == JOptionPane.OK_OPTION) {
-            if (username.getText().equals("root") && password.getText().equals("root"))
+            if (username.getText().equals("") || password.getText().equals("")) {
+                JOptionPane.showMessageDialog(null, panelForMessageDialog("Not given username or password!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+            } else if (username.getText().equals("root") && password.getText().equals("root")) {
                 displayProcedures(true);
-            else {
+            } else {
                 employeeId = request.login(username.getText(), password.getText());
                 if (employeeId == -1) {
-                    JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect login!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, panelForMessageDialog("Login with false combination of username and password!"), "Message", JOptionPane.INFORMATION_MESSAGE);
                     loginPage();
                 }
                 JOptionPane.showMessageDialog(null, panelForMessageDialog("Employee with id " + employeeId + " made a successful login!"), "Message", JOptionPane.INFORMATION_MESSAGE);
@@ -564,7 +565,7 @@ public class GUI {
         categories.add("Permanent Manager");
         categories.add("Permanent Educator");
         categories.add("Contractor Manager");
-        categories.add("Contractor EducatorS");
+        categories.add("Contractor Educator");
         return categories;
     }
 
@@ -681,6 +682,17 @@ public class GUI {
 
     }
 
+    public static void calculate_last_day_Month(String current){
+        String[] date = current.split("-");
+        int month = Integer.parseInt(date[1]);
+        if (month == 1 || month == 3 || month == 5 || month == 7
+            || month == 8 || month == 10 || month == 12) {
+            currentDate = Date.valueOf(date[0] + "-" + date[1] + "-31");
+        } else if (month == 4 || month == 6 || month == 9 || month == 11) {
+            currentDate = Date.valueOf(date[0] + "-" + date[1] + "-30");
+        } else currentDate = Date.valueOf(date[0] + "-" + date[1] + "-28");
+    }
+
     private static void displayProcedures(boolean root) {
         JLabel dateLabel = new JLabel("Current date: " + currentDate.toString());
         dateLabel.setFont(new Font("Calibri", Font.ITALIC, 20));
@@ -726,20 +738,18 @@ public class GUI {
                         }
                         break;
                     case "Payments":
-                        //TODO check payment -> payment, payment -> hire, payment ->fire
                         if (!root) {
                             should_dispose.set(false);
                             break;
                         }
                         should_dispose.set(true);
-                        hireAlready = false;
                         String[] date = currentDate.toString().split("-");
                         if (paidEveryone == true) {
                             JOptionPane.showMessageDialog(null, panelForMessageDialog("Employees have already been paid!"), "Message", JOptionPane.INFORMATION_MESSAGE);
                             currentDate = Date.valueOf(((Integer.parseInt(date[1]) + 1) == 13) ? ((Integer.parseInt(date[0]) + 1) + "-01-" + date[2])
                                     : (date[0] + "-" + (Integer.parseInt(date[1]) + 1) + "-01"));
                         } else {
-                            currentDate = Date.valueOf(date[0] + "-" + date[1] + "-31");
+                            if (Integer.parseInt(date[2]) != 31 || Integer.parseInt(date[2]) != 30 || Integer.parseInt(date[2]) != 28) calculate_last_day_Month(currentDate.toString());
                             try {
                                 ArrayList<String> payments = request.payEmployees(currentDate.toString(), basicSALARY, contractSALARY);
                                 displayPaymentInGUI(payments);
@@ -798,14 +808,18 @@ public class GUI {
         proceduresFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    public static boolean check_correct_IBAN_category(String IBAN, String groupEmployer, String jobDepartment) {
-        if (IBAN.length() == 0 || !IBAN.matches("[0-9]+") || Integer.parseInt(IBAN) > 2147483647) {
+    public static boolean check_correct_IBAN_Category(String IBAN, String groupEmployer, String jobDepartment) {
+        if (!IBAN.matches("[0-9]+") || Integer.parseInt(IBAN) > 2147483647) {
             JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data from Employee's IBAN!"), "Message", JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
 
-        if (!groupEmployer.equals("Permanent") && !groupEmployer.equals("Contractor") && !jobDepartment.equals("Educator") && !jobDepartment.equals("Manager")) {
-            JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data from Employee's category!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+        if (groupEmployer.equals("") || !groupEmployer.equals("Permanent") && !groupEmployer.equals("Contractor")) {
+            JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data from Employee's category (Permanent/Contractor)!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }
+        if (jobDepartment.equals("") || !jobDepartment.equals("Educator") && !jobDepartment.equals("Manager")){
+            JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data from Employee's category (Educator/Manager)!"), "Message", JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
 
@@ -814,7 +828,7 @@ public class GUI {
 
     public static boolean check_correct_family_state(String ages, String kids, String state) {
         String[] splitKidsAges = ages.split(",");
-        if (!kids.matches("[0-9]+") || Integer.parseInt(kids) > 10) {
+        if (state.equals("") || !kids.matches("[0-9]+") || Integer.parseInt(kids) > 10) {
             JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data or not exists from Employee's family state!"), "Message", JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
@@ -836,7 +850,7 @@ public class GUI {
     }
 
     public static boolean check_correct_phoneNumber(String phoneNumber) {
-        if (phoneNumber.length() == 0 || !phoneNumber.matches("[0-9]+") || Integer.parseInt(phoneNumber) > 2147483647) {
+        if (!phoneNumber.matches("[0-9]+") || Integer.parseInt(phoneNumber) > 2147483647) {
             JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data or not given data from Employee's phoneNumber!"), "Message", JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
@@ -887,33 +901,30 @@ public class GUI {
         int option = JOptionPane.showConfirmDialog(null, panelHirePage(fields, labels), "Hire", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             if (!check_correct_family_state(kidsAgesWithCommas.getText(), kids.getText(), married.getText())
-                    || !check_correct_IBAN_category(IBAN.getText(), groupEmployer.getText(), jobDepartment.getText())
+                    || !check_correct_IBAN_Category(IBAN.getText(), groupEmployer.getText(), jobDepartment.getText())
                     || !check_rest_info(firstName.getText(), lastName.getText(), username.getText(), password.getText(), address.getText(), bankName.getText())
                     || !check_correct_phoneNumber(phoneNumber.getText()))
                 displayProcedures(root);
             else {
                 String[] date = currentDate.toString().split("-");
-                //TODO below statement
-                if (!paidEveryone) { //employees are not paid, user's mistake
-                    ArrayList<String> payments = request.payEmployees(currentDate.toString(), basicSALARY, contractSALARY);
-                    displayPaymentInGUI(payments);
-                }
-
-                if (!hireAlready) {
+                if (Integer.parseInt(date[2]) != 1) {
                     String dateS = ((Integer.parseInt(date[1]) + 1) == 13) ? ((Integer.parseInt(date[0]) + 1) + "-01-" + date[2])
                             : (date[0] + "-" + (Integer.parseInt(date[1]) + 1) + "-01");
                     currentDate = Date.valueOf(dateS);
                 }
 
-                //TODO must check IBAN != all Employees in Database???
+                if (!paidEveryone && Integer.parseInt(date[2]) == 1) { //employees are not paid, user's mistake
+                    ArrayList<String> payments = request.payEmployees(currentDate.toString(), basicSALARY, contractSALARY);
+                    displayPaymentInGUI(payments);
+                }
+
                 int bankId = request.insertBankInfo(Integer.parseInt(IBAN.getText()), bankName.getText());
-                int bonusId = request.insertBonus(request.calculateFamilyBonus(married.getText().toString(), kids.getText().toString()), searchBONUS, libraryBONUS, groupEmployer.getText().toString(), jobDepartment.getText().toString()); //calculateFamilyBonus instead of 0.15
+                int bonusId = request.insertBonus(request.calculateFamilyBonus(married.getText().toString(), kidsAgesWithCommas.getText().toString()), searchBONUS, libraryBONUS, groupEmployer.getText().toString(), jobDepartment.getText().toString()); //calculateFamilyBonus instead of 0.15
                 int stateId = request.insertFamilyState(married.getText(), Integer.parseInt(kids.getText()), kidsAgesWithCommas.getText());
 
                 int[] infoInt = {Integer.parseInt(phoneNumber.getText()), bankId, stateId, bonusId};
                 String[] infoStr = {firstName.getText(), lastName.getText(), address.getText()};
 
-                //TODO check string for groupEmployer and jobDepartment, in general all info given from user
                 if (groupEmployer.getText().equals("Permanent"))
                     employeeId = request.insertEmployee(infoStr, currentDate, infoInt, basicSALARY);
                 else
@@ -922,7 +933,6 @@ public class GUI {
                 request.hireEmployee(employeeId, groupEmployer.getText().toString(), jobDepartment.getText().toString(), username.getText(), password.getText());
 
                 paidEveryone = false;
-                hireAlready = true;
                 displayProcedures(root);
             }
         } else {
@@ -942,9 +952,7 @@ public class GUI {
 
         int option = JOptionPane.showConfirmDialog(null, panelLoginAndFirePage(employeeId, fireRetire, labelId, labelOption), "Fire", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            hireAlready = false;
-
-            if (employeeId.getText().equals("") || Integer.parseInt(employeeId.getText()) < 0) {
+            if (!employeeId.getText().matches("[0-9]+") || Integer.parseInt(employeeId.getText()) == 1) {
                 JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect Employee Id"), "Message", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
@@ -953,10 +961,12 @@ public class GUI {
             if (paidEveryone == true) {
                 JOptionPane.showMessageDialog(null, panelForMessageDialog("EmployeeID " + givenEmployeeId + " has already been paid with "
                         + payment + " euros!"), "Message", JOptionPane.INFORMATION_MESSAGE);
-            } else
+            } else {
+                String[] date = currentDate.toString().split("-");
+                if (Integer.parseInt(date[2]) != 31 || Integer.parseInt(date[2]) != 30 || Integer.parseInt(date[2]) != 28) calculate_last_day_Month(currentDate.toString());
                 JOptionPane.showMessageDialog(null, panelForMessageDialog("EmployeeID " + givenEmployeeId +
                         " is " + fireRetire.getText().toString() + "d with " + payment + " euros!"), "Message", JOptionPane.INFORMATION_MESSAGE);
-
+            }
             displayProcedures(root);
         } else
             validateExit(root);
@@ -979,7 +989,6 @@ public class GUI {
 
         int option = JOptionPane.showConfirmDialog(null, panelChangeInfoPage(fields, labels), "Change Employee Info", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            hireAlready = false;
             if (address.getText().length() != 0) request.changeAddress(address.getText(), employeeId);
             if (check_correct_phoneNumber(phoneNumber.getText()))
                 request.changePhoneNumber(Integer.parseInt(phoneNumber.getText()), employeeId);
@@ -1007,9 +1016,11 @@ public class GUI {
 
         int option = JOptionPane.showConfirmDialog(null, panelChangeBonusSalaryPage(fields, labels), "Change Employee Info", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
+            if (!basicSalary.getText().matches("(\\d*\\.?\\d+)") && !contractSalary.getText().matches("(\\d*\\.?\\d+)")
+                    && !libraryBonus.getText().matches("(\\d*\\.?\\d+)") && !searchBonus.getText().matches("(\\d*\\.?\\d+)"))
+                return;
             if (!basicSalary.getText().equals("")) basicSALARY = Double.parseDouble(basicSalary.getText().toString());
-            if (!contractSalary.getText().equals(""))
-                contractSALARY = Double.parseDouble(contractSalary.getText().toString());
+            if (!contractSalary.getText().equals("")) contractSALARY = Double.parseDouble(contractSalary.getText().toString());
             if (!libraryBonus.getText().equals("")) {
                 libraryBONUS = Double.parseDouble(libraryBonus.getText().toString());
                 request.changeLibraryBonus(libraryBONUS);
