@@ -793,45 +793,43 @@ public class ServerRequest {
         SalaryCat = defineCategory(SalaryCat, Category);
         if (SalaryCat.size() == 0)
             return 0;
-        double averageSalary = 0;
+        double totalSalary = 0;
         for (int i = 0; i < SalaryCat.size(); ++i)
-            averageSalary += SalaryCat.get(i).getSalary();
-        return averageSalary;
+            totalSalary += SalaryCat.get(i).getSalary();
+        return totalSalary;
     }
 
     public ArrayList<Double> getTotalSalaryperCategory() throws SQLException {
         ArrayList<Double> sortedSalaries = new ArrayList<>();
         ArrayList<Employee> Employees = new ArrayList<>();
 
-        sortedSalaries.add(getTotalSalary(Employees, "PM"));
+        sortedSalaries.add(getTotalSalary(Employees, "Permanent Manager"));
 
         Employees.clear();
-        sortedSalaries.add(getTotalSalary(Employees, "PE"));
-
-
-        Employees.clear();
-        sortedSalaries.add(getTotalSalary(Employees, "CM"));
+        sortedSalaries.add(getTotalSalary(Employees, "Permanent Educator"));
 
         Employees.clear();
-        sortedSalaries.add(getTotalSalary(Employees, "CE"));
+        sortedSalaries.add(getTotalSalary(Employees, "Contractor Manager"));
 
+        Employees.clear();
+        sortedSalaries.add(getTotalSalary(Employees, "Contractor Educator"));
         return sortedSalaries;
     }
     public ArrayList<Double> getMinSalaryStatisticsperCategory() throws SQLException {
         ArrayList<Double> sortedSalaries = new ArrayList<>();
         ArrayList<Employee> Employees = new ArrayList<>();
 
-        sortedSalaries.add(getMinSalary(Employees, "PM"));
+        sortedSalaries.add(getMinSalary(Employees, "Permanent Manager"));
 
         Employees.clear();
-        sortedSalaries.add(getMinSalary(Employees, "PE"));
+        sortedSalaries.add(getMinSalary(Employees, "Permanent Educator"));
 
 
         Employees.clear();
-        sortedSalaries.add(getMinSalary(Employees, "CM"));
+        sortedSalaries.add(getMinSalary(Employees, "Contractor Manager"));
 
         Employees.clear();
-        sortedSalaries.add(getMinSalary(Employees, "CE"));
+        sortedSalaries.add(getMinSalary(Employees, "Contractor Educator"));
 
         return sortedSalaries;
     }

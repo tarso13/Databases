@@ -578,7 +578,7 @@ public class GUI {
         panel = new JPanel(new GridLayout(9, 1));
         panel.add(dateLabel);
         String b[] = {"Payment State per Staff Category", "Max Salary per Staff Category", "Min Salary per Staff Category",
-                "Average Salary per Staff Category", "Average Salary and Bonus Increase", "Employee Data and Salary", "Total Salary Increase per Staff Category", "Back to Login Page"};
+                "Average Salary per Staff Category", "Average Salary and Bonus Increase", "Employee Data and Salary", "Total Salary per Staff Category", "Back to Login Page"};
         for (int i = 0; i < buttons.length; i++) {
             buttons[i] = new JButton(b[i]);
             buttons[i].setSize(80, 80);
