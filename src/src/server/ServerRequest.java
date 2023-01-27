@@ -270,6 +270,7 @@ public class ServerRequest {
         statement.setDouble(1, newSalary);
         statement.setInt(2, employeeId);
         statement.execute();
+        setSalaryCategory(employeeId, newSalary);
     }
 
     public ArrayList<String> payEmployees(String currentDate, double basicSalary, double contractSalary) throws SQLException {
@@ -307,7 +308,6 @@ public class ServerRequest {
             statement3.setInt(1, resultEmployee.getInt("BonusId"));
             ResultSet resultBonus = statement3.executeQuery();
             resultBonus.next();
-
             payments.add("EmployeeId: " + resultEmployee.getInt("EmployeeId") + " ,Salary: " + resultEmployee.getDouble("salary")
                     + " ,FamilyBonus: " + resultBonus.getDouble("familyBonus") + " ,SearchBonus: " + resultBonus.getDouble("searchBonus")
                     + " ,LibraryBonus: " + resultBonus.getDouble("libraryBonus"));
@@ -344,6 +344,7 @@ public class ServerRequest {
             newSalary = new BigDecimal(newSalary).setScale(2, RoundingMode.DOWN).doubleValue();
 
             insertSalary(newSalary, resultEmployee.getDouble("salary"), resultEmployee.getInt("EmployeeId"));
+
         }
     }
 
@@ -669,6 +670,35 @@ public class ServerRequest {
         return sortedSalaryperStaffCategory;
     }
 
+    public double getMinSalary(String EmployeeCategory) throws SQLException {
+        PreparedStatement statement1 = selectStatement(connector, "SELECT MIN(salary) FROM " + EmployeeCategory);
+        ResultSet resultSalary = statement1.executeQuery();
+        if (resultSalary.next() == false) return 0.0;
+        return resultSalary.getDouble("salary");
+    }
+
+    public double getMaxSalary(String EmployeeCategory) throws SQLException {
+        PreparedStatement statement1 = selectStatement(connector, "SELECT MAX(salary) FROM " + EmployeeCategory);
+        ResultSet resultSalary = statement1.executeQuery();
+        if (resultSalary.next() == false) return 0.0;
+        return resultSalary.getDouble("salary");
+    }
+
+    public double getAverageSalary(String EmployeeCategory) throws SQLException {
+        PreparedStatement statement1 = selectStatement(connector, "SELECT AVG(salary) FROM " + EmployeeCategory);
+        ResultSet resultSalary = statement1.executeQuery();
+        if (resultSalary.next() == false) return 0.0;
+        return resultSalary.getDouble("salary");
+    }
+
+
+    public double getSumSalary(String EmployeeCategory) throws SQLException {
+        PreparedStatement statement1 = selectStatement(connector, "SELECT SUM(salary) FROM " + EmployeeCategory);
+        ResultSet resultSalary = statement1.executeQuery();
+        if (resultSalary.next() == false) return 0.0;
+        return resultSalary.getDouble("salary");
+    }
+
     public ArrayList<Employee> addCMSalaries(ArrayList<Employee> sortedSalaryperStaffCategory, ArrayList<String> categories) throws
             SQLException {
         PreparedStatement statement1 = selectStatement(connector, "SELECT * FROM ContractorManager");
@@ -802,7 +832,7 @@ public class ServerRequest {
         return minSalary;
     }
 
-    public double getMaxSalary(ArrayList<Employee> SalaryCat, String Category) throws SQLException {
+    public double getMaxxSalary(ArrayList<Employee> SalaryCat, String Category) throws SQLException {
         SalaryCat = defineCategory(SalaryCat, Category);
         if (SalaryCat.size() == 0)
             return 0;
@@ -853,6 +883,43 @@ public class ServerRequest {
         return sortedSalaries;
     }
 
+    private void updateSalaryCategory(int EmployeeId, String category, double salary) throws SQLException {
+        PreparedStatement statement2 = selectStatement(connector,
+                "UPDATE " + category + "SET salary=? WHERE EmployeeId=?");
+        statement2.setDouble(1, salary);
+        statement2.setInt(2, EmployeeId);
+        statement2.execute();
+    }
+
+    private void setSalaryCategory(int EmployeeId, double salary) throws SQLException {
+        Employee result = getPE(EmployeeId);
+
+        if (result != null) {
+            updateSalaryCategory(EmployeeId, "PermanentEducator", salary);
+            return;
+        }
+        result = getPM(EmployeeId);
+
+        if (result != null) {
+            updateSalaryCategory(EmployeeId, "PermanentManager", salary);
+            return;
+        }
+
+        result = getCM(EmployeeId);
+
+        if (result != null) {
+            updateSalaryCategory(EmployeeId, "ContractorManager", salary);
+            return;
+        }
+        result = getCE(EmployeeId);
+
+        if (result == null) {
+            JOptionPane.showMessageDialog(null, "Employee could not be found", "Incorrect Employee Id Given", JOptionPane.OK_OPTION);
+            return;
+        }
+        updateSalaryCategory(EmployeeId, "ContractorEducator", salary);
+    }
+
     public ArrayList<Double> getMinSalaryStatisticsperCategory() throws SQLException {
         ArrayList<Double> sortedSalaries = new ArrayList<>();
         ArrayList<Employee> Employees = new ArrayList<>();
@@ -876,17 +943,18 @@ public class ServerRequest {
         ArrayList<Double> sortedSalaries = new ArrayList<>();
         ArrayList<Employee> Employees = new ArrayList<>();
 
-        sortedSalaries.add(getMaxSalary(Employees, "Permanent Manager"));
+        sortedSalaries.add(getMaxSalary("PermanentManager"));
+        //getMaxSalary(Employees, "Permanent Manager"));
 
         Employees.clear();
-        sortedSalaries.add(getMaxSalary(Employees, "Permanent Educator"));
+        sortedSalaries.add(getMaxSalary(/*Employees, */"PermanentEducator"));
 
         Employees.clear();
-        sortedSalaries.add(getMaxSalary(Employees, "Contractor Manager"));
+        sortedSalaries.add(getMaxSalary(/*Employees, */"ContractorManager"));
 
 
         Employees.clear();
-        sortedSalaries.add(getMaxSalary(Employees, "Contractor Educator"));
+        sortedSalaries.add(getMaxSalary(/*Employees, */"ContractorEducator"));
 
         return sortedSalaries;
     }

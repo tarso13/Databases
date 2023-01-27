@@ -6,7 +6,7 @@ public class ContractorEducator extends Employee {
     private String userName;
     private String password;
     private final int CEId;
-
+    private double salary;
     public ContractorEducator(String firstName, String lastName, String address, int phoneNumber, Date beginHiringDate, int CEId, int EmployeeId) {
         super(firstName, lastName, address, phoneNumber, beginHiringDate, EmployeeId);
         this.CEId= CEId;
@@ -53,5 +53,14 @@ public class ContractorEducator extends Employee {
                 ", groupEmployer: " + groupEmployer() +
                 ", JobDepartment: " + JobDepartment() +
                 "}\n";
+    }
+
+    public void setSalary(double salary)
+    {
+        this.salary = salary;
+    }
+
+    public double getSalary(){
+        return this.salary;
     }
 }

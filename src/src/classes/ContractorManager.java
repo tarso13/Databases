@@ -6,7 +6,7 @@ public class ContractorManager extends Employee{
     private String userName;
     private String password;
     private final int CMId;
-
+    private double salary;
     public ContractorManager(String firstName, String lastName, String address, int phoneNumber, Date beginHiringDate, int CMId, int EmployeeId) {
         super(firstName, lastName, address, phoneNumber, beginHiringDate, EmployeeId);
         this.CMId= CMId;
@@ -41,7 +41,14 @@ public class ContractorManager extends Employee{
     public String JobDepartment() {
         return "Manager";
     }
+    public void setSalary(double salary)
+    {
+        this.salary = salary;
+    }
 
+    public double getSalary(){
+        return this.salary;
+    }
     @Override
     public String toString() {
         return "firstname: " + getFirstName() +
