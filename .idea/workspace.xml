@@ -2,8 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8ac59761-340c-4cca-8ff0-776d525464e2" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/src/classes/LoginInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/src/classes/BankInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/classes/BankInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/src/classes/ContractorEducator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/classes/ContractorEducator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/src/classes/ContractorManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/classes/ContractorManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/src/classes/Employee.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/classes/Employee.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/src/classes/PermanentEducator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/classes/PermanentEducator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/src/classes/PermanentManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/classes/PermanentManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/src/gui/GUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/gui/GUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/src/server/ServerRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/server/ServerRequest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -99,18 +109,23 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/src/gui/GUI.java</url>
-          <line>746</line>
+          <line>744</line>
           <option name="timeStamp" value="4" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/src/gui/GUI.java</url>
-          <line>751</line>
+          <line>749</line>
           <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/src/gui/GUI.java</url>
-          <line>748</line>
+          <line>746</line>
           <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/src/Main.java</url>
+          <line>12</line>
+          <option name="timeStamp" value="10" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

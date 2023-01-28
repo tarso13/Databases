@@ -32,29 +32,29 @@ public class PermanentEducator extends Employee{
         return this.PEId;
     }
 
-    @Override
-    public String groupEmployer() {
-        return "Permanent";
-    }
+//    @Override
+//    public String groupEmployer() {
+//        return "Permanent";
+//    }
+//
+//    @Override
+//    public String JobDepartment() {
+//        return "Educator";
+//    }
 
-    @Override
-    public String JobDepartment() {
-        return "Educator";
-    }
-
-    @Override
-    public String toString() {
-        return "PermanentEducator{" +
-                "firstname: " + getFirstName() +
-                ",lastname: " + getLastName() +
-                ",address: " + getAddress() +
-                ",phoneNumber: " + getPhoneNumber() +
-                ",beginHiringDate: " + getBeginHiringDate() +
-                ",username: " + userName +
-                ", password: " + password +
-                ", groupEmployer: " + groupEmployer() +
-                ", JobDepartment: " + JobDepartment() +
-                "}\n";
-    }
+//    @Override
+//    public String toString() {
+//        return "PermanentEducator{" +
+//                "firstname: " + getFirstName() +
+//                ",lastname: " + getLastName() +
+//                ",address: " + getAddress() +
+//                ",phoneNumber: " + getPhoneNumber() +
+//                ",beginHiringDate: " + getBeginHiringDate() +
+//                ",username: " + userName +
+//                ", password: " + password +
+//                ", groupEmployer: " + groupEmployer() +
+//                ", JobDepartment: " + JobDepartment() +
+//                "}\n";
+//    }
 }
 

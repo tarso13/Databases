@@ -21,178 +21,17 @@ public class ServerRequest {
                 ResultSet.CONCUR_UPDATABLE);
     }
 
-    public boolean check_null_username_password(String username, String password) {
-        if (username == null || password == null || username.isEmpty() || password.isEmpty()) {
-            System.err.println("Cannot give a username and password that is null!\n");
-            return true;
-        }
-        return false;
-    }
-
-    public int login(String userName, String password) throws SQLException {
-        if (check_null_username_password(userName, password)) return -1;
-        int id;
-
-        id = loginPE(userName, password);
-        if (id != -1) return id;
-
-        id = loginPM(userName, password);
-        if (id != -1) return id;
-
-        id = loginCE(userName, password);
-        if (id != -1) return id;
-
-        id = loginCM(userName, password);
-        return id;
-    }
-
     /*login Employees with username password*/
-    public int loginPE(String userName, String password) throws SQLException {
+    public int loginEmployee(String userName, String password) throws SQLException {
         PreparedStatement statement = selectStatement(connector,
-                "SELECT password,EmployeeId FROM PermanentEducator WHERE username=?");
+                "SELECT password,EmployeeId FROM LoginInfo WHERE username=?");
         statement.setString(1, userName);
         ResultSet result = statement.executeQuery();
         if (!result.next()) return -1;
         String pass = result.getString("password");
-        PermanentEducator pe = getPE(result.getInt("EmployeeId"));
-        if (!password.equals(pass) || pe == null) return -1;
+        if (!password.equals(pass)) return -1;
 
         return result.getInt("EmployeeId");
-    }
-
-    /*select information from tables*/
-    public PermanentEducator getPE(int EmployeeId) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM Employee WHERE EmployeeId=?");
-        statement1.setInt(1, EmployeeId);
-        ResultSet resultEmployee = statement1.executeQuery();
-        if (!resultEmployee.next()) {
-            System.out.println("The person is not a UOC employee!\n");
-            return null;
-        }
-
-        PreparedStatement statement2 = selectStatement(connector,
-                "SELECT * FROM PermanentEducator WHERE EmployeeId=?");
-        statement2.setInt(1, EmployeeId);
-        ResultSet resultPE = statement2.executeQuery();
-        if (!resultPE.next()) return null;
-
-        PermanentEducator pEducator = new PermanentEducator(resultEmployee.getString("firstName"),
-                resultEmployee.getString("lastName"), resultEmployee.getString("address"),
-                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultPE.getInt("PEId"), resultPE.getInt("EmployeeId"));
-
-        return pEducator;
-    }
-
-    public int loginPM(String userName, String password) throws SQLException {
-        PreparedStatement statement = selectStatement(connector,
-                "SELECT password,EmployeeId FROM PermanentManager WHERE username=?");
-        statement.setString(1, userName);
-        ResultSet result = statement.executeQuery();
-        if (!result.next()) return -1;
-        String pass = result.getString("password");
-        PermanentManager pm = getPM(result.getInt("EmployeeId"));
-        if (!password.equals(pass) || pm == null) return -1;
-
-        System.out.println(pm.toString());
-        return result.getInt("EmployeeId");
-    }
-
-    public PermanentManager getPM(int EmployeeId) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM Employee WHERE EmployeeId=?");
-        statement1.setInt(1, EmployeeId);
-        ResultSet resultEmployee = statement1.executeQuery();
-        if (!resultEmployee.next()) {
-            System.out.println("The person is not a UOC employee!\n");
-            return null;
-        }
-
-        PreparedStatement statement2 = selectStatement(connector,
-                "SELECT * FROM PermanentManager WHERE EmployeeId=?");
-        statement2.setInt(1, EmployeeId);
-        ResultSet resultPM = statement2.executeQuery();
-        if (!resultPM.next()) return null;
-
-        PermanentManager pManager = new PermanentManager(resultEmployee.getString("firstName"),
-                resultEmployee.getString("lastName"), resultEmployee.getString("address"),
-                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultPM.getInt("PMId"), resultPM.getInt("EmployeeId"));
-
-        return pManager;
-    }
-
-    public int loginCE(String userName, String password) throws SQLException {
-        PreparedStatement statement = selectStatement(connector,
-                "SELECT password,EmployeeId FROM ContractorEducator WHERE username=?");
-        statement.setString(1, userName);
-        ResultSet result = statement.executeQuery();
-        if (!result.next()) return -1;
-        String pass = result.getString("password");
-        ContractorEducator ce = getCE(result.getInt("EmployeeId"));
-        if (!password.equals(pass) || ce == null) return -1;
-
-        System.out.println(ce.toString());
-        return result.getInt("EmployeeId");
-    }
-
-    public ContractorEducator getCE(int EmployeeId) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM Employee WHERE EmployeeId=?");
-        statement1.setInt(1, EmployeeId);
-        ResultSet resultEmployee = statement1.executeQuery();
-        if (!resultEmployee.next()) {
-            System.out.println("The person is not a UOC employee!\n");
-            return null;
-        }
-
-        PreparedStatement statement2 = selectStatement(connector,
-                "SELECT * FROM ContractorEducator WHERE EmployeeId=?");
-        statement2.setInt(1, EmployeeId);
-        ResultSet resultCE = statement2.executeQuery();
-        if (!resultCE.next()) return null;
-
-        ContractorEducator cEducator = new ContractorEducator(resultEmployee.getString("firstName"),
-                resultEmployee.getString("lastName"), resultEmployee.getString("address"),
-                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultCE.getInt("CEId"), resultEmployee.getInt("EmployeeId"));
-
-        return cEducator;
-    }
-
-    public int loginCM(String userName, String password) throws SQLException {
-        PreparedStatement statement = selectStatement(connector,
-                "SELECT password,EmployeeId FROM ContractorManager WHERE username=?");
-        statement.setString(1, userName);
-        ResultSet result = statement.executeQuery();
-        if (!result.next()) return -1;
-        String pass = result.getString("password");
-        ContractorManager cm = getCM(result.getInt("EmployeeId"));
-        if (!password.equals(pass) || cm == null) return -1;
-
-        System.out.println(cm.toString());
-        return result.getInt("EmployeeId");
-    }
-
-    public ContractorManager getCM(int EmployeeId) throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM Employee WHERE EmployeeId=?");
-        statement1.setInt(1, EmployeeId);
-        ResultSet resultEmployee = statement1.executeQuery();
-        if (!resultEmployee.next()) {
-            System.out.println("The person is not a UOC employee!\n");
-            return null;
-        }
-
-        PreparedStatement statement2 = selectStatement(connector,
-                "SELECT * FROM ContractorManager WHERE EmployeeId=?");
-        statement2.setInt(1, EmployeeId);
-        ResultSet resultCM = statement2.executeQuery();
-        if (!resultCM.next()) return null;
-
-        ContractorManager cManager = new ContractorManager(resultEmployee.getString("firstName"),
-                resultEmployee.getString("lastName"), resultEmployee.getString("address"),
-                resultEmployee.getInt("phoneNumber"), resultEmployee.getDate("beginHiringDate"), resultCM.getInt("CMId"), resultCM.getInt("EmployeeId"));
-
-        return cManager;
     }
 
 
@@ -327,17 +166,17 @@ public class ServerRequest {
             ResultSet resultBonus = statement2.executeQuery();
             if (!resultBonus.next()) continue;
 
-            if (getPM(resultEmployee.getInt("EmployeeId")) != null)
-                newSalary = estimateEmployeesSalary(currentDate, resultEmployee.getDate("beginHiringDate"), basicSalary, resultBonus.getDouble("familyBonus"), 0, 0);
-
-            if (getPE(resultEmployee.getInt("EmployeeId")) != null)
-                newSalary = estimateEmployeesSalary(currentDate, resultEmployee.getDate("beginHiringDate"), basicSalary, resultBonus.getDouble("familyBonus"), resultBonus.getDouble("searchBonus"), 0);
-
-            if (getCE(resultEmployee.getInt("EmployeeId")) != null)
-                newSalary = estimateEmployeesSalary(currentDate, resultEmployee.getDate("beginHiringDate"), contractSalary, resultBonus.getDouble("familyBonus"), 0, resultBonus.getDouble("libraryBonus"));
-
-            if (getCM(resultEmployee.getInt("EmployeeId")) != null)
-                newSalary = estimateEmployeesSalary(currentDate, resultEmployee.getDate("beginHiringDate"), contractSalary, resultBonus.getDouble("familyBonus"), 0, 0);
+//            if (getPM(resultEmployee.getInt("EmployeeId")) != null)
+//                newSalary = estimateEmployeesSalary(currentDate, resultEmployee.getDate("beginHiringDate"), basicSalary, resultBonus.getDouble("familyBonus"), 0, 0);
+//
+//            if (getPE(resultEmployee.getInt("EmployeeId")) != null)
+//                newSalary = estimateEmployeesSalary(currentDate, resultEmployee.getDate("beginHiringDate"), basicSalary, resultBonus.getDouble("familyBonus"), resultBonus.getDouble("searchBonus"), 0);
+//
+//            if (getCE(resultEmployee.getInt("EmployeeId")) != null)
+//                newSalary = estimateEmployeesSalary(currentDate, resultEmployee.getDate("beginHiringDate"), contractSalary, resultBonus.getDouble("familyBonus"), 0, resultBonus.getDouble("libraryBonus"));
+//
+//            if (getCM(resultEmployee.getInt("EmployeeId")) != null)
+//                newSalary = estimateEmployeesSalary(currentDate, resultEmployee.getDate("beginHiringDate"), contractSalary, resultBonus.getDouble("familyBonus"), 0, 0);
 
             newSalary = new BigDecimal(newSalary).setScale(2, RoundingMode.DOWN).doubleValue();
 
@@ -862,32 +701,33 @@ public class ServerRequest {
         ResultSet resultEmployee = statement1.executeQuery();
         if (resultEmployee.next() == false) return null;
 
-        Employee result = getPE(EmployeeId);
+//        Employee result = getPE(EmployeeId);
         double salary = resultEmployee.getDouble("salary");
         String Category = "Permanent Educator";
 
-        if (result == null) {
-            result = getPM(EmployeeId);
-            Category = "Permanent Manager";
-        }
+//        if (result == null) {
+//            result = getPM(EmployeeId);
+//            Category = "Permanent Manager";
+//        }
+//
+//        if (result == null) {
+//            result = getCM(EmployeeId);
+//            Category = "Contractor Manager";
+//        }
+//
+//        if (result == null) {
+//            result = getCE(EmployeeId);
+//            Category = "Contractor Educator";
+//        }
 
-        if (result == null) {
-            result = getCM(EmployeeId);
-            Category = "Contractor Manager";
-        }
-
-        if (result == null) {
-            result = getCE(EmployeeId);
-            Category = "Contractor Educator";
-        }
-
-        if (result == null) {
-            JOptionPane.showMessageDialog(null, "Employee could not be found", "Incorrect Employee Id Given", JOptionPane.OK_OPTION);
-            Category = "Undefined";
-            return null;
-        }
-        result.setSalary(salary);
-        categories.add(Category);
-        return result;
+//        if (result == null) {
+//            JOptionPane.showMessageDialog(null, "Employee could not be found", "Incorrect Employee Id Given", JOptionPane.OK_OPTION);
+//            Category = "Undefined";
+//            return null;
+//        }
+//        result.setSalary(salary);
+//        categories.add(Category);
+//        return result;
+        return null;
     }
 }

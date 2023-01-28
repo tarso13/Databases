@@ -30,28 +30,28 @@ public class ContractorEducator extends Employee {
 
     public int getCEId(){
         return this.CEId; }
-    @Override
-    public String groupEmployer() {
-        return "Contractor";
-    }
-
-    @Override
-    public String JobDepartment() {
-        return "Educator";
-    }
-
-    @Override
-    public String toString() {
-        return "ContractorEducator{" +
-                "firstname: " + getFirstName() +
-                ",lastname: " + getLastName() +
-                ",address: " + getAddress() +
-                ",phoneNumber: " + getPhoneNumber() +
-                ",beginHiringDate: " + getBeginHiringDate() +
-                ",username: " + userName +
-                ", password: " + password +
-                ", groupEmployer: " + groupEmployer() +
-                ", JobDepartment: " + JobDepartment() +
-                "}\n";
-    }
+//    @Override
+//    public String groupEmployer() {
+//        return "Contractor";
+//    }
+//
+//    @Override
+//    public String JobDepartment() {
+//        return "Educator";
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "ContractorEducator{" +
+//                "firstname: " + getFirstName() +
+//                ",lastname: " + getLastName() +
+//                ",address: " + getAddress() +
+//                ",phoneNumber: " + getPhoneNumber() +
+//                ",beginHiringDate: " + getBeginHiringDate() +
+//                ",username: " + userName +
+//                ", password: " + password +
+//                ", groupEmployer: " + groupEmployer() +
+//                ", JobDepartment: " + JobDepartment() +
+//                "}\n";
+//    }
 }

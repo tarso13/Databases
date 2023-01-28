@@ -32,27 +32,27 @@ public class ContractorManager extends Employee{
         return this.CMId;
     }
 
-    @Override
-    public String groupEmployer() {
-        return "Contractor";
-    }
-
-    @Override
-    public String JobDepartment() {
-        return "Manager";
-    }
-
-    @Override
-    public String toString() {
-        return "firstname: " + getFirstName() +
-                ",lastname: " + getLastName() +
-                ",address: " + getAddress() +
-                ",phoneNumber: " + getPhoneNumber() +
-                ",beginHiringDate: " + getBeginHiringDate() +
-                ",username: " + userName +
-                ", password: " + password +
-                ", groupEmployer: " + groupEmployer() +
-                ", JobDepartment: " + JobDepartment() +
-                "}\n";
-    }
+//    @Override
+//    public String groupEmployer() {
+//        return "Contractor";
+//    }
+//
+//    @Override
+//    public String JobDepartment() {
+//        return "Manager";
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "firstname: " + getFirstName() +
+//                ",lastname: " + getLastName() +
+//                ",address: " + getAddress() +
+//                ",phoneNumber: " + getPhoneNumber() +
+//                ",beginHiringDate: " + getBeginHiringDate() +
+//                ",username: " + userName +
+//                ", password: " + password +
+//                ", groupEmployer: " + groupEmployer() +
+//                ", JobDepartment: " + JobDepartment() +
+//                "}\n";
+//    }
 }

@@ -419,19 +419,17 @@ public class GUI {
         int option = JOptionPane.showConfirmDialog(null, panelLoginAndFirePage(username, password, labelUser, labelPass), "Login Page", JOptionPane.OK_CANCEL_OPTION);
 
         if (option == JOptionPane.OK_OPTION) {
-            if (username.getText().equals("") || password.getText().equals("")) {
-                JOptionPane.showMessageDialog(null, panelForMessageDialog("Not given username or password!"), "Message", JOptionPane.INFORMATION_MESSAGE);
-            } else if (username.getText().equals("root") && password.getText().equals("root")) {
-                displayProcedures(true);
-            } else {
-                employeeId = request.login(username.getText(), password.getText());
-                if (employeeId == -1) {
-                    JOptionPane.showMessageDialog(null, panelForMessageDialog("Login with false combination of username and password!"), "Message", JOptionPane.INFORMATION_MESSAGE);
-                    loginPage();
-                }
-                JOptionPane.showMessageDialog(null, panelForMessageDialog("Employee with id " + employeeId + " made a successful login!"), "Message", JOptionPane.INFORMATION_MESSAGE);
-                displayProcedures(false);
+            employeeId = request.loginEmployee(username.getText(), password.getText());
+            if (employeeId == -1) {
+                JOptionPane.showMessageDialog(null, panelForMessageDialog("Login with false combination of username and password!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+                loginPage();
             }
+            JOptionPane.showMessageDialog(null, panelForMessageDialog("Employee with id " + employeeId + " made a successful login!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+
+            if (username.getText().equals("root") && password.getText().equals("root")) {
+                displayProcedures(true);
+            } else
+                displayProcedures(false);
         } else
             JOptionPane.showMessageDialog(null, panelForMessageDialog("Login cancelled!"), "Message", JOptionPane.INFORMATION_MESSAGE);
     }

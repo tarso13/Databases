@@ -6,8 +6,10 @@ public abstract class Employee {
 
     private String firstName;
     private String lastName;
-    public abstract String groupEmployer();
-    public abstract String JobDepartment();
+
+    private LoginInfo loginInfo;
+
+    public String category;
     private Date beginHiringDate;
     private String address;
     private int phoneNumber;
@@ -59,29 +61,13 @@ public abstract class Employee {
         return this.phoneNumber;
     }
 
-    public void setFamilyState(FamilyState state) {
-        this.familyState = state;
+    public String toString(){
+        return "Category: " + category + "{" +
+                "firstname: " + getFirstName() +
+                ",lastname: " + getLastName() +
+                ",address: " + getAddress() +
+                ",phoneNumber: " + getPhoneNumber() +
+                ",beginHiringDate: " + getBeginHiringDate() +
+                "}\n";
     }
-
-    public FamilyState getFamilyState() {
-        return this.familyState;
-    }
-
-    public void setBank_Info(BankInfo info) {
-        this.bankInfo = info;
-    }
-
-    public BankInfo getBankInfo() {
-        return this.bankInfo;
-    }
-
-    public void setBonus(Bonus bonus) {
-        this.bonus = bonus;
-    }
-
-    public Bonus getBonus() {
-        return this.bonus;
-    }
-
-    public abstract String toString();
 }

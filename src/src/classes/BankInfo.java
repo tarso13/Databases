@@ -1,7 +1,5 @@
 package src.classes;
 
-import java.util.Map;
-
 public class BankInfo {
 
     private int bankID;
