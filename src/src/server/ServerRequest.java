@@ -674,29 +674,29 @@ public class ServerRequest {
         PreparedStatement statement1 = selectStatement(connector, "SELECT MIN(salary) FROM " + EmployeeCategory);
         ResultSet resultSalary = statement1.executeQuery();
         if (resultSalary.next() == false) return 0.0;
-        return resultSalary.getDouble("salary");
+        return resultSalary.getDouble(1);
     }
 
     public double getMaxSalary(String EmployeeCategory) throws SQLException {
         PreparedStatement statement1 = selectStatement(connector, "SELECT MAX(salary) FROM " + EmployeeCategory);
         ResultSet resultSalary = statement1.executeQuery();
         if (resultSalary.next() == false) return 0.0;
-        return resultSalary.getDouble("salary");
+        return resultSalary.getDouble(1);
     }
 
     public double getAverageSalary(String EmployeeCategory) throws SQLException {
         PreparedStatement statement1 = selectStatement(connector, "SELECT AVG(salary) FROM " + EmployeeCategory);
         ResultSet resultSalary = statement1.executeQuery();
         if (resultSalary.next() == false) return 0.0;
-        return resultSalary.getDouble("salary");
+        return resultSalary.getDouble(1);
     }
 
 
-    public double getSumSalary(String EmployeeCategory) throws SQLException {
+    public double getTotalSalary(String EmployeeCategory) throws SQLException {
         PreparedStatement statement1 = selectStatement(connector, "SELECT SUM(salary) FROM " + EmployeeCategory);
         ResultSet resultSalary = statement1.executeQuery();
         if (resultSalary.next() == false) return 0.0;
-        return resultSalary.getDouble("salary");
+        return resultSalary.getDouble(1);
     }
 
     public ArrayList<Employee> addCMSalaries(ArrayList<Employee> sortedSalaryperStaffCategory, ArrayList<String> categories) throws
@@ -817,69 +817,20 @@ public class ServerRequest {
         return SalaryCat;
     }
 
-
-    public double getMinSalary(ArrayList<Employee> SalaryCat, String Category) throws SQLException {
-        SalaryCat = defineCategory(SalaryCat, Category);
-        if (SalaryCat.size() == 0)
-            return 0;
-        double minSalary = SalaryCat.get(0).getSalary();
-        double salary = 0;
-        for (int i = 1; i < SalaryCat.size(); ++i) {
-            salary = SalaryCat.get(i).getSalary();
-            if (salary < minSalary)
-                minSalary = salary;
-        }
-        return minSalary;
-    }
-
-    public double getMaxxSalary(ArrayList<Employee> SalaryCat, String Category) throws SQLException {
-        SalaryCat = defineCategory(SalaryCat, Category);
-        if (SalaryCat.size() == 0)
-            return 0;
-        double maxSalary = -1;
-        double salary = 0;
-        for (int i = 0; i < SalaryCat.size(); ++i) {
-            salary = SalaryCat.get(0).getSalary();
-            if (salary > maxSalary)
-                maxSalary = salary;
-        }
-        return maxSalary;
-    }
-
-    public double getAverageSalary(ArrayList<Employee> SalaryCat, String Category) throws SQLException {
-        SalaryCat = defineCategory(SalaryCat, Category);
-        if (SalaryCat.size() == 0)
-            return 0;
-        double averageSalary = 0;
-        for (int i = 0; i < SalaryCat.size(); ++i)
-            averageSalary += SalaryCat.get(i).getSalary();
-        return averageSalary / SalaryCat.size();
-    }
-
-    public double getTotalSalary(ArrayList<Employee> SalaryCat, String Category) throws SQLException {
-        SalaryCat = defineCategory(SalaryCat, Category);
-        if (SalaryCat.size() == 0)
-            return 0;
-        double totalSalary = 0;
-        for (int i = 0; i < SalaryCat.size(); ++i)
-            totalSalary += SalaryCat.get(i).getSalary();
-        return totalSalary;
-    }
-
     public ArrayList<Double> getTotalSalaryperCategory() throws SQLException {
         ArrayList<Double> sortedSalaries = new ArrayList<>();
         ArrayList<Employee> Employees = new ArrayList<>();
 
-        sortedSalaries.add(getTotalSalary(Employees, "Permanent Manager"));
+        sortedSalaries.add(getTotalSalary("PermanentManager"));
 
         Employees.clear();
-        sortedSalaries.add(getTotalSalary(Employees, "Permanent Educator"));
+        sortedSalaries.add(getTotalSalary("PermanentEducator"));
 
         Employees.clear();
-        sortedSalaries.add(getTotalSalary(Employees, "Contractor Manager"));
+        sortedSalaries.add(getTotalSalary("ContractorManager"));
 
         Employees.clear();
-        sortedSalaries.add(getTotalSalary(Employees, "Contractor Educator"));
+        sortedSalaries.add(getTotalSalary("ContractorEducator"));
         return sortedSalaries;
     }
 
@@ -924,17 +875,17 @@ public class ServerRequest {
         ArrayList<Double> sortedSalaries = new ArrayList<>();
         ArrayList<Employee> Employees = new ArrayList<>();
 
-        sortedSalaries.add(getMinSalary(Employees, "Permanent Manager"));
+        sortedSalaries.add(getMinSalary("PermanentManager"));
 
         Employees.clear();
-        sortedSalaries.add(getMinSalary(Employees, "Permanent Educator"));
+        sortedSalaries.add(getMinSalary("PermanentEducator"));
 
 
         Employees.clear();
-        sortedSalaries.add(getMinSalary(Employees, "Contractor Manager"));
+        sortedSalaries.add(getMinSalary("ContractorManager"));
 
         Employees.clear();
-        sortedSalaries.add(getMinSalary(Employees, "Contractor Educator"));
+        sortedSalaries.add(getMinSalary("ContractorEducator"));
 
         return sortedSalaries;
     }
@@ -944,17 +895,16 @@ public class ServerRequest {
         ArrayList<Employee> Employees = new ArrayList<>();
 
         sortedSalaries.add(getMaxSalary("PermanentManager"));
-        //getMaxSalary(Employees, "Permanent Manager"));
 
         Employees.clear();
-        sortedSalaries.add(getMaxSalary(/*Employees, */"PermanentEducator"));
+        sortedSalaries.add(getMaxSalary("PermanentEducator"));
 
         Employees.clear();
-        sortedSalaries.add(getMaxSalary(/*Employees, */"ContractorManager"));
+        sortedSalaries.add(getMaxSalary("ContractorManager"));
 
 
         Employees.clear();
-        sortedSalaries.add(getMaxSalary(/*Employees, */"ContractorEducator"));
+        sortedSalaries.add(getMaxSalary("ContractorEducator"));
 
         return sortedSalaries;
     }
@@ -963,16 +913,16 @@ public class ServerRequest {
         ArrayList<Double> sortedSalaries = new ArrayList<>();
         ArrayList<Employee> Employees = new ArrayList<>();
 
-        sortedSalaries.add(getAverageSalary(Employees, "Permanent Manager"));
+        sortedSalaries.add(getAverageSalary("PermanentManager"));
 
         Employees.clear();
-        sortedSalaries.add(getAverageSalary(Employees, "Permanent Educator"));
+        sortedSalaries.add(getAverageSalary("PermanentEducator"));
 
         Employees.clear();
-        sortedSalaries.add(getAverageSalary(Employees, "Contractor Manager"));
+        sortedSalaries.add(getAverageSalary("ContractorManager"));
 
         Employees.clear();
-        sortedSalaries.add(getAverageSalary(Employees, "Contractor Educator"));
+        sortedSalaries.add(getAverageSalary("ContractorEducator"));
 
         return sortedSalaries;
     }
