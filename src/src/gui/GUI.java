@@ -671,10 +671,41 @@ public class GUI {
 
     public static void displayPaymentInGUI(ArrayList<String> payments) {
         String message = "<html><body width='%1s'><h1>Payment Info</h1>";
+        ArrayList<String> paymentPM = new ArrayList<String>();
+        ArrayList<String> paymentCM = new ArrayList<String>();
+        ArrayList<String> paymentCE = new ArrayList<String>();
+        ArrayList<String> paymentPE = new ArrayList<String>();
 
         for (int i = 0; i < payments.size(); i++) {
-            message += payments.get(i) + "<br><br>";
+            if (payments.get(i).contains("Permanent Educator")) paymentPE.add(payments.get(i));
+            if (payments.get(i).contains("Permanent Manager")) paymentPM.add(payments.get(i));
+            if (payments.get(i).contains("Contractor Educator")) paymentCE.add(payments.get(i));
+            if (payments.get(i).contains("Contractor Manager")) paymentCM.add(payments.get(i));
         }
+
+        message += "Pay PM: {<br><br>";
+        for (int i = 0; i < paymentPM.size(); i++) {
+            message += paymentPM.get(i) + "<br><br>";
+        }
+        message += "}<br><br>";
+
+        message = "Pay PE: {<br><br>";
+        for (int i = 0; i < paymentPE.size(); i++) {
+            message += paymentPE.get(i) + "<br><br>";
+        }
+        message += "}<br><br>";
+
+        message = "Pay CM: {<br><br>";
+        for (int i = 0; i < paymentCM.size(); i++) {
+            message += paymentCM.get(i) + "<br><br>";
+        }
+        message += "}<br><br>";
+
+        message = "Pay CE: {<br><br>";
+        for (int i = 0; i < paymentCE.size(); i++) {
+            message += paymentCE.get(i) + "<br><br>";
+        }
+        message += "}<br><br>";
 
         JOptionPane.showMessageDialog(null, panelForMessageDialog(String.format(message, 500, 500)), "Message", JOptionPane.INFORMATION_MESSAGE);
 
@@ -917,18 +948,12 @@ public class GUI {
                 }
 
                 int bankId = request.insertBankInfo(Integer.parseInt(IBAN.getText()), bankName.getText());
-                int bonusId = request.insertBonus(request.calculateFamilyBonus(married.getText().toString(), kidsAgesWithCommas.getText().toString()), searchBONUS, libraryBONUS, groupEmployer.getText().toString(), jobDepartment.getText().toString()); //calculateFamilyBonus instead of 0.15
+                //int bonusId = request.insertBonus(request.calculateFamilyBonus(married.getText().toString(), kidsAgesWithCommas.getText().toString()), searchBONUS, libraryBONUS, groupEmployer.getText().toString(), jobDepartment.getText().toString()); //calculateFamilyBonus instead of 0.15
                 int stateId = request.insertFamilyState(married.getText(), Integer.parseInt(kids.getText()), kidsAgesWithCommas.getText());
 
-                int[] infoInt = {Integer.parseInt(phoneNumber.getText()), bankId, stateId, bonusId};
+                //int[] infoInt = {Integer.parseInt(phoneNumber.getText()), bankId, stateId, bonusId};
                 String[] infoStr = {firstName.getText(), lastName.getText(), address.getText()};
-
-                if (groupEmployer.getText().equals("Permanent"))
-                    employeeId = request.insertEmployee(infoStr, currentDate, infoInt, basicSALARY);
-                else
-                    employeeId = request.insertEmployee(infoStr, currentDate, infoInt, contractSALARY);
-
-                request.hireEmployee(employeeId, groupEmployer.getText().toString(), jobDepartment.getText().toString(), username.getText(), password.getText());
+                //request.insertEmployee(infoStr,currentDate,infoInt);
 
                 paidEveryone = false;
                 displayProcedures(root);

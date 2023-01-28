@@ -21,17 +21,27 @@ public class ServerRequest {
                 ResultSet.CONCUR_UPDATABLE);
     }
 
+    public double convert_to_2_Decimals(double value){
+        if ((BigDecimal.valueOf(value).scale() > 2) == false) return value;
+        return new BigDecimal(value).setScale(2, RoundingMode.DOWN).doubleValue();
+    }
+
     /*login Employee with username password*/
     public int loginEmployee(String userName, String password) throws SQLException {
         PreparedStatement statement = selectStatement(connector,
-                "SELECT password,EmployeeId FROM LoginInfo WHERE username=?");
+                "SELECT password,LoginId FROM LoginInfo WHERE username=?");
         statement.setString(1, userName);
         ResultSet result = statement.executeQuery();
         if (!result.next()) return -1;
         String pass = result.getString("password");
         if (!password.equals(pass)) return -1;
 
-        return result.getInt("EmployeeId");
+        PreparedStatement statement1 = selectStatement(connector,
+                "SELECT EmployeeId FROM Employee WHERE LoginId=?");
+        statement1.setInt(1, result.getInt("LoginId"));
+        ResultSet resultEmployee = statement1.executeQuery();
+        resultEmployee.next();
+        return resultEmployee.getInt("EmployeeId");
     }
 
 
@@ -89,6 +99,8 @@ public class ServerRequest {
     }
 
     public void changeSearchBonus(double searchBonus) throws SQLException {
+        searchBonus = convert_to_2_Decimals(searchBonus);
+
         PreparedStatement statement = selectStatement(connector,
                 "SELECT * FROM Bonus");
         ResultSet resultBonus = statement.executeQuery();
@@ -105,6 +117,8 @@ public class ServerRequest {
     }
 
     public void changeLibraryBonus(double libraryBonus) throws SQLException {
+        libraryBonus = convert_to_2_Decimals(libraryBonus);
+
         PreparedStatement statement = selectStatement(connector,
                 "SELECT * FROM Bonus");
         ResultSet resultBonus = statement.executeQuery();
@@ -133,195 +147,34 @@ public class ServerRequest {
             }
         }
 
-        famBonus = new BigDecimal(famBonus).setScale(2, RoundingMode.DOWN).doubleValue();
+        famBonus = convert_to_2_Decimals(famBonus);
         return famBonus;
     }
 
-    /*CHECKED ABOVE*/
-
-
-
-    public double estimateEmployeesSalary(String currentDate, Date date, double InitialSalary, double familyBonus, double searchBonus, double libraryBonus) {
-        String dateString = date.toString();
-        String[] separateDate = dateString.split("-");
-        String[] separateCurrentDate = currentDate.split("-");
-
-        int oneMoreYear = (Integer.parseInt(separateCurrentDate[1]) < Integer.parseInt(separateDate[1])) ? 1 : 0;
-        double newSalary = InitialSalary;
-
-        for (int i = 0; i < (Integer.parseInt(separateCurrentDate[0]) - Integer.parseInt(separateDate[0]) + oneMoreYear); i++)
-            newSalary += 0.15 * newSalary;
-
-        return (newSalary + InitialSalary * familyBonus + searchBonus + libraryBonus);
-    }
-
-    public void insertSalary(double newSalary, double oldSalary, int employeeId) throws SQLException {
-        if (newSalary <= oldSalary) return;
-
-        PreparedStatement statement = selectStatement(connector,
-                "UPDATE Employee SET salary=? WHERE EmployeeId=?");
-        statement.setDouble(1, newSalary);
-        statement.setInt(2, employeeId);
-        statement.execute();
-    }
-
-    public ArrayList<String> payEmployees(String currentDate, double basicSalary, double contractSalary) throws SQLException {
-        /**
-         * Make a JOptionPane.showMessageDialog that shows "The Employees are paid 31-X-XXXX"
-         * In this panel show for each Employee: EmployeeId, salary (basic or contract), familyBonus, searchBonus, libraryBonus, finalSalary
-         */
-        ArrayList<String> payments = new ArrayList<String>();
-
-        int timesPaid = 0;
-        int i = 0;
-
-        PreparedStatement statement = selectStatement(connector,
-                "SELECT * FROM Employee"); //salary,StateId,BonusId,beginHiringDate
-        ResultSet resultEmployee = statement.executeQuery();
-
-        while (resultEmployee.next()) {
-            PreparedStatement statement1 = selectStatement(connector,
-                    "SELECT timesPaid FROM BankInfo WHERE BankId=?"); //salary,StateId,BonusId,beginHiringDate
-            statement1.setInt(1, resultEmployee.getInt("BankId"));
-            ResultSet resultBank = statement1.executeQuery();
-            resultBank.next();
-
-            timesPaid = resultBank.getInt("timesPaid") + 1;
-            PreparedStatement statement2 = selectStatement(connector,
-                    "UPDATE BankInfo SET timesPaid=? WHERE BanKId=?");
-            statement2.setDouble(1, timesPaid);
-            statement2.setInt(2, resultEmployee.getInt("BankId"));
-            statement2.execute();
-
-            if ((timesPaid % 12) == 1) changeSalary(currentDate, basicSalary, contractSalary);
-
-            PreparedStatement statement3 = selectStatement(connector,
-                    "SELECT * FROM Bonus WHERE BonusId=?"); //salary,StateId,BonusId,beginHiringDate
-            statement3.setInt(1, resultEmployee.getInt("BonusId"));
-            ResultSet resultBonus = statement3.executeQuery();
-            resultBonus.next();
-
-            payments.add("EmployeeId: " + resultEmployee.getInt("EmployeeId") + " ,Salary: " + resultEmployee.getDouble("salary")
-                    + " ,FamilyBonus: " + resultBonus.getDouble("familyBonus") + " ,SearchBonus: " + resultBonus.getDouble("searchBonus")
-                    + " ,LibraryBonus: " + resultBonus.getDouble("libraryBonus"));
-        }
-        return payments;
-    }
-
-    public void changeSalary(String currentDate, double basicSalary, double contractSalary) throws SQLException {
-        double newSalary = 0;
-
-        PreparedStatement statement1 = selectStatement(connector,
-                "SELECT * FROM Employee"); //salary,StateId,BonusId,beginHiringDate
-        ResultSet resultEmployee = statement1.executeQuery();
-
-        while (resultEmployee.next()) {
-            PreparedStatement statement2 = selectStatement(connector,
-                    "SELECT * FROM Bonus WHERE BonusId=?");
-            statement2.setInt(1, resultEmployee.getInt("BonusId"));
-            ResultSet resultBonus = statement2.executeQuery();
-            if (!resultBonus.next()) continue;
-
-//            if (getPM(resultEmployee.getInt("EmployeeId")) != null)
-//                newSalary = estimateEmployeesSalary(currentDate, resultEmployee.getDate("beginHiringDate"), basicSalary, resultBonus.getDouble("familyBonus"), 0, 0);
-//
-//            if (getPE(resultEmployee.getInt("EmployeeId")) != null)
-//                newSalary = estimateEmployeesSalary(currentDate, resultEmployee.getDate("beginHiringDate"), basicSalary, resultBonus.getDouble("familyBonus"), resultBonus.getDouble("searchBonus"), 0);
-//
-//            if (getCE(resultEmployee.getInt("EmployeeId")) != null)
-//                newSalary = estimateEmployeesSalary(currentDate, resultEmployee.getDate("beginHiringDate"), contractSalary, resultBonus.getDouble("familyBonus"), 0, resultBonus.getDouble("libraryBonus"));
-//
-//            if (getCM(resultEmployee.getInt("EmployeeId")) != null)
-//                newSalary = estimateEmployeesSalary(currentDate, resultEmployee.getDate("beginHiringDate"), contractSalary, resultBonus.getDouble("familyBonus"), 0, 0);
-
-            newSalary = new BigDecimal(newSalary).setScale(2, RoundingMode.DOWN).doubleValue();
-
-            insertSalary(newSalary, resultEmployee.getDouble("salary"), resultEmployee.getInt("EmployeeId"));
-        }
-    }
-
-
-
-
-
-
-
-
     /*insert columns into tables*/
-    public int insertEmployee(String[] infoStr, Date date, int[] infoInt, double salary) throws SQLException {
-        //infoStr contains firstName, lastName, address
-        //infoInt contains phoneNumber, BankId, StateId, BonusId
+    public int insertEmployee(String[] infoStr, Date date, int[] infoInt) throws SQLException {
+        //infoStr contains firstName, lastName, category, address
+        //infoInt contains phoneNumber, LoginId, BankId, StateId, BonusId
         PreparedStatement statement1 = connector.getConnection().prepareStatement(
-                "INSERT INTO Employee (EmployeeId,firstName,lastName,beginHiringDate,address,phoneNumber,salary,BankId,StateId,BonusId) VALUES (?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+                "INSERT INTO Employee (EmployeeId,firstName,lastName,beginHiringDate,category,address,phoneNumber,salary,active,LoginId,BankId,StateId,BonusId) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
         statement1.setString(1, null);
         statement1.setString(2, infoStr[0]);
         statement1.setString(3, infoStr[1]);
         statement1.setDate(4, date);
         statement1.setString(5, infoStr[2]);
-        statement1.setInt(6, infoInt[0]);
-        statement1.setDouble(7, salary);
-        statement1.setInt(8, infoInt[1]);
-        statement1.setInt(9, infoInt[2]);
-        statement1.setInt(10, infoInt[3]);
+        statement1.setString(6, infoStr[3]);
+        statement1.setInt(7, infoInt[0]);
+        statement1.setDouble(8, 0.0);
+        statement1.setInt(9, 1);
+        statement1.setInt(10, infoInt[1]);
+        statement1.setInt(11, infoInt[2]);
+        statement1.setInt(12, infoInt[3]);
+        statement1.setInt(13, infoInt[4]);
         statement1.executeUpdate();
 
         ResultSet resultEmployee = statement1.getGeneratedKeys();
         if (!resultEmployee.next()) return -1;
         return resultEmployee.getInt(1);
-    }
-
-    public void hireEmployee(int EmployeeId, String groupEmployer, String JobDepartment, String username, String password) throws SQLException {
-        if (groupEmployer.equals("Permanent")) {
-            if (JobDepartment.equals("Educator"))
-                hirePermanentEducator(EmployeeId, username, password);
-            else
-                hirePermanentManager(EmployeeId, username, password);
-        } else {
-            if (JobDepartment.equals("Educator"))
-                hireContractorEducator(EmployeeId, username, password);
-            else
-                hireContractorManager(EmployeeId, username, password);
-        }
-    }
-
-    public void hirePermanentEducator(int EmployeeId, String username, String password) throws SQLException {
-        PreparedStatement statement1 = connector.getConnection().prepareStatement(
-                "INSERT INTO PermanentEducator (username,password,PEId,EmployeeId) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-        statement1.setString(1, username);
-        statement1.setString(2, password);
-        statement1.setString(3, null);
-        statement1.setInt(4, EmployeeId);
-        statement1.executeUpdate();
-    }
-
-    public void hirePermanentManager(int EmployeeId, String username, String password) throws SQLException {
-        PreparedStatement statement1 = connector.getConnection().prepareStatement(
-                "INSERT INTO PermanentManager (username,password,PMId,EmployeeId) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-        statement1.setString(1, username);
-        statement1.setString(2, password);
-        statement1.setString(3, null);
-        statement1.setInt(4, EmployeeId);
-        statement1.executeUpdate();
-    }
-
-    public void hireContractorEducator(int EmployeeId, String username, String password) throws SQLException {
-        PreparedStatement statement1 = connector.getConnection().prepareStatement(
-                "INSERT INTO ContractorEducator (username,password,CEId,EmployeeId) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-        statement1.setString(1, username);
-        statement1.setString(2, password);
-        statement1.setString(3, null);
-        statement1.setInt(4, EmployeeId);
-        statement1.executeUpdate();
-    }
-
-    public void hireContractorManager(int EmployeeId, String username, String password) throws SQLException {
-        PreparedStatement statement1 = connector.getConnection().prepareStatement(
-                "INSERT INTO ContractorManager (username,password,CMId,EmployeeId) VALUES (?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-        statement1.setString(1, username);
-        statement1.setString(2, password);
-        statement1.setString(3, null);
-        statement1.setInt(4, EmployeeId);
-        statement1.executeUpdate();
     }
 
     public int insertFamilyState(String state, int numberKids, String ages) throws SQLException {
@@ -352,10 +205,15 @@ public class ServerRequest {
         return resultBankInfo.getInt(1);
     }
 
-    public int insertBonus(double famBonus, double searchBonus, double libBonus, String group, String job) throws SQLException {
-        if (group.equals("Permanent") && job.equals("Educator")) {
+    public int insertBonus(double famBonus, double searchBonus, double libBonus, String category) throws SQLException {
+        famBonus = convert_to_2_Decimals(famBonus);
+        searchBonus = convert_to_2_Decimals(searchBonus);
+        libBonus = convert_to_2_Decimals(libBonus);
+
+        String[] split = category.split(" ");
+        if (split[0].equals("Permanent") && split[1].equals("Educator")) {
             libBonus = 0.0;
-        } else if (group.equals("Contractor") && job.equals("Manager")) {
+        } else if (split[0].equals("Contractor") && split[1].equals("Manager")) {
             searchBonus = 0.0;
         } else {
             searchBonus = 0.0;
@@ -375,69 +233,118 @@ public class ServerRequest {
         return resultBonus.getInt(1);
     }
 
-    /*Check EmployeeId in Database to change info of Employee*/
-    public boolean check_EmployeeId_In_Database(int EmployeeId) throws SQLException {
-        PreparedStatement statement = selectStatement(connector,
-                "SELECT * FROM Employee WHERE EmployeeId=?");
-        statement.setInt(1, EmployeeId);
-        ResultSet resultEmployee = statement.executeQuery();
+    public void insertSalary(double newSalary, double oldSalary, int employeeId) throws SQLException {
+        oldSalary = convert_to_2_Decimals(oldSalary);
+        newSalary = convert_to_2_Decimals(newSalary);
+        if (newSalary <= oldSalary) return;
 
-        if (resultEmployee.next()) return true;
-        return false;
+        PreparedStatement statement = selectStatement(connector,
+                "UPDATE Employee SET salary=? WHERE EmployeeId=?");
+        statement.setDouble(1, newSalary);
+        statement.setInt(2, employeeId);
+        statement.execute();
+    }
+
+    public int insertLoginInfo(String username, String password) throws SQLException {
+        PreparedStatement statement1 = connector.getConnection().prepareStatement(
+                "INSERT INTO LoginInfo (LoginId,username,password) VALUES (?,?,?)", Statement.RETURN_GENERATED_KEYS);
+        statement1.setString(1, null);
+        statement1.setString(2, username);
+        statement1.setString(3, password);
+        statement1.executeUpdate();
+
+        ResultSet resultLogin = statement1.getGeneratedKeys();
+        if (!resultLogin.next()) return -1;
+        return resultLogin.getInt(1);
     }
 
     public double fireEmployee(int employeeId) throws SQLException {
+        PreparedStatement statement1 = selectStatement(connector,
+                "UPDATE Employee SET active=? WHERE EmployeeId=?");
+        statement1.setInt(1, 0);
+        statement1.setInt(2, employeeId);
+        statement1.execute();
+
         PreparedStatement statement = selectStatement(connector,
                 "SELECT * FROM Employee WHERE EmployeeId=?");
         statement.setInt(1, employeeId);
         ResultSet resultEmployee = statement.executeQuery();
-        resultEmployee.next();
+        if (!resultEmployee.next()) return 0.0;
 
         double salary = resultEmployee.getDouble("salary");
-
-        PreparedStatement statement1 = connector.getConnection().prepareStatement(
-                "DELETE FROM Bonus WHERE BonusId=?");
-        statement1.setInt(1, resultEmployee.getInt("BonusId"));
-        statement1.execute();
-
-        PreparedStatement statement2 = connector.getConnection().prepareStatement(
-                "DELETE FROM FamilyState WHERE StateId=?");
-        statement2.setInt(1, resultEmployee.getInt("StateId"));
-        statement2.execute();
-
-        PreparedStatement statement3 = connector.getConnection().prepareStatement(
-                "DELETE FROM BankInfo WHERE BankId=?");
-        statement3.setInt(1, resultEmployee.getInt("BankId"));
-        statement3.execute();
-
-        PreparedStatement statement4 = connector.getConnection().prepareStatement(
-                "DELETE FROM Employee WHERE EmployeeId=?");
-        statement4.setInt(1, employeeId);
-        statement4.execute();
-
-        PreparedStatement statement5 = connector.getConnection().prepareStatement(
-                "DELETE FROM PermanentEducator WHERE EmployeeId=?");
-        statement5.setInt(1, employeeId);
-        statement5.execute();
-
-        PreparedStatement statement6 = connector.getConnection().prepareStatement(
-                "DELETE FROM PermanentManager WHERE EmployeeId=?");
-        statement6.setInt(1, employeeId);
-        statement6.execute();
-
-        PreparedStatement statement7 = connector.getConnection().prepareStatement(
-                "DELETE FROM ContractorEducator WHERE EmployeeId=?");
-        statement7.setInt(1, employeeId);
-        statement7.execute();
-
-        PreparedStatement statement8 = connector.getConnection().prepareStatement(
-                "DELETE FROM ContractorManager WHERE EmployeeId=?");
-        statement8.setInt(1, employeeId);
-        statement8.execute();
 
         return salary;
     }
 
+    public void changeSalary(String currentDate, double basicSalary, double contractSalary) throws SQLException {
+        double newSalary = 0;
+
+        PreparedStatement statement1 = selectStatement(connector,
+                "SELECT * FROM Employee");
+        ResultSet resultEmployee = statement1.executeQuery();
+
+        while (resultEmployee.next()) {
+            PreparedStatement statement2 = selectStatement(connector,
+                    "SELECT * FROM Bonus WHERE BonusId=?");
+            statement2.setInt(1, resultEmployee.getInt("BonusId"));
+            ResultSet resultBonus = statement2.executeQuery();
+            if (!resultBonus.next()) continue;
+
+            if (resultEmployee.getInt("active") == 1){
+                if (resultEmployee.getString("category").contains("Permanent"))
+                    newSalary = estimateEmployeesSalary(currentDate, resultEmployee.getDate("beginHiringDate"), basicSalary, resultBonus.getDouble("familyBonus"), resultBonus.getDouble("searchBonus"), resultBonus.getDouble("libraryBonus"),true);
+                else
+                    newSalary = estimateEmployeesSalary(currentDate, resultEmployee.getDate("beginHiringDate"), contractSalary, resultBonus.getDouble("familyBonus"), resultBonus.getDouble("searchBonus"), resultBonus.getDouble("libraryBonus"),false);
+            }
+
+            insertSalary(newSalary, resultEmployee.getDouble("salary"), resultEmployee.getInt("EmployeeId"));
+        }
+    }
+
+    public double estimateEmployeesSalary(String currentDate, Date date, double InitialSalary, double familyBonus, double searchBonus, double libraryBonus, boolean permanent) {
+        String dateString = date.toString();
+        String[] separateDate = dateString.split("-");
+        String[] separateCurrentDate = currentDate.split("-");
+
+        int oneMoreYear = (Integer.parseInt(separateCurrentDate[1]) > Integer.parseInt(separateDate[1]) ||
+                          (Integer.parseInt(separateCurrentDate[1]) == Integer.parseInt(separateDate[1]) &&
+                                  Integer.parseInt(separateCurrentDate[2]) >= Integer.parseInt(separateDate[2]))) ? 1 : 0;
+        double newSalary = InitialSalary;
+
+        if (permanent == true){
+            int times15up = Integer.parseInt(separateCurrentDate[0]) - Integer.parseInt(separateDate[0]) + oneMoreYear - 1; //-1 to not count 1st year from hire
+            newSalary += times15up * 0.15 * InitialSalary;
+        }
+
+        return convert_to_2_Decimals(newSalary + InitialSalary * familyBonus + searchBonus + libraryBonus);
+    }
+
+    public ArrayList<String> payEmployees(String currentDate, double basicSalary, double contractSalary) throws SQLException {
+        changeSalary(currentDate,basicSalary,contractSalary);
+
+        ArrayList<String> payments = new ArrayList<String>();
+
+        PreparedStatement statement = selectStatement(connector,
+                "SELECT * FROM Employee");
+        ResultSet resultEmployee = statement.executeQuery();
+
+        while (resultEmployee.next()) {
+            PreparedStatement statement3 = selectStatement(connector,
+                    "SELECT * FROM Bonus WHERE BonusId=?");
+            statement3.setInt(1, resultEmployee.getInt("BonusId"));
+            ResultSet resultBonus = statement3.executeQuery();
+            resultBonus.next();
+
+
+            payments.add("EmployeeId: " + resultEmployee.getInt("EmployeeId") + ", Category: " + resultEmployee.getString("category")
+                    + " ,Salary: " + resultEmployee.getDouble("salary")
+                    + " ,FamilyBonus: " + resultBonus.getDouble("familyBonus") + " ,SearchBonus: " + resultBonus.getDouble("searchBonus")
+                    + " ,LibraryBonus: " + resultBonus.getDouble("libraryBonus"));
+        }
+        return payments;
+    }
+
+    /*Tarso's queries, not checked*/
     public ArrayList<Employee> addPESalaries(ArrayList<Employee> sortedSalaryperStaffCategory, ArrayList<String> categories) throws SQLException {
         PreparedStatement statement1 = selectStatement(connector, "SELECT * FROM PermanentEducator");
         ResultSet resultEmployee = statement1.executeQuery();

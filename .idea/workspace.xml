@@ -4,6 +4,7 @@
     <list default="true" id="8ac59761-340c-4cca-8ff0-776d525464e2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/src/gui/GUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/gui/GUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/src/server/ServerRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/server/ServerRequest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -99,24 +100,14 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/src/gui/GUI.java</url>
-          <line>744</line>
-          <option name="timeStamp" value="4" />
+          <url>file://$PROJECT_DIR$/src/src/server/ServerRequest.java</url>
+          <line>236</line>
+          <option name="timeStamp" value="15" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/src/gui/GUI.java</url>
-          <line>749</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/src/gui/GUI.java</url>
-          <line>746</line>
-          <option name="timeStamp" value="6" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/src/Main.java</url>
-          <line>12</line>
-          <option name="timeStamp" value="10" />
+          <url>file://$PROJECT_DIR$/src/src/server/ServerRequest.java</url>
+          <line>237</line>
+          <option name="timeStamp" value="16" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
