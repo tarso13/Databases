@@ -21,7 +21,7 @@ public class ServerRequest {
                 ResultSet.CONCUR_UPDATABLE);
     }
 
-    /*login Employees with username password*/
+    /*login Employee with username password*/
     public int loginEmployee(String userName, String password) throws SQLException {
         PreparedStatement statement = selectStatement(connector,
                 "SELECT password,EmployeeId FROM LoginInfo WHERE username=?");
@@ -37,11 +37,6 @@ public class ServerRequest {
 
     /*update information in base*/
     public void changeAddress(String address, int EmployeeId) throws SQLException {
-        if (!check_EmployeeId_In_Database(EmployeeId)) {
-            System.out.println("The Person does not work in UOC!\n");
-            return;
-        }
-
         PreparedStatement statement1 = selectStatement(connector,
                 "UPDATE Employee SET address=? WHERE EmployeeId=?");
         statement1.setString(1, address);
@@ -50,11 +45,6 @@ public class ServerRequest {
     }
 
     public void changePhoneNumber(int number, int EmployeeId) throws SQLException {
-        if (!check_EmployeeId_In_Database(EmployeeId)) {
-            System.err.println("The Person does not work in UOC!\n");
-            return;
-        }
-
         PreparedStatement statement1 = selectStatement(connector,
                 "UPDATE Employee SET phoneNumber=? WHERE EmployeeId=?");
         statement1.setInt(1, number);
@@ -63,11 +53,6 @@ public class ServerRequest {
     }
 
     public void changeFamilyState(String state, int kids, String ages, int EmployeeId) throws SQLException {
-        if (!check_EmployeeId_In_Database(EmployeeId)) {
-            System.err.println("The Person does not work in UOC!\n");
-            return;
-        }
-
         PreparedStatement statement = selectStatement(connector,
                 "SELECT StateID FROM Employee WHERE EmployeeId=?");
         statement.setInt(1, EmployeeId);
@@ -84,6 +69,77 @@ public class ServerRequest {
 
         changeFamilyBonus(state, ages, EmployeeId);
     }
+
+    public double changeFamilyBonus(String state, String kidsAges, int employeeId) throws SQLException {
+        double famBonus = calculateFamilyBonus(state, kidsAges);
+
+        PreparedStatement statement = selectStatement(connector,
+                "SELECT BonusId FROM Employee WHERE EmployeeId=?");
+        statement.setInt(1, employeeId);
+        ResultSet resultBonus = statement.executeQuery();
+        resultBonus.next();
+
+        PreparedStatement statement1 = selectStatement(connector,
+                "UPDATE Bonus SET familyBonus=? WHERE BonusId=?");
+        statement1.setDouble(1, famBonus);
+        statement1.setInt(2, resultBonus.getInt("BonusId"));
+        statement1.execute();
+
+        return famBonus;
+    }
+
+    public void changeSearchBonus(double searchBonus) throws SQLException {
+        PreparedStatement statement = selectStatement(connector,
+                "SELECT * FROM Bonus");
+        ResultSet resultBonus = statement.executeQuery();
+
+        while (resultBonus.next()) {
+            if (resultBonus.getInt("searchBonus") == 0) continue;
+
+            PreparedStatement statement1 = selectStatement(connector,
+                    "UPDATE Bonus SET searchBonus=? WHERE BonusId=?");
+            statement1.setDouble(1, searchBonus);
+            statement1.setInt(2, resultBonus.getInt("BonusId"));
+            statement1.execute();
+        }
+    }
+
+    public void changeLibraryBonus(double libraryBonus) throws SQLException {
+        PreparedStatement statement = selectStatement(connector,
+                "SELECT * FROM Bonus");
+        ResultSet resultBonus = statement.executeQuery();
+
+        while (resultBonus.next()) {
+            if (resultBonus.getInt("libraryBonus") == 0) continue;
+
+            PreparedStatement statement1 = selectStatement(connector,
+                    "UPDATE Bonus SET libraryBonus=? WHERE BonusId=?");
+            statement1.setDouble(1, libraryBonus);
+            statement1.setInt(2, resultBonus.getInt("BonusId"));
+            statement1.execute();
+        }
+    }
+
+    /*Calculation of Family Bonus*/
+    public double calculateFamilyBonus(String state, String kidsAges) {
+        double famBonus = 0.0;
+
+        if (state.equals("married")) famBonus += 0.05;
+
+        String[] split = kidsAges.split(",");
+        if (!split[0].equals("")) {
+            for (int i = 0; i < split.length; i++) {
+                if (Integer.parseInt(split[i]) < 18) famBonus += 0.05;
+            }
+        }
+
+        famBonus = new BigDecimal(famBonus).setScale(2, RoundingMode.DOWN).doubleValue();
+        return famBonus;
+    }
+
+    /*CHECKED ABOVE*/
+
+
 
     public double estimateEmployeesSalary(String currentDate, Date date, double InitialSalary, double familyBonus, double searchBonus, double libraryBonus) {
         String dateString = date.toString();
@@ -184,71 +240,11 @@ public class ServerRequest {
         }
     }
 
-    public void changeSearchBonus(double searchBonus) throws SQLException {
-        PreparedStatement statement = selectStatement(connector,
-                "SELECT * FROM Bonus");
-        ResultSet resultBonus = statement.executeQuery();
 
-        while (resultBonus.next()) {
-            if (resultBonus.getInt("searchBonus") == 0) continue;
 
-            PreparedStatement statement1 = selectStatement(connector,
-                    "UPDATE Bonus SET searchBonus=? WHERE BonusId=?");
-            statement1.setDouble(1, searchBonus);
-            statement1.setInt(2, resultBonus.getInt("BonusId"));
-            statement1.execute();
-        }
-    }
 
-    public void changeLibraryBonus(double libraryBonus) throws SQLException {
-        PreparedStatement statement = selectStatement(connector,
-                "SELECT * FROM Bonus");
-        ResultSet resultBonus = statement.executeQuery();
 
-        while (resultBonus.next()) {
-            if (resultBonus.getInt("libraryBonus") == 0) continue;
 
-            PreparedStatement statement1 = selectStatement(connector,
-                    "UPDATE Bonus SET libraryBonus=? WHERE BonusId=?");
-            statement1.setDouble(1, libraryBonus);
-            statement1.setInt(2, resultBonus.getInt("BonusId"));
-            statement1.execute();
-        }
-    }
-
-    public double changeFamilyBonus(String state, String kidsAges, int employeeId) throws SQLException {
-        double famBonus = calculateFamilyBonus(state, kidsAges);
-
-        PreparedStatement statement = selectStatement(connector,
-                "SELECT BonusId FROM Employee WHERE EmployeeId=?");
-        statement.setInt(1, employeeId);
-        ResultSet resultBonus = statement.executeQuery();
-        resultBonus.next();
-
-        PreparedStatement statement1 = selectStatement(connector,
-                "UPDATE Bonus SET familyBonus=? WHERE BonusId=?");
-        statement1.setDouble(1, famBonus);
-        statement1.setInt(2, resultBonus.getInt("BonusId"));
-        statement1.execute();
-
-        return famBonus;
-    }
-
-    public double calculateFamilyBonus(String state, String kidsAges) {
-        double famBonus = 0.0;
-
-        if (state.equals("married")) famBonus += 0.05;
-
-        String[] split = kidsAges.split(",");
-        if (!split[0].equals("")) {
-            for (int i = 0; i < split.length; i++) {
-                if (Integer.parseInt(split[i]) < 18) famBonus += 0.05;
-            }
-        }
-
-        famBonus = new BigDecimal(famBonus).setScale(2, RoundingMode.DOWN).doubleValue();
-        return famBonus;
-    }
 
 
     /*insert columns into tables*/
