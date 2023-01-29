@@ -501,7 +501,7 @@ public class GUI {
                 displayProcedures(false);
             }
         } else
-          panelForMessageDialog("Login cancelled!", false, false);
+            panelForMessageDialog("Login cancelled!", false, false);
     }
 
 
@@ -786,13 +786,12 @@ public class GUI {
                 String choice = e.getActionCommand();
                 switch (choice) {
                     case "Queries":
+                        proceduresFrame.dispose();
                         JFrame queriesFrame = new JFrame("Queries Supported");
                         displayQueries(queriesFrame, root);
-                        should_dispose.set(true);
                         break;
                     case "Back to Login Page":
                         proceduresFrame.dispose();
-                        should_dispose.set(true);
                         try {
                             loginPage();
                         } catch (SQLException ex) {
@@ -800,23 +799,19 @@ public class GUI {
                         }
                         break;
                     case "New Hire":
-                        if (!root) {
-                            should_dispose.set(false);
+                        if (!root)
                             break;
-                        }
                         try {
-                            should_dispose.set(true);
+                            proceduresFrame.dispose();
                             displayHire(root);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
                         break;
                     case "Payments":
-                        if (!root) {
-                            should_dispose.set(false);
+                        if (!root)
                             break;
-                        }
-                        should_dispose.set(true);
+                        proceduresFrame.dispose();
                         String[] date = currentDate.toString().split("-");
                         if (paidEveryone == true) {
                             JOptionPane.showMessageDialog(null, panelForMessageDialog("Employees have already been paid!", true, false), "Message", JOptionPane.INFORMATION_MESSAGE);
@@ -836,7 +831,7 @@ public class GUI {
                         displayProcedures(root);
                         break;
                     case "Change Employee Info":
-                        should_dispose.set(true);
+                        proceduresFrame.dispose();
                         try {
                             displayChangeInfo(proceduresFrame, root);
                         } catch (SQLException ex) {
@@ -844,24 +839,20 @@ public class GUI {
                         }
                         break;
                     case "Change Salary/Bonuses":
-                        if (!root) {
-                            should_dispose.set(false);
+                        if (!root)
                             break;
-                        }
                         try {
-                            should_dispose.set(true);
+                            proceduresFrame.dispose();
                             displayChangeSalaryBonuses(proceduresFrame, root);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
                         break;
                     case "New Fire/Retirement":
-                        if (!root) {
-                            should_dispose.set(false);
+                        if (!root)
                             break;
-                        }
                         try {
-                            should_dispose.set(true);
+                            proceduresFrame.dispose();
                             displayFireRetire(root);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
@@ -870,8 +861,6 @@ public class GUI {
                     default:
                         assert (false);
                 }
-                if (should_dispose.get() == true)
-                    proceduresFrame.dispose();
             });
             panel.add(buttons[i]);
         }
