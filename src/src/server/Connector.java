@@ -13,7 +13,7 @@ public class Connector {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
             String url = "jdbc:mysql://localhost";
-            String databaseName = "hy360-1";
+            String databaseName = "hy360";
             int port = 3306;
             String username = "root";
             String passwd = "";

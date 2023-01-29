@@ -37,7 +37,8 @@ public class GUI {
                     e -> {
                         frame.setVisible(false);
                         frame.dispose();
-                        displayProcedures(root);
+                        if(message.equals("Login cancelled!")==false)
+                            displayProcedures(root);
                     });
             panel.add(returnPage);
         } else {
@@ -487,6 +488,7 @@ public class GUI {
             }
 
             dates.add(Date.valueOf(initialDate.getText()));
+            dates.add(Date.valueOf(finalDate.getText()));
             if (currentDate.before(Date.valueOf(finalDate.getText()))) dates.add(currentDate);
         } else
             validateExit(root);
@@ -592,7 +594,6 @@ public class GUI {
 
     private static void displayAverageSalaryBonusIncrease(boolean root, ArrayList<Double> result) throws NumberFormatException {
         JButton ok = new JButton("OK");
-        JButton[] options = {ok};
         JFrame frame = new JFrame();
         frame.setLocation(200, 200);
         frame.setResizable(false);
@@ -616,7 +617,7 @@ public class GUI {
         StringBuilder message = new StringBuilder("<html><body width='%1s'><h1>Average Salary and Bonuses Increase for a specific duration</h1><br><br>");
         for (int i = 0; i < result.size(); ++i)
             message.append(categories.get(i)).append(": ").append(result.get(i).toString()).append("<br><br>");
-        
+
         panelForMessageDialog(message.toString(), root, false);
     }
 
