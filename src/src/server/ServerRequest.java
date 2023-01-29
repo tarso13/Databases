@@ -686,7 +686,7 @@ public class ServerRequest {
         return resultRaise.getDouble(1);
     }
 
-    public int countAtiveEmployees() throws SQLException {
+    public int countActiveEmployees() throws SQLException {
         PreparedStatement statement1 = selectStatement(connector, "SELECT SUM(active) FROM Employee WHERE active=1");
         ResultSet resultRaise = statement1.executeQuery();
         if (resultRaise.next() == false) return 0;
