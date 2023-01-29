@@ -509,9 +509,8 @@ public class GUI {
         String message = "<html><body width='%1s'><h1>Would you like to exit?</h1><br><br>" +
                 "[Yes: Go to login page<br><br>" +
                 "No: Go to previous page]<br><br>";
-
-        int option = JOptionPane.showConfirmDialog(null, panelForMessageDialog(message, root, true), "Exit", JOptionPane.YES_NO_OPTION);
-
+        
+        panelForMessageDialog(message, root, true);
     }
 
     private static void displayPaymentPerStaffCategory(ArrayList<ArrayList<String>> payments, ArrayList<String> Categories, boolean root) {
