@@ -487,17 +487,16 @@ public class GUI {
 
         if (option == JOptionPane.OK_OPTION) {
             if (username.getText().equals("") || password.getText().equals("")) {
-                JOptionPane.showMessageDialog(null, panelForMessageDialog("Not given username or password!", false, false), "Message", JOptionPane.INFORMATION_MESSAGE);
+                panelForMessageDialog("Not given username or password!", false, false);
                 loginPage();
             } else if (username.getText().equals("root") && password.getText().equals("root"))
                 displayProcedures(true);
             else {
                 employeeId = request.login(username.getText(), password.getText());
                 if (employeeId == -1) {
-                    JOptionPane.showMessageDialog(null, panelForMessageDialog("Login with false combination of username and password!", false, false), "Message", JOptionPane.INFORMATION_MESSAGE);
+                    panelForMessageDialog("Login with false combination of username and password!", false, false);
                     loginPage();
                 }
-                JOptionPane.showMessageDialog(null, panelForMessageDialog("Employee with id " + employeeId + " made a successful login!", false, false), "Message", JOptionPane.INFORMATION_MESSAGE);
                 displayProcedures(false);
             }
         } else
@@ -509,7 +508,6 @@ public class GUI {
         String message = "<html><body width='%1s'><h1>Would you like to exit?</h1><br><br>" +
                 "[Yes: Go to login page<br><br>" +
                 "No: Go to previous page]<br><br>";
-
         panelForMessageDialog(message, root, true);
     }
 
@@ -528,7 +526,7 @@ public class GUI {
 
     private static void displayEmployeeInfo(String info) {
         String message = "<html><body width='%1s'><h1>EmployeeInfo</h1><br><br>" + info + "<br><br>";
-        JOptionPane.showMessageDialog(null, panelForMessageDialog(message, true, false), "Message", JOptionPane.INFORMATION_MESSAGE);
+        panelForMessageDialog(message, true, false);
     }
 
     private static void displayResultsSalaries(ArrayList<Double> Salaries, ArrayList<String> Categories, boolean root, String stat) throws SQLException {
@@ -635,10 +633,12 @@ public class GUI {
                 queriesFrame.dispose();
                 switch (choice) {
                     case "Back to Previous Page":
+                        queriesFrame.dispose();
                         displayProcedures(root);
                         break;
                     case "Back to Login Page":
                         try {
+                            queriesFrame.dispose();
                             loginPage();
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
@@ -646,6 +646,7 @@ public class GUI {
                         break;
                     case "Payment State per Staff Category":
                         try {
+                            queriesFrame.dispose();
                             ArrayList<ArrayList<String>> employees = new ArrayList<>();
                             employees.add(request.getSalaryPerCategory("PermanentManager"));
                             employees.add(request.getSalaryPerCategory("PermanentEducator"));
@@ -659,6 +660,7 @@ public class GUI {
                         break;
                     case "Max Salary per Staff Category":
                         try {
+                            queriesFrame.dispose();
                             ArrayList<Double> maxSalaries = request.getMaxSalaryStatisticsperCategory();
                             displayResultsSalaries(maxSalaries, categories, root, "Max");
                         } catch (SQLException ex) {
@@ -667,6 +669,7 @@ public class GUI {
                         break;
                     case "Min Salary per Staff Category":
                         try {
+                            queriesFrame.dispose();
                             ArrayList<Double> minSalaries = request.getMinSalaryStatisticsperCategory();
                             displayResultsSalaries(minSalaries, categories, root, "Min");
                         } catch (SQLException ex) {
@@ -675,6 +678,7 @@ public class GUI {
                         break;
                     case "Average Salary per Staff Category":
                         try {
+                            queriesFrame.dispose();
                             ArrayList<Double> avgSalaries = request.getAverageSalaryStatisticsperCategory();
                             displayResultsSalaries(avgSalaries, categories, root, "Average");
                         } catch (SQLException ex) {
@@ -683,6 +687,7 @@ public class GUI {
                         break;
                     case "Average Salary and Bonus Increase":
                         try {
+                            queriesFrame.dispose();
                             ArrayList<Date> dates = getDates(root);
                             ArrayList<Double> averageResults = new ArrayList<Double>();
                             averageResults.add(request.getAverageSalaryBonusIncrease(dates.get(0), dates.get(1), "raiseSalary"));
@@ -695,6 +700,7 @@ public class GUI {
                         }
                         break;
                     case "Employee Data and Salary":
+                        queriesFrame.dispose();
                         int employeeId = getEmployeeId(root);
                         try {
                             displayEmployeeInfo(request.getEmployeeSalaryData(employeeId));
@@ -704,6 +710,7 @@ public class GUI {
                         break;
                     case "Total Salary per Staff Category":
                         try {
+                            queriesFrame.dispose();
                             ArrayList<Double> totalSalaries = request.getTotalSalaryperCategory();
                             displayResultsSalaries(totalSalaries, categories, root, "Total");
                         } catch (SQLException ex) {
@@ -712,6 +719,7 @@ public class GUI {
                         break;
                     case "Count of active Employees":
                         try {
+                            queriesFrame.dispose();
                             int id = request.countActiveEmployees();
                             JOptionPane.showMessageDialog(null, panelForMessageDialog("Count of Active Employees are: " + id, root, false), "Message", JOptionPane.INFORMATION_MESSAGE);
                         } catch (SQLException ex) {
@@ -719,6 +727,7 @@ public class GUI {
                         }
                     case "Employee with max number of kids":
                         try {
+                            queriesFrame.dispose();
                             String name = request.EmployeeWithMaxKids();
                             JOptionPane.showMessageDialog(null, panelForMessageDialog("Employee with max number of kid is: " + name, root, false), "Message", JOptionPane.INFORMATION_MESSAGE);
                         } catch (SQLException ex) {
@@ -726,6 +735,7 @@ public class GUI {
                         }
                     case "Active employee with most experience":
                         try {
+                            queriesFrame.dispose();
                             String name = request.EmployeeWithMaxExperience();
                             JOptionPane.showMessageDialog(null, panelForMessageDialog("Employee with most experience is: " + name, root, false), "Message", JOptionPane.INFORMATION_MESSAGE);
                         } catch (SQLException ex) {
@@ -737,7 +747,6 @@ public class GUI {
             });
             panel.add(buttons[i]);
         }
-
         queriesFrame.add(panel);
         queriesFrame.setPreferredSize(new Dimension(600, 600));
         queriesFrame.pack();
