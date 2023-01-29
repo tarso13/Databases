@@ -1,21 +1,19 @@
 package src.gui;
 
-import jdk.jfr.Category;
 import src.classes.Employee;
 import src.server.ServerRequest;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Array;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GUI {
@@ -28,13 +26,39 @@ public class GUI {
     static boolean paidEveryone = false;
     static Date currentDate;
 
-    public static JPanel panelForMessageDialog(String message) {
+    static JButton returnPage = new JButton("OK");
+
+    public static JFrame panelForMessageDialog(String message,boolean root) {
+        JFrame frame = new JFrame();
+        frame.setLayout(new BorderLayout());
+
         JPanel panel = new JPanel();
-        panel.setPreferredSize(new Dimension(600, 600));
         JLabel label = new JLabel(message);
+        //panel.setLayout(new BorderLayout());
         label.setFont(new Font("Calibri", Font.ITALIC, 17));
         panel.add(label);
-        return panel;
+
+        //FIXME cannot see buttons in some Panels
+//        panel.add(returnPage);
+//
+//        returnPage.addActionListener(
+//                new ActionListener() {
+//                    @Override
+//                    public void actionPerformed(ActionEvent e) {
+//                        displayProcedures(root);
+//                    }
+//                }
+//
+//        );
+
+        frame.add(BorderLayout.CENTER, new JScrollPane(panel));
+
+        frame.setSize(600, 600);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+
+        return frame;
     }
 
     public static JPanel panelLoginAndFirePage(JTextField firstField, JTextField secondField, JLabel firstLabel, JLabel secondLabel) {
@@ -409,30 +433,28 @@ public class GUI {
         return panel;
     }
 
-    private static ArrayList<String> getDates(boolean root) throws SQLException {
+    private static ArrayList<Date> getDates(boolean root) throws SQLException {
         JTextField initialDate = new JTextField();
         JTextField finalDate = new JTextField();
-        Object[] message = {
-                "Initial Date: ", initialDate,
-                "Final Date: ", finalDate
-        };
+        JLabel labelInit = new JLabel("Initial Date: ");
+        JLabel labelFinal = new JLabel("Final Date: ");
 
-        ArrayList<String> dates = new ArrayList<>();
+        ArrayList<Date> dates = new ArrayList<>();
 
-        currentDate = Date.valueOf(LocalDate.now());
-        int option = JOptionPane.showConfirmDialog(null,message, "Get Dates", JOptionPane.OK_CANCEL_OPTION);
+        int option = JOptionPane.showConfirmDialog(null, panelLoginAndFirePage(initialDate,finalDate,labelInit,labelFinal), "Login Page", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            dates.add(initialDate.getText());
-            dates.add(finalDate.getText());
-            if (dates.get(0).isEmpty() || dates.get(1).isEmpty()) {
-                int opt = JOptionPane.showConfirmDialog(null, panelForMessageDialog("Invalid Dates given!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+            //TODO check valid date for XXXX-XX-XX
+            if (initialDate.getText().equals("") || finalDate.getText().equals("")) {
+                int opt = JOptionPane.showConfirmDialog(null, panelForMessageDialog("Invalid Dates given!",true), "Message", JOptionPane.INFORMATION_MESSAGE);
                 if(opt == JOptionPane.OK_OPTION)
                     displayProcedures(root);
                 else
                     validateExit(root);
                 return null;
             }
-            return dates;
+
+            dates.add(Date.valueOf(initialDate.getText()));
+            dates.add(Date.valueOf(finalDate.getText()));
         } else
             validateExit(root);
         return dates;
@@ -450,21 +472,21 @@ public class GUI {
 
         if (option == JOptionPane.OK_OPTION) {
             if (username.getText().equals("") || password.getText().equals("")) {
-                JOptionPane.showMessageDialog(null, panelForMessageDialog("Not given username or password!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, panelForMessageDialog("Not given username or password!",false), "Message", JOptionPane.INFORMATION_MESSAGE);
                 loginPage();
             } else if (username.getText().equals("root") && password.getText().equals("root"))
                 displayProcedures(true);
             else {
                 employeeId = request.login(username.getText(), password.getText());
                 if (employeeId == -1) {
-                    JOptionPane.showMessageDialog(null, panelForMessageDialog("Login with false combination of username and password!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(null, panelForMessageDialog("Login with false combination of username and password!",false), "Message", JOptionPane.INFORMATION_MESSAGE);
                     loginPage();
                 }
-                JOptionPane.showMessageDialog(null, panelForMessageDialog("Employee with id " + employeeId + " made a successful login!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, panelForMessageDialog("Employee with id " + employeeId + " made a successful login!",false), "Message", JOptionPane.INFORMATION_MESSAGE);
                 displayProcedures(false);
             }
         } else
-            JOptionPane.showMessageDialog(null, panelForMessageDialog("Login cancelled!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, panelForMessageDialog("Login cancelled!",false), "Message", JOptionPane.INFORMATION_MESSAGE);
     }
 
 
@@ -473,19 +495,35 @@ public class GUI {
                 "[Yes: Go to login page<br><br>" +
                 "No: Go to previous page]<br><br>";
 
-        int option = JOptionPane.showConfirmDialog(null, panelForMessageDialog(message), "Exit", JOptionPane.YES_NO_OPTION);
+        int option = JOptionPane.showConfirmDialog(null, panelForMessageDialog(message,false), "Exit", JOptionPane.YES_NO_OPTION);
         if (option == JOptionPane.YES_OPTION)
             loginPage();
         else
             displayProcedures(root);
     }
 
+    private static void displayPaymentPerStaffCategory(ArrayList<ArrayList<String>> payments,ArrayList<String> Categories){
+        String message="<html><body width='%1s'><h1>Payment Staff Per Category</h1><br><br>";
+
+        for (int category=0; category<4; category++){
+            message += "<p>" + Categories.get(category) + " {<br><br>";
+            for (int person = 0; person < payments.get(category).size(); person++){
+                message += payments.get(category).get(person) + "<br><br>";
+            }
+            message += "}</p><br><br>";
+        }
+        JOptionPane.showMessageDialog(null, panelForMessageDialog(message,true), "Message", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private static void displayEmployeeInfo(String info){
+        String message="<html><body width='%1s'><h1>EmployeeInfo</h1><br><br>" + info + "<br><br>";
+        JOptionPane.showMessageDialog(null, panelForMessageDialog(message,true), "Message", JOptionPane.INFORMATION_MESSAGE);
+    }
+
     private static void displayResultsEmployees(ArrayList<Employee> Employees, ArrayList<String> Categories, boolean root) {
         JButton ok = new JButton("OK");
         JButton[] options = {ok};
         JFrame frame = new JFrame();
-        frame.setLocation(200, 200);
-        frame.setResizable(false);
 
         ok.addActionListener(e -> {
             frame.setVisible(false);
@@ -497,7 +535,7 @@ public class GUI {
             }
         });
 
-        String employeeEntries = "First Name | Last Name | Address | Phone Number | Begin Hiring Date | Employee Id | Salary | Group/Job Department\n\n";
+        String employeeEntries = "First Name | Last Name | Address | Phone Number | Begin Hiring Date | Employee Id | Salary\n\n";
 
         for (int i = 0; i < Employees.size(); ++i)
             employeeEntries += (Employees.get(i).getFirstName() + " | " +
@@ -545,7 +583,7 @@ public class GUI {
         JButton ok = new JButton("OK");
         JButton[] options = {ok};
         JFrame frame = new JFrame();
-        frame.setLocation(200, 200);
+        frame.setSize(600, 600);
         frame.setResizable(false);
 
         ok.addActionListener(e -> {
@@ -558,18 +596,11 @@ public class GUI {
             }
         });
 
-        String salaries = "";
-
+        String salaries = "<html><body width='%1s'><h1>Max Salary Per Category</h1><br><br>";
         for (int i = 0; i < Salaries.size(); ++i)
-            salaries += (Categories.get(i) + ": " + Salaries.get(i).toString() + "\n");
+            salaries += (Categories.get(i) + ": " + Salaries.get(i).toString() + "<br><br>");
 
-        int option = JOptionPane.showOptionDialog(frame, salaries,
-                "Results",
-                JOptionPane.OK_OPTION,
-                0,
-                new ImageIcon("download.jpeg"),
-                options,
-                options[0]);
+        int option = JOptionPane.showOptionDialog(frame, salaries, "Results", JOptionPane.OK_OPTION, 0, null, options, options[0]);
     }
 
     private static int getEmployeeId(boolean root) throws NumberFormatException {
@@ -579,19 +610,20 @@ public class GUI {
         };
 
         int option = JOptionPane.showConfirmDialog(null, message, "Employee Id", JOptionPane.OK_CANCEL_OPTION);
-        int givenEmployeeId = Integer.parseInt(employeeId.getText());
-        if (givenEmployeeId < 0) {
+        if (employeeId.getText().toString() == null || employeeId.getText().toString().equals("") || Integer.parseInt(employeeId.getText()) < 0
+             || !employeeId.getText().toString().matches("[0-9]+") || Integer.parseInt(employeeId.getText()) > 2147483647){
             JOptionPane.showMessageDialog(null, "Incorrect Employee Id");
             return -1;
         }
+
         if (option == JOptionPane.CANCEL_OPTION) {
             displayProcedures(root);
             return -1;
         }
-        return givenEmployeeId;
+        return Integer.parseInt(employeeId.getText());
     }
 
-    private static void displayAverageSalaryBonusIncrease(boolean root, double result) throws NumberFormatException {
+    private static void displayAverageSalaryBonusIncrease(boolean root, ArrayList<Double> result) throws NumberFormatException {
         JButton ok = new JButton("OK");
         JButton[] options = {ok};
         JFrame frame = new JFrame();
@@ -608,16 +640,20 @@ public class GUI {
             }
         });
 
-        int option = JOptionPane.showOptionDialog(frame, "Average Salary and Bonus Increase for the given period of time is: " + result,
-                "Results",
-                JOptionPane.OK_OPTION,
-                0,
-                new ImageIcon("download.jpeg"),
-                options,
-                options[0]);
+        ArrayList<String> categories = new ArrayList<String>();
+        categories.add("Average family Bonus increment");
+        categories.add("Average search Bonus increment");
+        categories.add("Average library Bonus increment");
+        categories.add("Average salary increment");
+
+        String message = "<html><body width='%1s'><h1>Average Salary and Bonuses Increase for a specific duration</h1><br><br>";
+        for (int i = 0; i < result.size(); ++i)
+            message += (categories.get(i) + ": " + result.get(i).toString() + "<br><br>");
+
+        int option = JOptionPane.showOptionDialog(frame, message, "Results", JOptionPane.OK_OPTION, 0, new ImageIcon("download.jpeg"),options, options[0]);
     }
-    private static ArrayList<String> initCategoriesForStats(ArrayList<String> categories) {
-        categories = new ArrayList<>();
+    private static ArrayList<String> initCategoriesForStats() {
+        ArrayList<String> categories = new ArrayList<>();
         categories.add("Permanent Manager");
         categories.add("Permanent Educator");
         categories.add("Contractor Manager");
@@ -629,12 +665,14 @@ public class GUI {
         JLabel dateLabel = new JLabel("Current date: " + currentDate.toString());
         dateLabel.setFont(new Font("Calibri", Font.ITALIC, 20));
 
+        ArrayList<String> categories = initCategoriesForStats();
+
         JPanel panel;
-        JButton[] buttons = new JButton[8];
-        panel = new JPanel(new GridLayout(9, 1));
+        JButton[] buttons = new JButton[11];
+        panel = new JPanel(new GridLayout(12, 1));
         panel.add(dateLabel);
-        String b[] = {"Payment State per Staff Category", "Max Salary per Staff Category", "Min Salary per Staff Category",
-                "Average Salary per Staff Category", "Average Salary and Bonus Increase", "Employee Data and Salary", "Total Salary per Staff Category", "Back to Login Page"};
+        String b[] = {"Payment State per Staff Category", "Max Salary per Staff Category", "Min Salary per Staff Category", "Average Salary per Staff Category",
+                "Average Salary and Bonus Increase", "Employee Data and Salary", "Total Salary per Staff Category", "Count of active Employees","Employee with max number of kids","Active employee with most experience","Back to Login Page"};
         for (int i = 0; i < buttons.length; i++) {
             buttons[i] = new JButton(b[i]);
             buttons[i].setSize(80, 80);
@@ -655,17 +693,21 @@ public class GUI {
                         break;
                     case "Payment State per Staff Category":
                         try {
-                            ArrayList<String> categories = new ArrayList<>();
-                            ArrayList<Employee> employees = request.getSalaryperStaffCategory(categories);
-                            displayResultsEmployees(employees, categories, root);
+                            ArrayList<ArrayList<String>> employees = new ArrayList<>();
+                            employees.add(request.getSalaryPerCategory("PermanentManager"));
+                            employees.add(request.getSalaryPerCategory("PermanentEducator"));
+                            employees.add(request.getSalaryPerCategory("ContractorManager"));
+                            employees.add(request.getSalaryPerCategory("ContractorEducator"));
+
+                            displayPaymentPerStaffCategory(employees,categories);
+                            //ArrayList<Employee> employees = request.getSalaryperStaffCategory();
+                            //displayResultsEmployees(employees, categories, root);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
                         break;
                     case "Max Salary per Staff Category":
                         try {
-                            ArrayList<String> categories = null;
-                            categories = initCategoriesForStats(categories);
                             ArrayList<Double> maxSalaries = request.getMaxSalaryStatisticsperCategory();
                             displayResultsSalaries(maxSalaries, categories, root);
                         } catch (SQLException ex) {
@@ -674,8 +716,6 @@ public class GUI {
                         break;
                     case "Min Salary per Staff Category":
                         try {
-                            ArrayList<String> categories = null;
-                            categories = initCategoriesForStats(categories);
                             ArrayList<Double> minSalaries = request.getMinSalaryStatisticsperCategory();
                             displayResultsSalaries(minSalaries, categories, root);
                         } catch (SQLException ex) {
@@ -684,8 +724,6 @@ public class GUI {
                         break;
                     case "Average Salary per Staff Category":
                         try {
-                            ArrayList<String> categories = null;
-                            categories = initCategoriesForStats(categories);
                             ArrayList<Double> avgSalaries = request.getAverageSalaryStatisticsperCategory();
                             displayResultsSalaries(avgSalaries, categories, root);
                         } catch (SQLException ex) {
@@ -694,41 +732,54 @@ public class GUI {
                         break;
                     case "Average Salary and Bonus Increase":
                         try {
-                            ArrayList<String> dates = getDates(root);
-                            if (dates == null || dates.size() != 2)
-                                break;
-                            double result = request.getAverageSalaryBonusIncrease(dates.get(0), dates.get(1));
-                            displayAverageSalaryBonusIncrease(root, result);
+                            ArrayList<Date> dates = getDates(root);
+                            ArrayList<Double> averageResults = new ArrayList<Double>();
+                            averageResults.add(request.getAverageSalaryBonusIncrease(dates.get(0), dates.get(1),"raiseSalary"));
+                            averageResults.add(request.getAverageSalaryBonusIncrease(dates.get(0), dates.get(1),"raiseFamBonus"));
+                            averageResults.add(request.getAverageSalaryBonusIncrease(dates.get(0), dates.get(1),"raiseSearchBonus"));
+                            averageResults.add(request.getAverageSalaryBonusIncrease(dates.get(0), dates.get(1),"raiseLibraryBonus"));
+                            displayAverageSalaryBonusIncrease(root, averageResults);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
                         break;
                     case "Employee Data and Salary":
+                        int employeeId = getEmployeeId(root);
                         try {
-                            int employeeId = getEmployeeId(root);
-                            ArrayList<Employee> employees = new ArrayList<>();
-                            ArrayList<String> categories = new ArrayList<>();
-                            Employee employee = request.getEmployeeSalaryData(employeeId, categories);
-                            employees.add(employee);
-                            if (categories.get(0).equals("Undefined")) {
-                                EmployeeNotFound(root);
-                                break;
-                            }
-                            displayResultsEmployees(employees, categories, root);
+                            displayEmployeeInfo(request.getEmployeeSalaryData(employeeId));
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
                         break;
                     case "Total Salary per Staff Category":
                         try {
-                            ArrayList<String> categories = null;
-                            categories = initCategoriesForStats(categories);
                             ArrayList<Double> totalSalaries = request.getTotalSalaryperCategory();
                             displayResultsSalaries(totalSalaries, categories, root);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
                         break;
+                    case "Count of active Employees":
+                        try {
+                            int id = request.countAtiveEmployees();
+                            JOptionPane.showMessageDialog(null, panelForMessageDialog("Count of Active Employees are: " + id,root), "Message", JOptionPane.INFORMATION_MESSAGE);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    case "Employee with max number of kids":
+                        try {
+                            String name = request.EmployeeWithMaxKids();
+                            JOptionPane.showMessageDialog(null, panelForMessageDialog("Employee with max number of kid is: " + name,root), "Message", JOptionPane.INFORMATION_MESSAGE);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    case "Active employee with most experience":
+                        try {
+                            String name = request.EmployeeWithMaxExperience();
+                            JOptionPane.showMessageDialog(null, panelForMessageDialog("Employee with most experience is: " + name,root), "Message", JOptionPane.INFORMATION_MESSAGE);
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     default:
                         assert (false);
                 }
@@ -751,7 +802,7 @@ public class GUI {
             message += payments.get(i) + "<br><br>";
         }
 
-        JOptionPane.showMessageDialog(null, panelForMessageDialog(String.format(message, 500, 500)), "Message", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, panelForMessageDialog(String.format(message, 500, 500),true), "Message", JOptionPane.INFORMATION_MESSAGE);
 
     }
 
@@ -818,7 +869,7 @@ public class GUI {
                         should_dispose.set(true);
                         String[] date = currentDate.toString().split("-");
                         if (paidEveryone == true) {
-                            JOptionPane.showMessageDialog(null, panelForMessageDialog("Employees have already been paid!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(null, panelForMessageDialog("Employees have already been paid!",true), "Message", JOptionPane.INFORMATION_MESSAGE);
                             currentDate = Date.valueOf(((Integer.parseInt(date[1]) + 1) == 13) ? ((Integer.parseInt(date[0]) + 1) + "-01-" + date[2])
                                     : (date[0] + "-" + (Integer.parseInt(date[1]) + 1) + "-01"));
                         } else {
@@ -884,16 +935,16 @@ public class GUI {
 
     public static boolean check_correct_IBAN_Category(String IBAN, String groupEmployer, String jobDepartment) {
         if (!IBAN.matches("[0-9]+") || Integer.parseInt(IBAN) > 2147483647) {
-            JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data from Employee's IBAN!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data from Employee's IBAN!",false), "Message", JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
 
         if (groupEmployer.equals("") || !groupEmployer.equals("Permanent") && !groupEmployer.equals("Contractor")) {
-            JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data from Employee's category (Permanent/Contractor)!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data from Employee's category (Permanent/Contractor)!",false), "Message", JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
         if (jobDepartment.equals("") || !jobDepartment.equals("Educator") && !jobDepartment.equals("Manager")) {
-            JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data from Employee's category (Educator/Manager)!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data from Employee's category (Educator/Manager)!",false), "Message", JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
 
@@ -903,19 +954,19 @@ public class GUI {
     public static boolean check_correct_family_state(String ages, String kids, String state) {
         String[] splitKidsAges = ages.split(",");
         if (state.equals("") || !kids.matches("[0-9]+") || Integer.parseInt(kids) > 10) {
-            JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data or not exists from Employee's family state!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data or not exists from Employee's family state!",false), "Message", JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
 
         int kidsNumber = Integer.parseInt(kids);
         if ((splitKidsAges.length != kidsNumber && kidsNumber != 0) || (kidsNumber != 0 && state == "unmarried") || (kidsNumber == 0 && state == "married")) {
-            JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data from Employee's family state!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data from Employee's family state!",false), "Message", JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
 
         for (int i = 0; i < kidsNumber; i++) {
             if (state == "married" && (Integer.parseInt(splitKidsAges[i]) <= 0 || Integer.parseInt(splitKidsAges[i]) >= 100)) {
-                JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data from Employee's family state!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data from Employee's family state!",false), "Message", JOptionPane.INFORMATION_MESSAGE);
                 return false;
             }
         }
@@ -925,7 +976,7 @@ public class GUI {
 
     public static boolean check_correct_phoneNumber(String phoneNumber) {
         if (!phoneNumber.matches("[0-9]+") || Integer.parseInt(phoneNumber) > 2147483647) {
-            JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data or not given data from Employee's phoneNumber!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect data or not given data from Employee's phoneNumber!",false), "Message", JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
         return true;
@@ -934,7 +985,7 @@ public class GUI {
     public static boolean check_rest_info(String firstName, String lastName, String username, String password, String address, String bankName) {
         if (firstName.length() == 0 || lastName.length() == 0 || username.length() == 0
                 || password.length() == 0 || address.length() == 0 || bankName.length() == 0) {
-            JOptionPane.showMessageDialog(null, panelForMessageDialog("Not given data for Employee's information!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, panelForMessageDialog("Not given data for Employee's information!",false), "Message", JOptionPane.INFORMATION_MESSAGE);
             return false;
         }
         return true;
@@ -987,7 +1038,8 @@ public class GUI {
                     currentDate = Date.valueOf(dateS);
                 }
 
-                if (!paidEveryone && Integer.parseInt(date[2]) == 1) { //employees are not paid, user's mistake
+                //TODO check this state
+                if (Integer.parseInt(date[2]) == 31 && !paidEveryone) { //employees are not paid, user's mistake
                     ArrayList<String> payments = request.payEmployees(currentDate.toString(), basicSALARY, contractSALARY);
                     displayPaymentInGUI(payments);
                 }
@@ -1027,20 +1079,20 @@ public class GUI {
         int option = JOptionPane.showConfirmDialog(null, panelLoginAndFirePage(employeeId, fireRetire, labelId, labelOption), "Fire", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             if (!employeeId.getText().matches("[0-9]+") || Integer.parseInt(employeeId.getText()) == 1) {
-                JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect Employee Id"), "Message", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, panelForMessageDialog("Incorrect Employee Id",true), "Message", JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
             int givenEmployeeId = Integer.parseInt(employeeId.getText());
             double payment = request.fireEmployee(givenEmployeeId);
             if (paidEveryone == true) {
                 JOptionPane.showMessageDialog(null, panelForMessageDialog("EmployeeID " + givenEmployeeId + " has already been paid with "
-                        + payment + " euros!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+                        + payment + " euros!",true), "Message", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 String[] date = currentDate.toString().split("-");
                 if (Integer.parseInt(date[2]) != 31 || Integer.parseInt(date[2]) != 30 || Integer.parseInt(date[2]) != 28)
                     calculate_last_day_Month(currentDate.toString());
                 JOptionPane.showMessageDialog(null, panelForMessageDialog("EmployeeID " + givenEmployeeId +
-                        " is " + fireRetire.getText().toString() + "d with " + payment + " euros!"), "Message", JOptionPane.INFORMATION_MESSAGE);
+                        " has been " + fireRetire.getText().toString() + "d given " + payment + " euros!",true), "Message", JOptionPane.INFORMATION_MESSAGE);
             }
             displayProcedures(root);
         } else
@@ -1068,7 +1120,7 @@ public class GUI {
             if (check_correct_phoneNumber(phoneNumber.getText()))
                 request.changePhoneNumber(Integer.parseInt(phoneNumber.getText()), employeeId);
             if (check_correct_family_state(kidsAgesWithCommas.getText(), kids.getText(), married.getText())) {
-                request.changeFamilyState(married.getText(), Integer.parseInt(kids.getText()), kidsAgesWithCommas.getText(), employeeId);
+                request.changeFamilyState(married.getText(), Integer.parseInt(kids.getText()), kidsAgesWithCommas.getText(), employeeId,currentDate);
                 request.changeSalary(currentDate.toString(), basicSALARY, contractSALARY);
             }
             displayProcedures(root);
@@ -1097,13 +1149,14 @@ public class GUI {
             if (!basicSalary.getText().equals("")) basicSALARY = Double.parseDouble(basicSalary.getText().toString());
             if (!contractSalary.getText().equals(""))
                 contractSALARY = Double.parseDouble(contractSalary.getText().toString());
+
             if (!libraryBonus.getText().equals("")) {
                 libraryBONUS = Double.parseDouble(libraryBonus.getText().toString());
-                request.changeLibraryBonus(libraryBONUS);
+                request.change_Search_Library_Bonus(libraryBONUS,"libraryBonus",currentDate);
             }
             if (!searchBonus.getText().equals("")) {
                 searchBONUS = Double.parseDouble(searchBonus.getText().toString());
-                request.changeSearchBonus(searchBONUS);
+                request.change_Search_Library_Bonus(searchBONUS,"searchBonus",currentDate);
             }
             request.changeSalary(currentDate.toString(), basicSALARY, contractSALARY);
             displayProcedures(root);
