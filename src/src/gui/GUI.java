@@ -598,8 +598,8 @@ public class GUI {
         String message = "<html><body width='%1s'><h1>Average Salary and Bonuses Increase for a specific duration</h1><br><br>";
         for (int i = 0; i < result.size(); ++i)
             message += (categories.get(i) + ": " + result.get(i).toString() + "<br><br>");
-
-        int option = JOptionPane.showOptionDialog(frame, message, "Results", JOptionPane.OK_OPTION, 0, new ImageIcon("download.jpeg"), options, options[0]);
+        
+        panelForMessageDialog(message, root, false);
     }
 
     private static ArrayList<String> initCategoriesForStats() {
