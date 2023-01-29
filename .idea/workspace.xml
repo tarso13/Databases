@@ -4,6 +4,7 @@
     <list default="true" id="8ac59761-340c-4cca-8ff0-776d525464e2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/src/classes/BankInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/classes/BankInfo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/src/gui/GUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/gui/GUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/src/server/ServerRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/src/server/ServerRequest.java" afterDir="false" />
     </list>
@@ -100,14 +101,14 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/src/server/ServerRequest.java</url>
-          <line>292</line>
-          <option name="timeStamp" value="24" />
+          <url>file://$PROJECT_DIR$/src/src/gui/GUI.java</url>
+          <line>444</line>
+          <option name="timeStamp" value="30" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/src/server/ServerRequest.java</url>
-          <line>682</line>
-          <option name="timeStamp" value="26" />
+          <url>file://$PROJECT_DIR$/src/src/gui/GUI.java</url>
+          <line>446</line>
+          <option name="timeStamp" value="32" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

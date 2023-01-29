@@ -1,7 +1,5 @@
 package src.classes;
 
-import java.util.Map;
-
 public class BankInfo {
 
     private int bankID;
@@ -14,21 +12,6 @@ public class BankInfo {
         this.IBAN = IBAN;
         this.bankName = bankName;
         this.timesPaid = timesPaid;
-    }
-
-    public int getBankID() {
-        return this.bankID;
-    }
-
-    public int getIBAN() {
-        return this.IBAN;
-    }
-
-    public String getNameBank() {
-        return this.bankName;
-    }
-    public int getTimesPaid() {
-        return this.timesPaid;
     }
 }
 

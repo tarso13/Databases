@@ -1,20 +1,18 @@
 package src.gui;
 
-import src.classes.Employee;
 import src.server.ServerRequest;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GUI {
     static ServerRequest request = new ServerRequest();
@@ -34,10 +32,9 @@ public class GUI {
 
         JPanel panel = new JPanel();
         JLabel label = new JLabel(message);
-        label.setFont(new Font("Calibri", Font.ITALIC, 17));
+        label.setFont(new Font("Calibre", Font.ITALIC, 17));
         panel.add(label);
-        if (yesno == false) {
-            //FIXME cannot see buttons in some Panels !FIXED!
+        if (!yesno) {
             returnPage.addActionListener(
                     e -> {
                         frame.setVisible(false);
@@ -79,11 +76,11 @@ public class GUI {
     public static JPanel panelLoginAndFirePage(JTextField firstField, JTextField secondField, JLabel firstLabel, JLabel secondLabel) {
         firstField.setPreferredSize(new Dimension(334, 19));
         secondField.setPreferredSize(new Dimension(334, 19));
-        firstLabel.setFont(new Font("Calibri", Font.ITALIC, 20));
-        secondLabel.setFont(new Font("Calibri", Font.ITALIC, 20));
+        firstLabel.setFont(new Font("Calibre", Font.ITALIC, 20));
+        secondLabel.setFont(new Font("Calibre", Font.ITALIC, 20));
 
         JLabel dateLabel = new JLabel("Current date: " + currentDate.toString());
-        dateLabel.setFont(new Font("Calibri", Font.ITALIC, 20));
+        dateLabel.setFont(new Font("Calibre", Font.ITALIC, 20));
 
         JPanel panel = new JPanel();
         GridBagLayout grid = new GridBagLayout();
@@ -126,13 +123,13 @@ public class GUI {
         fields[1].setPreferredSize(new Dimension(334, 19));
         fields[2].setPreferredSize(new Dimension(334, 19));
         fields[3].setPreferredSize(new Dimension(334, 19));
-        labels[0].setFont(new Font("Calibri", Font.ITALIC, 20));
-        labels[1].setFont(new Font("Calibri", Font.ITALIC, 20));
-        labels[2].setFont(new Font("Calibri", Font.ITALIC, 20));
-        labels[3].setFont(new Font("Calibri", Font.ITALIC, 20));
+        labels[0].setFont(new Font("Calibre", Font.ITALIC, 20));
+        labels[1].setFont(new Font("Calibre", Font.ITALIC, 20));
+        labels[2].setFont(new Font("Calibre", Font.ITALIC, 20));
+        labels[3].setFont(new Font("Calibre", Font.ITALIC, 20));
 
         JLabel dateLabel = new JLabel("Current date: " + currentDate.toString());
-        dateLabel.setFont(new Font("Calibri", Font.ITALIC, 20));
+        dateLabel.setFont(new Font("Calibre", Font.ITALIC, 20));
 
         JPanel panel = new JPanel();
         GridBagLayout grid = new GridBagLayout();
@@ -196,14 +193,14 @@ public class GUI {
         fields[2].setPreferredSize(new Dimension(334, 19));
         fields[3].setPreferredSize(new Dimension(334, 19));
         fields[4].setPreferredSize(new Dimension(334, 19));
-        labels[0].setFont(new Font("Calibri", Font.ITALIC, 20));
-        labels[1].setFont(new Font("Calibri", Font.ITALIC, 20));
-        labels[2].setFont(new Font("Calibri", Font.ITALIC, 20));
-        labels[3].setFont(new Font("Calibri", Font.ITALIC, 20));
-        labels[4].setFont(new Font("Calibri", Font.ITALIC, 20));
+        labels[0].setFont(new Font("Calibre", Font.ITALIC, 20));
+        labels[1].setFont(new Font("Calibre", Font.ITALIC, 20));
+        labels[2].setFont(new Font("Calibre", Font.ITALIC, 20));
+        labels[3].setFont(new Font("Calibre", Font.ITALIC, 20));
+        labels[4].setFont(new Font("Calibre", Font.ITALIC, 20));
 
         JLabel dateLabel = new JLabel("Current date: " + currentDate.toString());
-        dateLabel.setFont(new Font("Calibri", Font.ITALIC, 20));
+        dateLabel.setFont(new Font("Calibre", Font.ITALIC, 20));
 
         JPanel panel = new JPanel();
         GridBagLayout grid = new GridBagLayout();
@@ -218,9 +215,7 @@ public class GUI {
         gbc.gridy = 0;
         panel.add(dateLabel);
 
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipady = 20;
-        gbc.gridx = 0;
         gbc.gridy = 1;
         panel.add(labels[0], gbc);
 
@@ -285,22 +280,22 @@ public class GUI {
         fields[10].setPreferredSize(new Dimension(234, 7));
         fields[11].setPreferredSize(new Dimension(234, 7));
         fields[12].setPreferredSize(new Dimension(234, 7));
-        labels[0].setFont(new Font("Calibri", Font.ITALIC, 17));
-        labels[1].setFont(new Font("Calibri", Font.ITALIC, 17));
-        labels[2].setFont(new Font("Calibri", Font.ITALIC, 17));
-        labels[3].setFont(new Font("Calibri", Font.ITALIC, 17));
-        labels[4].setFont(new Font("Calibri", Font.ITALIC, 17));
-        labels[5].setFont(new Font("Calibri", Font.ITALIC, 17));
-        labels[6].setFont(new Font("Calibri", Font.ITALIC, 17));
-        labels[7].setFont(new Font("Calibri", Font.ITALIC, 17));
-        labels[8].setFont(new Font("Calibri", Font.ITALIC, 17));
-        labels[9].setFont(new Font("Calibri", Font.ITALIC, 17));
-        labels[10].setFont(new Font("Calibri", Font.ITALIC, 17));
-        labels[11].setFont(new Font("Calibri", Font.ITALIC, 17));
-        labels[12].setFont(new Font("Calibri", Font.ITALIC, 17));
+        labels[0].setFont(new Font("Calibre", Font.ITALIC, 17));
+        labels[1].setFont(new Font("Calibre", Font.ITALIC, 17));
+        labels[2].setFont(new Font("Calibre", Font.ITALIC, 17));
+        labels[3].setFont(new Font("Calibre", Font.ITALIC, 17));
+        labels[4].setFont(new Font("Calibre", Font.ITALIC, 17));
+        labels[5].setFont(new Font("Calibre", Font.ITALIC, 17));
+        labels[6].setFont(new Font("Calibre", Font.ITALIC, 17));
+        labels[7].setFont(new Font("Calibre", Font.ITALIC, 17));
+        labels[8].setFont(new Font("Calibre", Font.ITALIC, 17));
+        labels[9].setFont(new Font("Calibre", Font.ITALIC, 17));
+        labels[10].setFont(new Font("Calibre", Font.ITALIC, 17));
+        labels[11].setFont(new Font("Calibre", Font.ITALIC, 17));
+        labels[12].setFont(new Font("Calibre", Font.ITALIC, 17));
 
         JLabel dateLabel = new JLabel("Current date: " + currentDate.toString());
-        dateLabel.setFont(new Font("Calibri", Font.ITALIC, 20));
+        dateLabel.setFont(new Font("Calibre", Font.ITALIC, 20));
 
         JPanel panel = new JPanel();
         GridBagLayout grid = new GridBagLayout();
@@ -315,9 +310,7 @@ public class GUI {
         gbc.gridy = 0;
         panel.add(dateLabel);
 
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.ipady = 20;
-        gbc.gridx = 0;
         gbc.gridy = 1;
         panel.add(labels[0], gbc);
 
@@ -448,6 +441,33 @@ public class GUI {
         return panel;
     }
 
+    public static boolean check_valid_dates(Date initialDate, Date finalDate, Date currentDate){
+        try {
+            // ResolverStyle.STRICT for 30, 31 days checking, and also leap year.
+            LocalDate.parse(initialDate.toString(),
+                    DateTimeFormatter.ofPattern("uuuu-M-d")
+                            .withResolverStyle(ResolverStyle.STRICT)
+            );
+
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+
+        try {
+            // ResolverStyle.STRICT for 30, 31 days checking, and also leap year.
+            LocalDate.parse(finalDate.toString(),
+                    DateTimeFormatter.ofPattern("uuuu-M-d")
+                            .withResolverStyle(ResolverStyle.STRICT)
+            );
+
+        } catch (DateTimeParseException e) {
+            System.out.println("invalid dates");
+            return false;
+        }
+
+        return !currentDate.before(initialDate);
+    }
+
     private static ArrayList<Date> getDates(boolean root) throws SQLException {
         JTextField initialDate = new JTextField();
         JTextField finalDate = new JTextField();
@@ -458,8 +478,8 @@ public class GUI {
 
         int option = JOptionPane.showConfirmDialog(null, panelLoginAndFirePage(initialDate, finalDate, labelInit, labelFinal), "Login Page", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            //TODO check valid date for XXXX-XX-XX
-            if (initialDate.getText().equals("") || finalDate.getText().equals("")) {
+            if (initialDate.getText().equals("") || finalDate.getText().equals("")
+                    || !check_valid_dates(Date.valueOf(initialDate.getText()),Date.valueOf(finalDate.getText()),currentDate)) {
                 int opt = JOptionPane.showConfirmDialog(null, panelForMessageDialog("Invalid Dates given!", true, false), "Message", JOptionPane.INFORMATION_MESSAGE);
                 if (opt == JOptionPane.OK_OPTION)
                     displayProcedures(root);
@@ -469,7 +489,7 @@ public class GUI {
             }
 
             dates.add(Date.valueOf(initialDate.getText()));
-            dates.add(Date.valueOf(finalDate.getText()));
+            if (currentDate.before(Date.valueOf(finalDate.getText()))) dates.add(currentDate);
         } else
             validateExit(root);
         return dates;
@@ -492,7 +512,7 @@ public class GUI {
             } else if (username.getText().equals("root") && password.getText().equals("root"))
                 displayProcedures(true);
             else {
-                employeeId = request.login(username.getText(), password.getText());
+                employeeId = request.loginEmployee(username.getText(), password.getText());
                 if (employeeId == -1) {
                     panelForMessageDialog("Login with false combination of username and password!", false, false);
                     loginPage();
@@ -512,16 +532,16 @@ public class GUI {
     }
 
     private static void displayPaymentPerStaffCategory(ArrayList<ArrayList<String>> payments, ArrayList<String> Categories, boolean root) {
-        String message = "<html><body width='%1s'><h1>Payment Staff Per Category</h1><br><br>";
+        StringBuilder message = new StringBuilder("<html><body width='%1s'><h1>Payment Staff Per Category</h1><br><br>");
 
         for (int category = 0; category < 4; category++) {
-            message += "<p>" + Categories.get(category) + " {<br><br>";
+            message.append("<p>").append(Categories.get(category)).append(" {<br><br>");
             for (int person = 0; person < payments.get(category).size(); person++) {
-                message += payments.get(category).get(person) + "<br><br>";
+                message.append(payments.get(category).get(person)).append("<br><br>");
             }
-            message += "}</p><br><br>";
+            message.append("}</p><br><br>");
         }
-        panelForMessageDialog(message, root, false);
+        panelForMessageDialog(message.toString(), root, false);
     }
 
     private static void displayEmployeeInfo(String info) {
@@ -546,10 +566,10 @@ public class GUI {
             }
         });
 
-        String salaries = "<html><body width='%1s'><h1>" + stat + "Salary Per Category</h1><br><br>";
+        StringBuilder salaries = new StringBuilder("<html><body width='%1s'><h1>" + stat + "Salary Per Category</h1><br><br>");
         for (int i = 0; i < Salaries.size(); ++i)
-            salaries += (Categories.get(i) + ": " + Salaries.get(i).toString() + "<br><br>");
-        int option = JOptionPane.showOptionDialog(frame, salaries, "Results", JOptionPane.OK_OPTION, 0, null, options, options[0]);
+            salaries.append(Categories.get(i)).append(": ").append(Salaries.get(i).toString()).append("<br><br>");
+        int option = JOptionPane.showOptionDialog(frame, salaries.toString(), "Results", JOptionPane.OK_OPTION, 0, null, options, options[0]);
     }
 
     private static int getEmployeeId(boolean root) throws NumberFormatException {
@@ -559,8 +579,8 @@ public class GUI {
         };
 
         int option = JOptionPane.showConfirmDialog(null, message, "Employee Id", JOptionPane.OK_CANCEL_OPTION);
-        if (employeeId.getText().toString() == null || employeeId.getText().toString().equals("") || Integer.parseInt(employeeId.getText()) < 0
-                || !employeeId.getText().toString().matches("[0-9]+") || Integer.parseInt(employeeId.getText()) > 2147483647) {
+        if (employeeId.getText() == null || employeeId.getText().equals("") || Integer.parseInt(employeeId.getText()) < 0
+                || !employeeId.getText().matches("[0-9]+")) {
             panelForMessageDialog("Incorrect Employee Id", root, false);
             return -1;
         }
@@ -589,17 +609,17 @@ public class GUI {
             }
         });
 
-        ArrayList<String> categories = new ArrayList<String>();
+        ArrayList<String> categories = new ArrayList<>();
         categories.add("Average family Bonus increment");
         categories.add("Average search Bonus increment");
         categories.add("Average library Bonus increment");
         categories.add("Average salary increment");
 
-        String message = "<html><body width='%1s'><h1>Average Salary and Bonuses Increase for a specific duration</h1><br><br>";
+        StringBuilder message = new StringBuilder("<html><body width='%1s'><h1>Average Salary and Bonuses Increase for a specific duration</h1><br><br>");
         for (int i = 0; i < result.size(); ++i)
-            message += (categories.get(i) + ": " + result.get(i).toString() + "<br><br>");
+            message.append(categories.get(i)).append(": ").append(result.get(i).toString()).append("<br><br>");
         
-        panelForMessageDialog(message, root, false);
+        panelForMessageDialog(message.toString(), root, false);
     }
 
     private static ArrayList<String> initCategoriesForStats() {
@@ -621,7 +641,7 @@ public class GUI {
         JButton[] buttons = new JButton[11];
         panel = new JPanel(new GridLayout(12, 1));
         panel.add(dateLabel);
-        String b[] = {"Payment State per Staff Category", "Max Salary per Staff Category", "Min Salary per Staff Category", "Average Salary per Staff Category",
+        String[] b = {"Payment State per Staff Category", "Max Salary per Staff Category", "Min Salary per Staff Category", "Average Salary per Staff Category",
                 "Average Salary and Bonus Increase", "Employee Data and Salary", "Total Salary per Staff Category", "Count of active Employees", "Employee with max number of kids", "Active employee with most experience", "Back to Login Page"};
         for (int i = 0; i < buttons.length; i++) {
             buttons[i] = new JButton(b[i]);
@@ -688,7 +708,8 @@ public class GUI {
                         try {
                             queriesFrame.dispose();
                             ArrayList<Date> dates = getDates(root);
-                            ArrayList<Double> averageResults = new ArrayList<Double>();
+                            ArrayList<Double> averageResults = new ArrayList<>();
+                            assert dates != null;
                             averageResults.add(request.getAverageSalaryBonusIncrease(dates.get(0), dates.get(1), "raiseSalary"));
                             averageResults.add(request.getAverageSalaryBonusIncrease(dates.get(0), dates.get(1), "raiseFamBonus"));
                             averageResults.add(request.getAverageSalaryBonusIncrease(dates.get(0), dates.get(1), "raiseSearchBonus"));
@@ -755,13 +776,13 @@ public class GUI {
     }
 
     public static void displayPaymentInGUI(ArrayList<String> payments) {
-        String message = "<html><body width='%1s'><h1>Payment Info</h1>";
+        StringBuilder message = new StringBuilder("<html><body width='%1s'><h1>Payment Info</h1>");
 
-        for (int i = 0; i < payments.size(); i++) {
-            message += payments.get(i) + "<br><br>";
+        for (String payment : payments) {
+            message.append(payment).append("<br><br>");
         }
 
-        panelForMessageDialog(String.format(message, 500, 500), true, false);
+        panelForMessageDialog(String.format(message.toString(), 500, 500), true, false);
     }
 
     public static void calculate_last_day_Month(String current) {
@@ -784,8 +805,7 @@ public class GUI {
         JButton[] buttons = new JButton[7];
         panel = new JPanel(new GridLayout(8, 1));
         panel.add(dateLabel);
-        AtomicBoolean should_dispose = new AtomicBoolean(true);
-        String b[] = {"New Hire", "New Fire/Retirement", "Change Salary/Bonuses", "Payments", "Change Employee Info", "Queries", "Back to Login Page"};
+        String[] b = {"New Hire", "New Fire/Retirement", "Change Salary/Bonuses", "Payments", "Change Employee Info", "Queries", "Back to Login Page"};
         for (int i = 0; i < buttons.length; i++) {
             buttons[i] = new JButton(b[i]);
             buttons[i].setSize(80, 80);
@@ -821,12 +841,12 @@ public class GUI {
                             break;
                         proceduresFrame.dispose();
                         String[] date = currentDate.toString().split("-");
-                        if (paidEveryone == true) {
+                        if (paidEveryone) {
                             panelForMessageDialog("Employees have already been paid!", true, false);
                             currentDate = Date.valueOf(((Integer.parseInt(date[1]) + 1) == 13) ? ((Integer.parseInt(date[0]) + 1) + "-01-" + date[2])
                                     : (date[0] + "-" + (Integer.parseInt(date[1]) + 1) + "-01"));
                         } else {
-                            if (Integer.parseInt(date[2]) != 31 || Integer.parseInt(date[2]) != 30 || Integer.parseInt(date[2]) != 28)
+                            if (Integer.parseInt(date[2]) == 1)
                                 calculate_last_day_Month(currentDate.toString());
                             try {
                                 ArrayList<String> payments = request.payEmployees(currentDate.toString(), basicSALARY, contractSALARY);
@@ -841,7 +861,7 @@ public class GUI {
                     case "Change Employee Info":
                         proceduresFrame.dispose();
                         try {
-                            displayChangeInfo(proceduresFrame, root);
+                            displayChangeInfo(root);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -851,7 +871,7 @@ public class GUI {
                             break;
                         try {
                             proceduresFrame.dispose();
-                            displayChangeSalaryBonuses(proceduresFrame, root);
+                            displayChangeSalaryBonuses(root);
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -881,9 +901,11 @@ public class GUI {
     }
 
     public static boolean check_correct_IBAN_Category(String IBAN, String groupEmployer, String jobDepartment) {
-        if (!IBAN.matches("[0-9]+") || Integer.parseInt(IBAN) > 2147483647) {
+        if (!IBAN.matches("[0-9]+")) {
             panelForMessageDialog("Incorrect data from Employee's IBAN!", false, false);
             return false;
+        } else {
+            Integer.parseInt(IBAN);
         }
 
         if (groupEmployer.equals("") || !groupEmployer.equals("Permanent") && !groupEmployer.equals("Contractor")) {
@@ -906,13 +928,13 @@ public class GUI {
         }
 
         int kidsNumber = Integer.parseInt(kids);
-        if ((splitKidsAges.length != kidsNumber && kidsNumber != 0) || (kidsNumber != 0 && state == "unmarried") || (kidsNumber == 0 && state == "married")) {
+        if (splitKidsAges.length != kidsNumber && kidsNumber != 0) {
             panelForMessageDialog("Incorrect data from Employee's family state!", false, false);
             return false;
         }
 
         for (int i = 0; i < kidsNumber; i++) {
-            if (state == "married" && (Integer.parseInt(splitKidsAges[i]) <= 0 || Integer.parseInt(splitKidsAges[i]) >= 100)) {
+            if (state.equals("married") && (Integer.parseInt(splitKidsAges[i]) <= 0 || Integer.parseInt(splitKidsAges[i]) >= 100)) {
                 panelForMessageDialog("Incorrect data from Employee's family state!", false, false);
                 return false;
             }
@@ -922,7 +944,7 @@ public class GUI {
     }
 
     public static boolean check_correct_phoneNumber(String phoneNumber) {
-        if (!phoneNumber.matches("[0-9]+") || Integer.parseInt(phoneNumber) > 2147483647) {
+        if (!phoneNumber.matches("[0-9]+")) {
             panelForMessageDialog("Incorrect data or not given data from Employee's phoneNumber!", false, false);
             return false;
         }
@@ -985,17 +1007,17 @@ public class GUI {
                     currentDate = Date.valueOf(dateS);
                 }
 
-                //TODO check this state
-                if (Integer.parseInt(date[2]) == 31 && !paidEveryone) { //employees are not paid, user's mistake
+                if (Integer.parseInt(date[2]) == 31 || Integer.parseInt(date[2]) == 28 || Integer.parseInt(date[2]) == 30 && !paidEveryone) { //employees are not paid, user's mistake
                     ArrayList<String> payments = request.payEmployees(currentDate.toString(), basicSALARY, contractSALARY);
                     displayPaymentInGUI(payments);
                 }
 
                 int bankId = request.insertBankInfo(Integer.parseInt(IBAN.getText()), bankName.getText());
-                int bonusId = request.insertBonus(request.calculateFamilyBonus(married.getText().toString(), kidsAgesWithCommas.getText().toString()), searchBONUS, libraryBONUS, groupEmployer.getText().toString(), jobDepartment.getText().toString()); //calculateFamilyBonus instead of 0.15
+                int bonusId = request.insertBonus(request.calculateFamilyBonus(married.getText(), kidsAgesWithCommas.getText()), searchBONUS, libraryBONUS, groupEmployer.getText(), jobDepartment.getText());
                 int stateId = request.insertFamilyState(married.getText(), Integer.parseInt(kids.getText()), kidsAgesWithCommas.getText());
+                int loginId = request.insertLogin(username.getText(),password.getText());
 
-                int[] infoInt = {Integer.parseInt(phoneNumber.getText()), bankId, stateId, bonusId};
+                int[] infoInt = {Integer.parseInt(phoneNumber.getText()), loginId,bankId, stateId, bonusId};
                 String[] infoStr = {firstName.getText(), lastName.getText(), address.getText()};
 
                 if (groupEmployer.getText().equals("Permanent"))
@@ -1003,7 +1025,7 @@ public class GUI {
                 else
                     employeeId = request.insertEmployee(infoStr, currentDate, infoInt, contractSALARY);
 
-                request.hireEmployee(employeeId, groupEmployer.getText().toString(), jobDepartment.getText().toString(), username.getText(), password.getText());
+                request.hireEmployee(employeeId, groupEmployer.getText(), jobDepartment.getText());
 
                 paidEveryone = false;
                 displayProcedures(root);
@@ -1031,15 +1053,17 @@ public class GUI {
             }
             int givenEmployeeId = Integer.parseInt(employeeId.getText());
             double payment = request.fireEmployee(givenEmployeeId);
-            if (paidEveryone == true) {
-                panelForMessageDialog("EmployeeID " + givenEmployeeId + " has already been paid with "
+
+            String[] date = currentDate.toString().split("-");
+            if (Integer.parseInt(date[2]) == 1)
+                calculate_last_day_Month(currentDate.toString());
+
+            if (paidEveryone) {
+                panelForMessageDialog("EmployeeID " + givenEmployeeId + " has ALREADY been paid with "
                         + payment + " euros!", true, false);
             } else {
-                String[] date = currentDate.toString().split("-");
-                if (Integer.parseInt(date[2]) != 31 || Integer.parseInt(date[2]) != 30 || Integer.parseInt(date[2]) != 28)
-                    calculate_last_day_Month(currentDate.toString());
                panelForMessageDialog("EmployeeID " + givenEmployeeId +
-                        " has been " + fireRetire.getText().toString() + "d given " + payment + " euros!", true, false);
+                        " has been " + fireRetire.getText() + "d given " + payment + " euros!", true, false);
             }
             displayProcedures(root);
         } else
@@ -1047,7 +1071,7 @@ public class GUI {
 
     }
 
-    private static void displayChangeInfo(JFrame proceduresFrame, boolean root) throws SQLException {
+    private static void displayChangeInfo(boolean root) throws SQLException {
         JTextField address = new JTextField();
         JTextField phoneNumber = new JTextField();
         JTextField married = new JTextField();
@@ -1076,7 +1100,7 @@ public class GUI {
 
     }
 
-    private static void displayChangeSalaryBonuses(JFrame proceduresFrame, boolean root) throws SQLException {
+    private static void displayChangeSalaryBonuses(boolean root) throws SQLException {
         JTextField searchBonus = new JTextField();
         JTextField libraryBonus = new JTextField();
         JTextField basicSalary = new JTextField();
@@ -1093,16 +1117,16 @@ public class GUI {
             if (!basicSalary.getText().matches("(\\d*\\.?\\d+)") && !contractSalary.getText().matches("(\\d*\\.?\\d+)")
                     && !libraryBonus.getText().matches("(\\d*\\.?\\d+)") && !searchBonus.getText().matches("(\\d*\\.?\\d+)"))
                 return;
-            if (!basicSalary.getText().equals("")) basicSALARY = Double.parseDouble(basicSalary.getText().toString());
+            if (!basicSalary.getText().equals("")) basicSALARY = Double.parseDouble(basicSalary.getText());
             if (!contractSalary.getText().equals(""))
-                contractSALARY = Double.parseDouble(contractSalary.getText().toString());
+                contractSALARY = Double.parseDouble(contractSalary.getText());
 
             if (!libraryBonus.getText().equals("")) {
-                libraryBONUS = Double.parseDouble(libraryBonus.getText().toString());
+                libraryBONUS = Double.parseDouble(libraryBonus.getText());
                 request.change_Search_Library_Bonus(libraryBONUS, "libraryBonus", currentDate);
             }
             if (!searchBonus.getText().equals("")) {
-                searchBONUS = Double.parseDouble(searchBonus.getText().toString());
+                searchBONUS = Double.parseDouble(searchBonus.getText());
                 request.change_Search_Library_Bonus(searchBONUS, "searchBonus", currentDate);
             }
             request.changeSalary(currentDate.toString(), basicSALARY, contractSALARY);
