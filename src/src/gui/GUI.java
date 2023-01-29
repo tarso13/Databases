@@ -37,7 +37,7 @@ public class GUI {
                     e -> {
                         frame.setVisible(false);
                         frame.dispose();
-                        if(message.equals("Login cancelled!")==false)
+                        if (message.equals("Login cancelled!") == false)
                             displayProcedures(root);
                     });
             panel.add(returnPage);
@@ -440,7 +440,7 @@ public class GUI {
         return panel;
     }
 
-    public static boolean check_valid_dates(Date initialDate, Date finalDate, Date currentDate){
+    public static boolean check_valid_dates(Date initialDate, Date finalDate, Date currentDate) {
         try {
             // ResolverStyle.STRICT for 30, 31 days checking, and also leap year.
             LocalDate.parse(initialDate.toString(),
@@ -478,15 +478,10 @@ public class GUI {
         int option = JOptionPane.showConfirmDialog(null, panelLoginAndFirePage(initialDate, finalDate, labelInit, labelFinal), "Login Page", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             if (initialDate.getText().equals("") || finalDate.getText().equals("")
-                    || !check_valid_dates(Date.valueOf(initialDate.getText()),Date.valueOf(finalDate.getText()),currentDate)) {
-                int opt = JOptionPane.showConfirmDialog(null, panelForMessageDialog("Invalid Dates given!", true, false), "Message", JOptionPane.INFORMATION_MESSAGE);
-                if (opt == JOptionPane.OK_OPTION)
-                    displayProcedures(root);
-                else
-                    validateExit(root);
+                    || !check_valid_dates(Date.valueOf(initialDate.getText()), Date.valueOf(finalDate.getText()), currentDate)) {
+                panelForMessageDialog("Invalid Dates given!", true, false);
                 return null;
             }
-
             dates.add(Date.valueOf(initialDate.getText()));
             dates.add(Date.valueOf(finalDate.getText()));
             if (currentDate.before(Date.valueOf(finalDate.getText()))) dates.add(currentDate);
@@ -708,7 +703,7 @@ public class GUI {
                             queriesFrame.dispose();
                             ArrayList<Date> dates = getDates(root);
                             ArrayList<Double> averageResults = new ArrayList<>();
-                            assert dates != null;
+                            if (dates == null) break;
                             averageResults.add(request.getAverageSalaryBonusIncrease(dates.get(0), dates.get(1), "raiseSalary"));
                             averageResults.add(request.getAverageSalaryBonusIncrease(dates.get(0), dates.get(1), "raiseFamBonus"));
                             averageResults.add(request.getAverageSalaryBonusIncrease(dates.get(0), dates.get(1), "raiseSearchBonus"));
@@ -1017,9 +1012,9 @@ public class GUI {
                 int bankId = request.insertBankInfo(Integer.parseInt(IBAN.getText()), bankName.getText());
                 int bonusId = request.insertBonus(request.calculateFamilyBonus(married.getText(), kidsAgesWithCommas.getText()), searchBONUS, libraryBONUS, groupEmployer.getText(), jobDepartment.getText());
                 int stateId = request.insertFamilyState(married.getText(), Integer.parseInt(kids.getText()), kidsAgesWithCommas.getText());
-                int loginId = request.insertLogin(username.getText(),password.getText());
+                int loginId = request.insertLogin(username.getText(), password.getText());
 
-                int[] infoInt = {Integer.parseInt(phoneNumber.getText()), loginId,bankId, stateId, bonusId};
+                int[] infoInt = {Integer.parseInt(phoneNumber.getText()), loginId, bankId, stateId, bonusId};
                 String[] infoStr = {firstName.getText(), lastName.getText(), address.getText()};
 
                 if (groupEmployer.getText().equals("Permanent"))
@@ -1050,7 +1045,7 @@ public class GUI {
         int option = JOptionPane.showConfirmDialog(null, panelLoginAndFirePage(employeeId, fireRetire, labelId, labelOption), "Fire", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
             if (!employeeId.getText().matches("[0-9]+") || Integer.parseInt(employeeId.getText()) == 1) {
-               panelForMessageDialog("Incorrect Employee Id", true, false);
+                panelForMessageDialog("Incorrect Employee Id", true, false);
                 return;
             }
             int givenEmployeeId = Integer.parseInt(employeeId.getText());
@@ -1064,7 +1059,7 @@ public class GUI {
                 panelForMessageDialog("EmployeeID " + givenEmployeeId + " has ALREADY been paid with "
                         + payment + " euros!", true, false);
             } else {
-               panelForMessageDialog("EmployeeID " + givenEmployeeId +
+                panelForMessageDialog("EmployeeID " + givenEmployeeId +
                         " has been " + fireRetire.getText() + "d given " + payment + " euros!", true, false);
             }
             displayProcedures(root);
