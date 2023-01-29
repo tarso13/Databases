@@ -501,7 +501,7 @@ public class GUI {
                 displayProcedures(false);
             }
         } else
-            JOptionPane.showMessageDialog(null, panelForMessageDialog("Login cancelled!", false, false), "Message", JOptionPane.INFORMATION_MESSAGE);
+          panelForMessageDialog("Login cancelled!", false, false);
     }
 
 
@@ -509,7 +509,7 @@ public class GUI {
         String message = "<html><body width='%1s'><h1>Would you like to exit?</h1><br><br>" +
                 "[Yes: Go to login page<br><br>" +
                 "No: Go to previous page]<br><br>";
-        
+
         panelForMessageDialog(message, root, true);
     }
 
