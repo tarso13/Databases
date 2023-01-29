@@ -512,7 +512,7 @@ public class ServerRequest {
             default:
                 assert(false);
         }
-        PreparedStatement statement1 = selectStatement(connector, select);
+        PreparedStatement statement1 = connector.getConnection().prepareStatement(select);
         ResultSet resultSalary = statement1.executeQuery();
         if (!resultSalary.next()) return 0.0;
         return resultSalary.getDouble(1);
@@ -547,7 +547,7 @@ public class ServerRequest {
             default:
                 assert(false);
         }
-        PreparedStatement statement1 = selectStatement(connector, select);
+        PreparedStatement statement1 = connector.getConnection().prepareStatement(select);
         ResultSet resultSalary = statement1.executeQuery();
         if (!resultSalary.next()) return 0.0;
         return resultSalary.getDouble(1);
@@ -582,7 +582,7 @@ public class ServerRequest {
             default:
                 assert(false);
         }
-        PreparedStatement statement1 = selectStatement(connector, select);
+        PreparedStatement statement1 = connector.getConnection().prepareStatement( select);
         ResultSet resultSalary = statement1.executeQuery();
         if (!resultSalary.next()) return 0.0;
         return resultSalary.getDouble(1);
@@ -617,7 +617,7 @@ public class ServerRequest {
             default:
                 assert(false);
         }
-        PreparedStatement statement1 = selectStatement(connector, select);
+        PreparedStatement statement1 = connector.getConnection().prepareStatement(select);
         ResultSet resultSalary = statement1.executeQuery();
         if (!resultSalary.next()) return 0.0;
         return resultSalary.getDouble(1);
@@ -627,7 +627,7 @@ public class ServerRequest {
     /*Add category of Employees salary*/
     public ArrayList<String> getSalaryPerCategory(String EmployeeCategory) throws SQLException {
         ArrayList<String> salaryEmployees = new ArrayList<>();
-        PreparedStatement statement1 = selectStatement(connector, "SELECT firstName,lastName,salary FROM Employee WHERE EmployeeId IN (SELECT EmployeeId FROM " + EmployeeCategory + ")");
+        PreparedStatement statement1 = connector.getConnection().prepareStatement("SELECT firstName,lastName,salary FROM Employee WHERE EmployeeId IN (SELECT EmployeeId FROM " + EmployeeCategory + ")");
         ResultSet resultSalary = statement1.executeQuery();
 
         while (resultSalary.next()) {
@@ -638,7 +638,7 @@ public class ServerRequest {
 
     public String getEmployeeSalaryData(int EmployeeId) throws SQLException {
         String EmployeeInfo = "";
-        PreparedStatement statement = selectStatement(connector, "SELECT * FROM Employee WHERE EmployeeId=?");
+        PreparedStatement statement = connector.getConnection().prepareStatement( "SELECT * FROM Employee WHERE EmployeeId=?");
         statement.setInt(1, EmployeeId);
         ResultSet resultEmployee = statement.executeQuery();
         resultEmployee.next();
@@ -648,14 +648,14 @@ public class ServerRequest {
                 + resultEmployee.getString("address") + "<br><br>PhoneNumber " + resultEmployee.getInt("phoneNumber")
                 + "<br><br>Salary: " + resultEmployee.getDouble("salary");
 
-        PreparedStatement statement1 = selectStatement(connector, "SELECT * FROM BankInfo WHERE BankId=?");
+        PreparedStatement statement1 = connector.getConnection().prepareStatement( "SELECT * FROM BankInfo WHERE BankId=?");
         statement1.setInt(1, resultEmployee.getInt("BankId"));
         ResultSet resultBankInfo = statement1.executeQuery();
         resultBankInfo.next();
 
         EmployeeInfo += "<br><br>IBAN: " + resultBankInfo.getInt("IBAN") + "<br><br>BankName: " + resultBankInfo.getString("bankName");
 
-        PreparedStatement statement2 = selectStatement(connector, "SELECT * FROM Bonus WHERE BonusId=?");
+        PreparedStatement statement2 = connector.getConnection().prepareStatement( "SELECT * FROM Bonus WHERE BonusId=?");
         statement2.setInt(1, resultEmployee.getInt("BonusId"));
         ResultSet resultBonus = statement2.executeQuery();
         resultBonus.next();
@@ -707,23 +707,23 @@ public class ServerRequest {
     }
 
     public int countActiveEmployees() throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector, "SELECT SUM(active) FROM Employee WHERE active=1");
-        ResultSet resultRaise = statement1.executeQuery();
-        if (!resultRaise.next()) return 0;
-        return resultRaise.getInt(1);
+        PreparedStatement statement1 = connector.getConnection().prepareStatement( "SELECT SUM(active) FROM Employee WHERE active=1");
+        ResultSet resultCount = statement1.executeQuery();
+        if (!resultCount.next()) return 0;
+        return resultCount.getInt(1);
     }
 
     public String EmployeeWithMaxKids() throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector, "SELECT firstName,lastName FROM Employee WHERE StateId IN (SELECT StateId FROM FamilyState WHERE numberKids = (SELECT MAX(numberKids) FROM FamilyState))");
-        ResultSet resultRaise = statement1.executeQuery();
-        if (!resultRaise.next()) return "";
-        return resultRaise.getString(1) + " " + resultRaise.getString(2);
+        PreparedStatement statement1 = connector.getConnection().prepareStatement( "SELECT firstName,lastName FROM Employee WHERE StateId IN (SELECT StateId FROM FamilyState WHERE numberKids = (SELECT MAX(numberKids) FROM FamilyState))");
+        ResultSet resultEmployee = statement1.executeQuery();
+        if (!resultEmployee.next()) return "";
+        return resultEmployee.getString(1) + " " + resultEmployee.getString(2);
     }
 
     public String EmployeeWithMaxExperience() throws SQLException {
-        PreparedStatement statement1 = selectStatement(connector, "SELECT firstName,lastName FROM Employee WHERE beginHiringDate = (SELECT MIN(beginHiringDate) FROM Employee) AND active=1");
-        ResultSet resultRaise = statement1.executeQuery();
-        if (!resultRaise.next()) return "";
-        return resultRaise.getString(1) + " " + resultRaise.getString(2);
+        PreparedStatement statement1 = connector.getConnection().prepareStatement("SELECT firstName,lastName FROM Employee WHERE beginHiringDate = (SELECT MIN(beginHiringDate) FROM Employee) AND active=1");
+        ResultSet resultEmployee = statement1.executeQuery();
+        if (!resultEmployee.next()) return "";
+        return resultEmployee.getString(1) + " " + resultEmployee.getString(2);
     }
 }
