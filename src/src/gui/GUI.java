@@ -24,12 +24,10 @@ public class GUI {
     static boolean paidEveryone = false;
     static Date currentDate;
 
-    static JButton returnPage = new JButton("OK");
-
     public static JFrame panelForMessageDialog(String message, boolean root, boolean yesno) {
         JFrame frame = new JFrame();
         frame.setLayout(new BorderLayout());
-
+        JButton returnPage = new JButton("OK");
         JPanel panel = new JPanel();
         JLabel label = new JLabel(message);
         label.setFont(new Font("Calibre", Font.ITALIC, 17));
@@ -745,6 +743,7 @@ public class GUI {
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
+                        break;
                     case "Employee with max number of kids":
                         try {
                             queriesFrame.dispose();
@@ -753,6 +752,7 @@ public class GUI {
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
+                        break;
                     case "Active employee with most experience":
                         try {
                             queriesFrame.dispose();
@@ -761,6 +761,7 @@ public class GUI {
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
                         }
+                        break;
                     default:
                         assert (false);
                 }
